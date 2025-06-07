@@ -1,22 +1,14 @@
-import { FiMenu } from "react-icons/fi";
-import { useUser } from "../../context/UserContext";
 import Profile from "./Profile";
+import BtnToggleSidebar from "./BtnToggleSidebar";
 
-type HeaderProps = {
-	onToggleSidebar: () => void;
-}
 
-function onToggleSidebar() {
+export default function Header() {
 
-}
-
-const Header = (() => {
 	return (
-		<header className="fixed top-0 h-16 w-full flex items-center justify-between px-5 shadow-md">
-			<FiMenu className="w-6 h-auto" onClick={onToggleSidebar} />
+		<header className="fixed top-0 h-16 w-full flex items-center justify-between px-7 border-b-1 border-gray-400">
+			<BtnToggleSidebar />
 			<Profile />
 		</header>
 	);
-});
+}
 
-export default Header;
