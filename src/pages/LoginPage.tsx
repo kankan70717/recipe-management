@@ -5,12 +5,12 @@ import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
-	const { state, loginWithEmailPassword } = useAuth();
+	const { loginWithEmailPassword } = useAuth();
 	const navigate = useNavigate();
 
 	const handleLoging = async () => {
-		loginWithEmailPassword(email, password);
-		if (!state) {
+		const result = await loginWithEmailPassword(email, password);
+		if (result.success) {
 			navigate('/dashboard');
 		}
 	}

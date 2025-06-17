@@ -2,6 +2,7 @@ import type { User } from "firebase/auth";
 
 export type AuthState = {
 	user: User | null;
+	error: string | null;
 }
 
 export type AuthAction =

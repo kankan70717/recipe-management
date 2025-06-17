@@ -7,19 +7,20 @@ import { auth } from "../firebase/config";
 type AuthContextType = {
 	state: AuthState,
 	dispatch: React.Dispatch<any>,
-	loginWithEmailPassword: (email: string, password: string) => Promise<void>,
+	loginWithEmailPassword: (email: string, password: string) => Promise<{ success: boolean }>,
 	logout: () => Promise<void>
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-	const [state, dispatch] = useReducer(authReducer, { user: null });
+	const [state, dispatch] = useReducer(authReducer, { user: null, error: null });
 
 	const loginWithEmailPassword = async (email: string, password: string) => {
 		try {
 			const result = await signInWithEmailAndPassword(auth, email, password);
 			dispatch({ type: 'LOGIN', payload: result.user });
+			return { success: true };
 		}
 		catch (error) {
 			if (error instanceof Error) {
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 			} else {
 				dispatch({ type: 'ERROR', payload: new Error("An unknown error occurred") });
 			}
+			return { success: false };
 		}
 	}
 

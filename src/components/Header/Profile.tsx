@@ -2,11 +2,12 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import profileImg from "../../assets/kanta.jpeg"
 import { useState } from "react";
 import ProfileModal from "./ProfileModal";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Profile() {
 
 	const [isProfileOpen, setProfileOpen] = useState(false);
-
+	const { state } = useAuth();
 	const toggleProfile = () => setProfileOpen((prev) => (!prev));
 
 	return (
@@ -15,7 +16,7 @@ export default function Profile() {
 				<div className="w-10 h-10">
 					<img src={profileImg} alt="" className="rounded-full w-full h-auto" />
 				</div>
-				<p>sample.email@sample.com</p>
+				<p>{state.user?.email}</p>
 				<MdKeyboardArrowDown className="w-6 h-auto" />
 			</div>
 			<ProfileModal isProfileOpen={isProfileOpen} />
