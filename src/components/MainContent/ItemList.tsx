@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGreaterThan } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function ItemList() {
 	return (
@@ -8,9 +8,9 @@ export default function ItemList() {
 				<li className="flex p-2 items-center border-b-1 border-b-gray-200">
 					<div className="w-20 h-auto mr-2"><img src="../../src/assets/kanta.jpeg" alt="" /></div>
 					<p>Shokado</p>
-					<FontAwesomeIcon className='mr-3 ml-auto' icon={faGreaterThan} />
+					<FontAwesomeIcon className='mr-3 ml-auto bg-white' icon={faChevronRight} />
 				</li>
-				
+
 			</ul>
 		</div>);
 }
