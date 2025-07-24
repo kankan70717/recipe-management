@@ -1,7 +1,7 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import type { AuthState } from "./AuthReducer";
 import authReducer from "./AuthReducer";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
 
 type AuthContextType = {
@@ -15,6 +15,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [state, dispatch] = useReducer(authReducer, { user: null, error: null });
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+			if (firebaseUser) {
+				dispatch({ type: "LOGIN", payload: firebaseUser });
+			} else {
+				dispatch({ type: "LOGOUT" });
+			}
+		});
+
+		return () => unsubscribe(); // cleanup listener on unmount
+	}, []);
 
 	const loginWithEmailPassword = async (email: string, password: string) => {
 		try {

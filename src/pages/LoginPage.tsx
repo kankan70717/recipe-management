@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
+	const [loginError, setLoginError] = useState<boolean | null>(null);
 	const { loginWithEmailPassword } = useAuth();
 	const navigate = useNavigate();
 
@@ -12,6 +13,8 @@ export default function LoginPage() {
 		const result = await loginWithEmailPassword(email, password);
 		if (result.success) {
 			navigate('/dashboard');
+		} else {
+			setLoginError(result.success);
 		}
 	}
 
@@ -39,7 +42,10 @@ export default function LoginPage() {
 					onChange={(e) => setPassword(e.target.value)}
 				/>
 
-				<div className="flex justify-evenly mt-5">
+				{loginError == false ? <div className="text-red-500">Incorrect Email or Password</div> : ""}
+
+
+				<div className="flex justify-evenly">
 					<button
 						className="rounded-full border-1 border-black py-1 px-3 w-30 hover:bg-black hover:text-white"
 						onClick={handleLoging}>
