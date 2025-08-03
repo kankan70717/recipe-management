@@ -4,8 +4,8 @@ import Dashboard from "./pages/Dashboard"
 import { AuthProvider } from "./context/AuthContext"
 import MainContent from "./components/MainContent/MainContent"
 import ItemDetail from "./components/MainContent/ItemDetail"
-import AllergenFilter from "./components/MainContent/AllergenFilter"
 import { SettingsProvider } from "./context/SettingsContext"
+import FilterLayout from "./components/MainContent/FilterLayout"
 
 function App() {
 
@@ -18,15 +18,15 @@ function App() {
 							<Route path="/" element={<LoginPage />} />
 							<Route path="/dashboard" element={<Dashboard />} >
 								<Route path="dish" element={<MainContent />} >
-									<Route index element={<AllergenFilter />} />
+									<Route index element={<FilterLayout />} />
 									<Route path=":dishItemId" element={<ItemDetail />} />
 								</Route>
 								<Route path="prep" element={<MainContent />} >
-									<Route index element={<AllergenFilter />} />
+									<Route index element={<FilterLayout />} />
 									<Route path=":prepItemId" element={<ItemDetail />} />
 								</Route>
 								<Route path="ingredient" element={<MainContent />} >
-									<Route index element={<AllergenFilter />} />
+									<Route index element={<FilterLayout />} />
 									<Route path=":ingredientItemId" element={<ItemDetail />} />
 								</Route>
 							</Route>
