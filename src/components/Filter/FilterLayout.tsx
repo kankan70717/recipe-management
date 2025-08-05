@@ -2,15 +2,11 @@ import { useEffect, useState } from "react";
 import { useSettings } from "../../context/SettingsContext";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleRight, faLayerGroup, faSkullCrossbones, faTag, faXmark } from '@fortawesome/free-solid-svg-icons'
-
-type TypeFilterType = "allergen" | "category" | "tag";
-type TypeFilterPath = "dish" | "prep" | "ingredient";
-type TypeFilterItems = {
-	dish: { allergen: any[], category: any[], tag: any[] };
-	prep: { allergen: any[], category: any[], tag: any[] };
-	ingredient: { allergen: any[], category: any[], tag: any[] };
-};
+import {  faLayerGroup, faSkullCrossbones, faTag } from '@fortawesome/free-solid-svg-icons'
+import type { TypeFilterItems, TypeFilterPath, TypeFilterType } from "./types";
+import { AllergenCategory } from "./AllergenCategory";
+import { FilterItem } from "./FilterItem";
+import { SelectedFilterItem } from "./SelectedFilterItem";
 
 export default function FilterLayout() {
 	const settings = useSettings();
@@ -44,8 +40,6 @@ export default function FilterLayout() {
 						(item) => item !== itemName
 					);
 			}
-			console.log("currentPath", currentPath, "filterBy", filterBy);
-			console.log("updatedFilterItem", updatedFilterItem);
 			return updatedFilterItem;
 		});
 	};
@@ -99,7 +93,7 @@ export default function FilterLayout() {
 						</li>
 					</ul>
 				</div>
-				<div className="basis-2/5 border-r-1 border-r-gray-200 overflow-scroll px-5">
+				<div className="basis-2/5 px-5 border-r-1 border-r-gray-200 overflow-scroll">
 					<h2 className="text-md">Show Only</h2>
 					<ul className={`${filterType != "allergen" ? "hidden" : ""} list-none capitalize flex flex-col gap-2 py-2`}>
 						{
@@ -139,7 +133,7 @@ export default function FilterLayout() {
 						}
 					</ul>
 				</div>
-				<div className="basis-2/5 pl-5 overflow-scroll ">
+				<div className="basis-2/5 pl-5 overflow-scroll">
 					<h2 className="text-md">Filter Selected</h2>
 					<ul className="list-none capitalize flex flex-col gap-3">
 						<li className="border-b-1 border-gray-200 pb-2">
@@ -181,98 +175,5 @@ export default function FilterLayout() {
 				<button className="uppercase py-2 px-4 rounded-full w-30 ml-3 bg-black text-white">apply</button>
 			</div>
 		</div>
-	);
-}
-
-function AllergenCategory({
-	data,
-	onSelect,
-	filterItems,
-	currentPath,
-	filterBy
-}: {
-	data: any;
-	onSelect: (filterBy: TypeFilterType, itemName: string, checked: boolean) => void;
-	filterItems: TypeFilterItems;
-	currentPath: TypeFilterPath;
-	filterBy: TypeFilterType;
-}) {
-	const [isOpen, setOpen] = useState(false);
-
-	return (
-		<li onClick={() => setOpen(prev => !prev)}>
-			<div className="flex items-center justify-between py-2 border-b-1 border-gray-200">
-				<h3 className="text-md">{data.category}</h3>
-				<FontAwesomeIcon icon={faAngleRight} className={`transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`} />
-			</div>
-			<ul className={`flex flex-col gap-2 transition-all duration-300 ease-in-out overflow-hidden ${isOpen == true ? "max-h-1000 py-2" : "max-h-0"}`}>
-				<li key={data.category} className="flex items-center">
-					<input
-						type="checkbox"
-						id={data.category}
-						className="peer" />
-					<label htmlFor={data.category} className="px-1">
-						All {data.category}
-					</label>
-				</li>
-
-				{data.items.map((itemName: string, itemIndex: number) => (
-					<FilterItem
-						itemName={itemName}
-						key={itemIndex}
-						onSelect={onSelect}
-						checked={filterItems[currentPath].allergen.includes(itemName)}
-						filterBy={filterBy} />
-				))}
-			</ul>
-		</li>
-	);
-}
-
-function FilterItem({
-	itemName,
-	onSelect,
-	checked,
-	filterBy
-}: {
-	itemName: string;
-	onSelect: (filterBy: TypeFilterType, itemName: string, checked: boolean) => void;
-	checked: boolean;
-	filterBy: TypeFilterType;
-}) {
-
-	return (
-		<li className="flex items-center">
-			<input
-				type="checkbox"
-				id={itemName}
-				className="peer"
-				checked={checked}
-				onChange={(e) => onSelect(filterBy, itemName, e.target.checked)} />
-			<label htmlFor={itemName} className="px-1">
-				{itemName}
-			</label>
-		</li>
-	);
-}
-
-function SelectedFilterItem({
-	filterBy,
-	selectedItems,
-	onSelect,
-}: {
-	filterBy: TypeFilterType,
-	selectedItems: string;
-	onSelect: (filterBy: TypeFilterType, itemName: string, checked: boolean) => void;
-}) {
-	return (
-		<li>
-			<button
-				className="flex items-center gap-1 py-2 px-4 rounded-full bg-gray-200 text-xs capitalize"
-				onClick={() => onSelect(filterBy, selectedItems, false)}>
-				{selectedItems}
-				<FontAwesomeIcon icon={faXmark} />
-			</button>
-		</li>
 	);
 }

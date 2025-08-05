@@ -5,7 +5,7 @@ import { AuthProvider } from "./context/AuthContext"
 import MainContent from "./components/MainContent/MainContent"
 import ItemDetail from "./components/MainContent/ItemDetail"
 import { SettingsProvider } from "./context/SettingsContext"
-import FilterLayout from "./components/MainContent/FilterLayout"
+import FilterLayout from "./components/Filter/FilterLayout"
 
 function App() {
 
