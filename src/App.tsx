@@ -3,9 +3,9 @@ import LoginPage from "./pages/LoginPage"
 import Dashboard from "./pages/Dashboard"
 import { AuthProvider } from "./context/AuthContext"
 import MainContent from "./components/MainContent/MainContent"
-import ItemDetail from "./components/MainContent/ItemDetail"
 import FilterLayout from "./components/Filter/Layout/FilterLayout"
 import { getSetting } from "./firebase/firestore"
+import FilterResultLayout from "./components/Filter/Layout/FilterResultLayout"
 
 const router = createBrowserRouter([
 	{
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
 				element: <MainContent />,
 				children: [
 					{ index: true, element: <FilterLayout /> },
-					{ path: ":dishItemId", element: <ItemDetail /> },
+					{ path: ":filterCondition", element: <FilterResultLayout /> },
 				],
 			},
 			{
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
 				element: <MainContent />,
 				children: [
 					{ index: true, element: <FilterLayout /> },
-					{ path: ":prepItemId", element: <ItemDetail /> },
+					{ path: ":filterCondition", element: <FilterResultLayout /> },
 				],
 			},
 			{
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
 				element: <MainContent />,
 				children: [
 					{ index: true, element: <FilterLayout /> },
-					{ path: ":ingredientItemId", element: <ItemDetail /> },
+					{ path: "result", element: <FilterResultLayout /> },
 				],
 			},
 		],
