@@ -1,9 +1,24 @@
-export type TypeFilterType = "allergen" | "category" | "tag";
-
 export type TypeFilterPath = "dish" | "prep" | "ingredient";
 
-export type TypeFilterItems = {
-	dish: { allergen: string[], category: string[], tag: string[] };
-	prep: { allergen: string[], category: string[], tag: string[] };
-	ingredient: { allergen: string[], category: string[], tag: string[] };
+export type TypeFilterType = "allergen" | "category" | "tag";
+
+export type TypeFilterAllergen = {
+	[allergenCategoryName: string]: {
+		allSelected: boolean;
+		items: {
+			[itemName: string]: boolean;
+		};
+	};
+};
+
+type TypeFilterSet = {
+	allergen: TypeFilterAllergen;
+	category: { [itemName: string]: boolean };
+	tag: { [itemName: string]: boolean };
+};
+
+export type TypeFilterItem = {
+	dish: TypeFilterSet;
+	prep: TypeFilterSet;
+	ingredient: TypeFilterSet;
 };

@@ -1,39 +1,54 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { createBrowserRouter, RouterProvider, } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
 import Dashboard from "./pages/Dashboard"
 import { AuthProvider } from "./context/AuthContext"
 import MainContent from "./components/MainContent/MainContent"
 import ItemDetail from "./components/MainContent/ItemDetail"
-import { SettingsProvider } from "./context/SettingsContext"
-import FilterLayout from "./components/Filter/FilterLayout"
+import FilterLayout from "./components/Filter/Layout/FilterLayout"
+import { getSetting } from "./firebase/firestore"
 
-function App() {
+const router = createBrowserRouter([
+	{
+		path: "/",
+		element: <LoginPage />,
+	},
+	{
+		path: "/dashboard",
+		element: <Dashboard />,
+		loader: getSetting,
+		children: [
+			{
+				path: "dish",
+				element: <MainContent />,
+				children: [
+					{ index: true, element: <FilterLayout /> },
+					{ path: ":dishItemId", element: <ItemDetail /> },
+				],
+			},
+			{
+				path: "prep",
+				element: <MainContent />,
+				children: [
+					{ index: true, element: <FilterLayout /> },
+					{ path: ":prepItemId", element: <ItemDetail /> },
+				],
+			},
+			{
+				path: "ingredient",
+				element: <MainContent />,
+				children: [
+					{ index: true, element: <FilterLayout /> },
+					{ path: ":ingredientItemId", element: <ItemDetail /> },
+				],
+			},
+		],
+	},
+]);
 
+export default function App() {
 	return (
 		<AuthProvider>
-			<SettingsProvider>
-				<BrowserRouter>
-					<Routes>
-						<Route path="/" element={<LoginPage />} />
-						<Route path="/dashboard" element={<Dashboard />} >
-							<Route path="dish" element={<MainContent />} >
-								<Route index element={<FilterLayout />} />
-								<Route path=":dishItemId" element={<ItemDetail />} />
-							</Route>
-							<Route path="prep" element={<MainContent />} >
-								<Route index element={<FilterLayout />} />
-								<Route path=":prepItemId" element={<ItemDetail />} />
-							</Route>
-							<Route path="ingredient" element={<MainContent />} >
-								<Route index element={<FilterLayout />} />
-								<Route path=":ingredientItemId" element={<ItemDetail />} />
-							</Route>
-						</Route>
-					</Routes>
-				</BrowserRouter>
-			</SettingsProvider>
+			<RouterProvider router={router} />
 		</AuthProvider>
-	)
+	);
 }
-
-export default App
