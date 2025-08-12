@@ -12,7 +12,6 @@ export function FilterSelectedLayout({
 		throw new Error("FilterContext must be used within a FilterProvider");
 	}
 	const { filterItem } = context;
-	console.log("filterItem", filterItem);
 
 	return (<div className="basis-2/5 pl-5 overflow-scroll">
 		<h2 className="text-md">Filter Selected</h2>

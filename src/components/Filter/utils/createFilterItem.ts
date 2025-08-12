@@ -43,6 +43,5 @@ export function createFilterItem(setting: any): TypeFilterItem {
 		});
 	});
 
-	console.log("initFilterItem", initFilterItem);
 	return initFilterItem;
 }

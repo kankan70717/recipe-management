@@ -3,14 +3,13 @@ import { collection, doc, getDoc, getDocs, query, where } from "firebase/firesto
 import { db } from "./config";
 import type { TypeFilterItem, TypeFilterPath } from "../components/Filter/types";
 
-
 export async function fetchItems() {
 	const querySnapshot = await getDocs(collection(db, "tamaru"));
 	return console.log(querySnapshot.docs);
 }
 
 export async function getSetting() {
-	const docId = "settings";
+	const docId = "setting";
 	const collectionName = "tamaru";
 
 	const docRef = doc(db, collectionName, docId);
@@ -30,22 +29,34 @@ export async function getSetting() {
 export async function fetchRecipe(
 	filterPath: TypeFilterPath,
 	filterItem: TypeFilterItem,
-	status: "active" | "pending" | "inactive"
 ) {
 	const collectionName = "tamaru";
 
-	Object.entries(filterItem[filterPath].allergen).map(([AllergenCategory, obj]) => {
+	const filterAllergen = Object.entries(filterItem[filterPath].allergen)
+		.flatMap(([allergenCategory, obj]) => {
+			if (obj.allSelected) {
+				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
+			} else {
+				return Object.entries(obj.items).flatMap(([allergen, selected]) => {
+					if (selected == true) {
+						return [where(`allergenForFilter.${allergen}`, "in", ["removable", "notContained", "unknown"])];
+					} else {
+						return [];
+					}
+				})
+			}
+		});
 
-		if(obj.allSelected){
-			
-		}
-	});
+	console.log("filterAllergen", filterAllergen);
 
+	// Max "where 5"
 	const q = query(
 		collection(db, collectionName),
 		where("kind", "==", filterPath),
-		where("status", "==", status),
+		where("status", "==", "active"),
+		...filterAllergen
 	);
+
 	const snapshot = await getDocs(q);
 	return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }

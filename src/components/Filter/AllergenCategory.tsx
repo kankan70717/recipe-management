@@ -39,14 +39,14 @@ export const AllergenCategory = ({
 						checked={filterItem[currentPath].allergen[allergenObj.category].allSelected}
 						onChange={(e) => handleSelect(currentPath, "allergen", allergenObj.category, allergenObj.category, e.target.checked)} />
 					<label htmlFor={allergenObj.category} className="px-1">
-						{allergenObj.category}
+						All {allergenObj.category}
 					</label>
 				</li>
 				{allergenObj.items.map((itemName: string, itemIndex: number) => (
 					<FilterItem
 						key={itemIndex}
 						filterPath={currentPath}
-						filterType = "allergen"
+						filterType="allergen"
 						filterAllergenCategory={allergenObj.category}
 						itemName={itemName}
 						checked={filterItem[currentPath].allergen[allergenObj.category].items[itemName]} />

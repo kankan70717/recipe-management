@@ -10,12 +10,12 @@ export default function FilterResultLayout() {
 	}
 	const { filterItem } = context;
 	const currentPath = location.pathname.split("/")[2] as TypeFilterPath;
-	console.log("currentPath", currentPath);
+	console.log("Result FilterItem", filterItem);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const recipeData = await fetchRecipe(currentPath, filterItem, "active");
+				const recipeData = await fetchRecipe(currentPath, filterItem);
 				console.log("recipeData", recipeData);
 			} catch (error) {
 				console.error(error);

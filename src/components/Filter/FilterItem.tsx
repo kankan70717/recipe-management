@@ -24,7 +24,7 @@ export const FilterItem = ({
 		<li className="flex items-center">
 			<input
 				type="checkbox"
-				id={itemName}
+				id={filterType + itemName}
 				className="peer"
 				checked={checked}
 				onChange={(e) => handleSelect(
@@ -33,7 +33,7 @@ export const FilterItem = ({
 					filterAllergenCategory,
 					itemName,
 					e.target.checked)} />
-			<label htmlFor={itemName} className="px-1">
+			<label htmlFor={filterType + itemName} className="px-1">
 				{itemName}
 			</label>
 		</li>
