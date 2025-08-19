@@ -1,5 +1,5 @@
 import { useFilter } from "../../context/FilterContext";
-import type { TypeFilterPath, TypeFilterType } from "./types";
+import type {  TypeFilterKind, TypeFilterType } from "./types";
 
 export const FilterItem = ({
 	filterPath,
@@ -8,7 +8,7 @@ export const FilterItem = ({
 	itemName,
 	checked,
 }: {
-	filterPath: TypeFilterPath;
+	filterPath: TypeFilterKind;
 	filterType: TypeFilterType;
 	filterAllergenCategory: string | undefined;
 	itemName: string;

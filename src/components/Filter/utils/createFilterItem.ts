@@ -1,7 +1,8 @@
-import type { TypeFilterItem } from "../types";
+import type { TypeFilterItem, TypeFilterKind } from "../types";
 
 export function createFilterItem(setting: any): TypeFilterItem {
 	const initFilterItem: TypeFilterItem = {
+		currentKind: "dish",
 		dish: {
 			allergen: {},
 			category: {},
@@ -23,23 +24,23 @@ export function createFilterItem(setting: any): TypeFilterItem {
 		const allergenCategory = allergenObj.category;
 		const allergenItems = allergenObj.items;
 
-		["dish", "prep", "ingredient"].forEach(path => {
-			initFilterItem[path as keyof TypeFilterItem].allergen[allergenCategory] = {
+		(["dish", "prep", "ingredient"] as TypeFilterKind[]).forEach(path => {
+			initFilterItem[path].allergen[allergenCategory] = {
 				allSelected: false,
 				items: Object.fromEntries(allergenItems.map((item: string) => [item, false]))
 			};
 		});
 	});
 
-	["dish", "prep", "ingredient"].forEach(path => {
-		setting[path as keyof TypeFilterItem].category.forEach((item: string) => {
-			initFilterItem[path as keyof TypeFilterItem].category[item] = false;
+	(["dish", "prep", "ingredient"] as TypeFilterKind[]).forEach(path => {
+		setting[path].category.forEach((item: string) => {
+			initFilterItem[path].category[item] = false;
 		});
 	});
 
-	["dish", "prep", "ingredient"].forEach(path => {
-		setting[path as keyof TypeFilterItem].tag.forEach((item: string) => {
-			initFilterItem[path as keyof TypeFilterItem].tag[item] = false;
+	(["dish", "prep", "ingredient"] as TypeFilterKind[]).forEach(path => {
+		setting[path].tag.forEach((item: string) => {
+			initFilterItem[path].tag[item] = false;
 		});
 	});
 

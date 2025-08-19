@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { TypeFilterItem, TypeFilterPath, TypeFilterType } from "../components/Filter/types";
+import type { TypeFilterItem, TypeFilterKind, TypeFilterType } from "../components/Filter/types";
+import { createFilterItem } from "../components/Filter/utils/createFilterItem";
+import { useSetting } from "./SettingsContext";
 
 type TypeFilterContext = {
 	filterItem: TypeFilterItem,
 	handleSelect: (
-		filterPath: TypeFilterPath,
-		filterType: TypeFilterType,
+		filterPath: TypeFilterKind,
+		filterType: TypeFilterType | undefined,
 		filterAllergenCategory: string | undefined,
 		filterItemName: string,
 		checked: boolean
@@ -17,17 +19,16 @@ export const useFilter = () => useContext(FilterContext);
 
 export const FilterProvider = ({
 	children,
-	initFilterItem
 }: {
 	children: ReactNode,
-	initFilterItem: TypeFilterItem
 }
 ) => {
-	const [filterItem, updateFilterItem] = useState<TypeFilterItem>(initFilterItem);
+	const { setting } = useSetting();
+	const [filterItem, updateFilterItem] = useState<TypeFilterItem>(() => createFilterItem(setting));
 
 	const handleSelect = (
-		filterPath: TypeFilterPath,
-		filterType: TypeFilterType,
+		filterKind: TypeFilterKind,
+		filterType: TypeFilterType | undefined,
 		filterAllergenCategory: string | undefined,
 		filterItemName: string,
 		checked: boolean
@@ -36,24 +37,39 @@ export const FilterProvider = ({
 
 			const updatedFilterItem = {
 				...prev,
-				[filterPath]: {
-					...prev[filterPath],
-					[filterType]: filterType == "allergen"
-						? { ...prev[filterPath][filterType] }
-						: { ...prev[filterPath][filterType] }
+				"dish": {
+					...prev.dish,
+					"allergen": { ...prev.dish.allergen },
+					"category": { ...prev.dish.category },
+					"tag": { ...prev.dish.tag }
+				},
+				"prep": {
+					...prev.prep,
+					"allergen": { ...prev.prep.allergen },
+					"category": { ...prev.prep.category },
+					"tag": { ...prev.prep.tag }
+				},
+				"ingredient": {
+					...prev.ingredient,
+					"allergen": { ...prev.ingredient.allergen },
+					"category": { ...prev.ingredient.category },
+					"tag": { ...prev.ingredient.tag }
 				}
 			};
 
 			if (filterType === "allergen" && filterAllergenCategory != undefined) {
 				if (filterAllergenCategory != filterItemName) {
-					updatedFilterItem[filterPath].allergen[filterAllergenCategory].items[filterItemName] = checked;
+					updatedFilterItem[filterKind].allergen[filterAllergenCategory].items[filterItemName] = checked;
 				} else {
-					updatedFilterItem[filterPath].allergen[filterAllergenCategory].allSelected = checked;
+					updatedFilterItem[filterKind].allergen[filterAllergenCategory].allSelected = checked;
 				}
+			} else if (filterType != undefined) {
+				updatedFilterItem[filterKind][filterType][filterItemName] = checked;
 			} else {
-				updatedFilterItem[filterPath][filterType][filterItemName] = checked;
+				updatedFilterItem.currentKind = filterKind;
 			}
 
+			console.log("updatedFilterItem", updatedFilterItem);
 			return updatedFilterItem;
 		});
 	};

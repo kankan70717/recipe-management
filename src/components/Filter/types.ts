@@ -1,4 +1,4 @@
-export type TypeFilterPath = "dish" | "prep" | "ingredient";
+export type TypeFilterKind = "dish" | "prep" | "ingredient";
 
 export type TypeFilterType = "allergen" | "category" | "tag";
 
@@ -18,6 +18,7 @@ type TypeFilterSet = {
 };
 
 export type TypeFilterItem = {
+	currentKind: TypeFilterKind;
 	dish: TypeFilterSet;
 	prep: TypeFilterSet;
 	ingredient: TypeFilterSet;

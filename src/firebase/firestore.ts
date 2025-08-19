@@ -1,12 +1,7 @@
 // src/firebase/firestore.ts
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "./config";
-import type { TypeFilterItem, TypeFilterPath } from "../components/Filter/types";
-
-export async function fetchItems() {
-	const querySnapshot = await getDocs(collection(db, "tamaru"));
-	return console.log(querySnapshot.docs);
-}
+import type { TypeFilterItem, TypeFilterKind } from "../components/Filter/types";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -27,12 +22,12 @@ export async function getSetting() {
 }
 
 export async function fetchRecipe(
-	filterPath: TypeFilterPath,
+	currentKind: TypeFilterKind,
 	filterItem: TypeFilterItem,
 ) {
 	const collectionName = "tamaru";
 
-	const filterAllergen = Object.entries(filterItem[filterPath].allergen)
+	const filterAllergen = Object.entries(filterItem[currentKind].allergen)
 		.flatMap(([allergenCategory, obj]) => {
 			if (obj.allSelected) {
 				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
@@ -47,16 +42,35 @@ export async function fetchRecipe(
 			}
 		});
 
-	console.log("filterAllergen", filterAllergen);
+	const filterCategory = Object.entries(filterItem[currentKind].category).flatMap(([item, selected]) => {
+		if (selected === true) {
+			return [where(`category.${item}`, "==", true)];
+		} else {
+			return [];
+		}
+	});
+
+	const filterTag = Object.entries(filterItem[currentKind].tag).flatMap(([item, selected]) => {
+		if (selected === true) {
+			return [where(`tag.${item}`, "==", true)];
+		} else {
+			return [];
+		}
+	});
 
 	// Max "where 5"
 	const q = query(
 		collection(db, collectionName),
-		where("kind", "==", filterPath),
+		where("kind", "==", currentKind),
 		where("status", "==", "active"),
-		...filterAllergen
+		...filterAllergen,
+		...filterCategory, 
+		...filterTag
 	);
 
 	const snapshot = await getDocs(q);
-	return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+	return snapshot.docs.map(doc => ({
+		docID: doc.id,
+		...doc.data()
+	}));
 }

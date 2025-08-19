@@ -6,35 +6,28 @@ import MainContent from "./components/MainContent/MainContent"
 import FilterLayout from "./components/Filter/Layout/FilterLayout"
 import { getSetting } from "./firebase/firestore"
 import FilterResultLayout from "./components/Filter/Layout/FilterResultLayout"
+import Home from "./components/Home/Home"
 
 const router = createBrowserRouter([
 	{
 		path: "/",
+		index: true,
 		element: <LoginPage />,
 	},
 	{
-		path: "/dashboard",
+		path: "/",
 		element: <Dashboard />,
 		loader: getSetting,
 		children: [
 			{
-				path: "dish",
+				path: "home",
 				element: <MainContent />,
 				children: [
-					{ index: true, element: <FilterLayout /> },
-					{ path: ":filterCondition", element: <FilterResultLayout /> },
+					{ index: true, element: <Home /> }
 				],
 			},
 			{
-				path: "prep",
-				element: <MainContent />,
-				children: [
-					{ index: true, element: <FilterLayout /> },
-					{ path: ":filterCondition", element: <FilterResultLayout /> },
-				],
-			},
-			{
-				path: "ingredient",
+				path: "search",
 				element: <MainContent />,
 				children: [
 					{ index: true, element: <FilterLayout /> },

@@ -12,7 +12,7 @@ export default function LoginPage() {
 	const handleLoging = async () => {
 		const result = await loginWithEmailPassword(email, password);
 		if (result.success) {
-			navigate('/dashboard/dish');
+			navigate('/home');
 		} else {
 			setLoginError(result.success);
 		}
