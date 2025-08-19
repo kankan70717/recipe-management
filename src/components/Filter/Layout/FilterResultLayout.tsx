@@ -16,9 +16,33 @@ export default function FilterResultLayout() {
 	const { filterItem } = context;
 
 	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | null>(null);
-	const [detailData, setDetailData] = useState<TypeIngredientData | null>(null);
+	const [detailData, setDetailData] = useState<TypeIngredientData>({
+		docID: "",
+		id: "",
+		status: "active",
+		store: "",
+		kind: "ingredient",
+		name: "",
+		nameJa: "",
+		searchKeywords: [],
+		category: {},
+		image: "",
+		vendor: "",
+		purchasePrice: 0,
+		purchaseQuantity: 0,
+		purchaseUnit: "",
+		usageUnit: "",
+		unitConversionRate: 0,
+		yieldRate: 0,
+		tag: {},
+		allergenForFilter: {},
+		dishRefs: [],
+		prepRefs: [],
+		updatePerson: "",
+		updateDate: ""
+	});
+
 	const [isOpen, setIsOpen] = useState(false);
-	console.log("detailData", detailData);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -114,9 +138,12 @@ export default function FilterResultLayout() {
 									key={index}
 									htmlFor={item.id}
 									className="flex items-center gap-2 p-2 border-b-1 border-gray-200 has-checked:bg-gray-200">
-									<img
-										src={item.image}
-										className="h-20 aspect-square object-cover" />
+									{
+										typeof item.image === "string" &&
+										(<img
+											src={item.image}
+											className="h-20 aspect-square object-cover" />)
+									}
 									<h2 className="capitalize">{item.name}</h2>
 									<input
 										type="radio"
@@ -138,7 +165,10 @@ export default function FilterResultLayout() {
 									<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
 										<div className="flex gap-2">
 											<div className="flex items-center aspect-square w-2/5">
-												<img src={detailData?.image} />
+												{
+													typeof detailData.image === "string" &&
+													(<img src={detailData.image} />)
+												}
 											</div>
 											<div className="flex-1 flex flex-col gap-3 justify-center">
 												<div className="flex items-center justify-center">
