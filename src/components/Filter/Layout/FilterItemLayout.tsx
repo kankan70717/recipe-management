@@ -11,12 +11,17 @@ export const FilterItemLayout = ({
 	currentKind: TypeFilterKind;
 	filterType: TypeFilterType;
 }) => {
-	const { setting } = useSetting();
-	const context = useFilter();
-	if (!context) {
+	const settingContext = useSetting();
+	if (!settingContext) {
+		throw new Error("SettingContext must be used within a SettingProvider");
+	}
+	const { setting } = settingContext;
+
+	const filterContext = useFilter();
+	if (!filterContext) {
 		throw new Error("FilterContext must be used within a FilterProvider");
 	}
-	const { filterItem } = context;
+	const { filterItem } = filterContext;
 
 	return (
 		<div className="w-50 px-5 border-r-1 border-r-gray-200 overflow-scroll">

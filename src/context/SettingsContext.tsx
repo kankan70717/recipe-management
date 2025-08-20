@@ -1,7 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { DocumentData } from "firebase/firestore";
+import type { TypeSetting } from "../types/TypeSetting";
 
-export const SettingsContext = createContext<DocumentData>({});
+type SettingsContextType = {
+	setting: TypeSetting;
+	updateSetting: React.Dispatch<React.SetStateAction<TypeSetting>>;
+};
+
+export const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const useSetting = () => useContext(SettingsContext);
 
@@ -10,10 +15,10 @@ export const SettingProvider = ({
 	downloadedSetting
 }: {
 	children: ReactNode,
-	downloadedSetting: DocumentData
+	downloadedSetting: TypeSetting
 }
 ) => {
-	const [setting, updateSetting] = useState<DocumentData | null | undefined>(downloadedSetting);
+	const [setting, updateSetting] = useState<TypeSetting>(downloadedSetting);
 
 	return (
 		<SettingsContext.Provider value={{ setting, updateSetting }}>

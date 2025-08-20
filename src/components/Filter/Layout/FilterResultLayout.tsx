@@ -39,7 +39,14 @@ export default function FilterResultLayout() {
 		dishRefs: [],
 		prepRefs: [],
 		updatePerson: "",
-		updateDate: ""
+		updateDate: {
+			seconds: 0,
+			nanoseconds: 0,
+		},
+		createdDate: {
+			seconds: 0,
+			nanoseconds: 0,
+		}
 	});
 
 	const [isOpen, setIsOpen] = useState(false);
@@ -171,7 +178,7 @@ export default function FilterResultLayout() {
 												}
 											</div>
 											<div className="flex-1 flex flex-col gap-3 justify-center">
-												<div className="flex items-center justify-center">
+												<div className="flex items-center justify-between">
 													<h3 className="capitalize text-3xl">{detailData?.name}</h3>
 													<FontAwesomeIcon
 														icon={faPenToSquare}
@@ -179,7 +186,7 @@ export default function FilterResultLayout() {
 														className="ml-10"
 														onClick={() => setIsOpen(true)} />
 												</div>
-												<div className="flex flex-wrap gap-5 justify-center">
+												<div className="flex flex-wrap gap-5 justify-start">
 													<div className="capitalize flex items-center gap-1">
 														<FontAwesomeIcon icon={faLayerGroup} />
 														{
@@ -204,7 +211,7 @@ export default function FilterResultLayout() {
 														{detailData?.vendor}
 													</div>
 												</div>
-												<table className="w-full border-separate border-spacing-x-3">
+												<table className="w-full border-collapse">
 													<tbody>
 														<tr>
 															<th className="capitalize text-left">purchasePrice:</th>

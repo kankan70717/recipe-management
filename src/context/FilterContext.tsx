@@ -23,7 +23,11 @@ export const FilterProvider = ({
 	children: ReactNode,
 }
 ) => {
-	const { setting } = useSetting();
+	const settingContext = useSetting();
+	if (!settingContext) {
+		throw new Error("SettingContext must be used within a SettingProvider");
+	}
+	const { setting } = settingContext;
 	const [filterItem, updateFilterItem] = useState<TypeFilterItem>(() => createFilterItem(setting));
 
 	const handleSelect = (

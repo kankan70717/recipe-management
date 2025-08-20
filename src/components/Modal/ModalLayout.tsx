@@ -1,7 +1,9 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
 import type { TypeIngredientData } from "../../types/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useSetting } from "../../context/SettingsContext";
+import { AllergenCategory } from "../Filter/AllergenCategory";
 
 export default function ModalLayout(
 	{
@@ -18,24 +20,23 @@ export default function ModalLayout(
 
 	if (!isOpen) return null;
 
+	const settingContext = useSetting();
+	if (!settingContext) {
+		throw new Error("SettingContext must be used within a SettingProvider");
+	}
+	const { setting } = settingContext;
+
 	const [formData, setFormData] = useState<TypeIngredientData>({ ...detailData });
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		e.preventDefault();
-		const { name, value } = e.target;
-		const selectedFile = e.target.files?.[0] || null;
 
-		if (selectedFile) {
-			setFormData((prev) => ({
-				...prev,
-				[name]: selectedFile,
-			}));
-		} else {
-			setFormData((prev) => ({
-				...prev,
-				[name]: value,
-			}));
-		}
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value, files } = e.target;
+		const selectedFile = files?.[0] || null;
+
+		setFormData((prev) => ({
+			...prev,
+			[name]: selectedFile ?? value,
+		}));
 	}
 
 	const handleSubmit = () => {
@@ -48,7 +49,7 @@ export default function ModalLayout(
 				<div className="flex justify-between">
 					<FontAwesomeIcon icon={faXmark} size="xl" className="ml-auto" onClick={() => setIsOpen(false)} />
 				</div>
-				<form onSubmit={handleSubmit} className="h-[calc(100svh-22rem)]">
+				<form onSubmit={handleSubmit} className="h-[calc(100svh-22rem)] mt-3 overflow-scroll">
 					<table className="w-full h-full">
 						<tbody>
 							<tr>
@@ -71,20 +72,28 @@ export default function ModalLayout(
 									</label>
 								</td>
 								<td className="w-1/2">
-									<table className="border-separate border-spacing-3 py-3 overflow-scroll">
+									<table className="border-separate border-spacing-3 overflow-scroll">
 										<tbody>
 											<tr>
 												<th className="capitalize">status</th>
 												<td>
-													<label className="capitalize border border-black rounded-full py-1 px-3 mr-2 has-checked:bg-black has-checked:text-white">
-														active
-														<input type="radio" className="hidden" name="status" value="active" checked={detailData?.status == "active"} onChange={(e) => handleChange(e)} />
+													<label htmlFor="active" className="border border-black rounded-full py-1 px-3 mr-2 has-[:checked]:bg-black has-[:checked]:text-white">
+														<span className="capitalize">active</span>
+														<input type="radio" id="active" className="hidden" name="status" value="active" checked={formData.status == "active"} onChange={(e) => handleChange(e)} />
 													</label>
-													<label className="capitalize border border-black rounded-full py-1 px-3 has-checked:bg-black has-checked:text-white">
-														inactive
-														<input type="radio" className="hidden" name="status" value="inactive" checked={detailData?.status == "inactive"} onChange={(e) => handleChange(e)} />
+													<label htmlFor="inactive" className="border border-black rounded-full py-1 px-3 has-[:checked]:bg-black has-[:checked]:text-white">
+														<span className="capitalize">inactive</span>
+														<input type="radio" id="inactive" className="hidden" name="status" value="inactive" checked={formData.status == "inactive"} onChange={(e) => handleChange(e)} />
 													</label>
 												</td>
+											</tr>
+											<tr>
+												<th><label htmlFor="kind" className="capitalize">kind</label></th>
+												<td><input type="text" className="lowercase border-gray-500 border rounded-md px-2 bg-gray-200" id="kind" defaultValue={detailData.kind} disabled /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" defaultValue={detailData.nameJa} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="name" className="capitalize">name</label></th>
@@ -92,10 +101,96 @@ export default function ModalLayout(
 											</tr>
 											<tr>
 												<th><label htmlFor="store" className="capitalize">store</label></th>
-												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" defaultValue={detailData?.store} /></td>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" defaultValue={detailData.store} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="purchasePrice" className="capitalize">purchasePrice</label></th>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchasePrice" defaultValue={detailData.purchasePrice} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="purchaseQuantity" className="capitalize">purchaseQuantity</label></th>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchaseQuantity" defaultValue={detailData.purchaseQuantity} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="purchaseUnit" className="capitalize">purchaseUnit</label></th>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" defaultValue={detailData.purchaseUnit} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="unitConversionRate" className="capitalize">unitConversionRate</label></th>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="unitConversionRate" defaultValue={detailData.unitConversionRate} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
+												<td>
+													<input
+														type="text"
+														className="lowercase bg-gray-200 border-gray-500 border rounded-md px-2"
+														id="updateDate"
+														disabled
+														defaultValue={
+															(() => {
+																const date = new Date(detailData.updateDate.seconds * 1000);
+																const pad = (n: number) => n.toString().padStart(2, '0');
+																return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+															})()
+														} />
+												</td>
+											</tr>
+											<tr>
+												<th><label htmlFor="createdDate" className="capitalize">createdDate</label></th>
+												<td>
+													<input
+														type="text"
+														className="lowercase bg-gray-200 border-gray-500 border rounded-md px-2"
+														id="createdDate"
+														disabled
+														defaultValue={
+															(() => {
+																const date = new Date(detailData.createdDate.seconds * 1000);
+																const pad = (n: number) => n.toString().padStart(2, '0');
+																return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+															})()
+														} />
+												</td>
 											</tr>
 										</tbody>
 									</table>
+								</td>
+							</tr>
+							<tr>
+								<td colSpan={2}>
+									<div className="capitalize font-bold">allergen</div>
+									<div className="flex gap-2 flex-wrap">
+										{setting.allergen.flatMap((allergenObj, allergenIndex) => {
+											const elements: JSX.Element[] = [];
+
+											Object.entries(detailData.allergenForFilter).flatMap(([detailAllergen, detailStatus], detailIndex) => {
+
+												if (allergenObj.category === detailAllergen) {
+													elements.unshift(
+														<div key={`cat-${allergenIndex}-${detailIndex}`}>
+															{allergenObj.category}
+														</div>
+													);
+												}
+
+												allergenObj.items
+													.filter(item => detailAllergen === item)
+													.forEach((item, itemIndex) => {
+														elements.push(
+															<div key={`item-${allergenIndex}-${itemIndex}-${detailIndex}`}>
+																{item}
+															</div>
+														);
+													});
+											})
+											return (
+												<div key={`allergen-wrapper-${allergenIndex}`} className="mb-2">
+													{elements}
+												</div>
+											);
+										})}
+									</div>
 								</td>
 							</tr>
 						</tbody>

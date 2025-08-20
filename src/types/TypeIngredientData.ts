@@ -17,11 +17,18 @@ export type TypeIngredientData = {
 	unitConversionRate: number;
 	yieldRate: number;
 	tag: Record<string, boolean>;
-	allergenForFilter: Record<string, string>;
+	allergenForFilter: Record<string, "contained" | "mayContained" | "notContained" | "removable" | "unknown">;
 	dishRefs: string[];
 	prepRefs: string[];
 	updatePerson: string;
-	updateDate: string;
+	updateDate: {
+		seconds: number;
+		nanoseconds: number;
+	};
+	createdDate: {
+		seconds: number;
+		nanoseconds: number;
+	};
 }
 export type TypeIngredientFormData = {
 	docID: string;
