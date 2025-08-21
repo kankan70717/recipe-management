@@ -1,7 +1,8 @@
 // src/firebase/firestore.ts
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../components/Filter/types";
+import type { TypeIngredientData } from "../types/TypeIngredientData";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -64,7 +65,7 @@ export async function fetchRecipe(
 		where("kind", "==", currentKind),
 		where("status", "==", "active"),
 		...filterAllergen,
-		...filterCategory, 
+		...filterCategory,
 		...filterTag
 	);
 
@@ -73,4 +74,14 @@ export async function fetchRecipe(
 		docID: doc.id,
 		...doc.data()
 	}));
+}
+
+export async function updateRecipe(formData: TypeIngredientData) {
+	try {
+		const docRef = doc(db, "tamaru", formData.docID);
+		await updateDoc(docRef, formData);
+		console.log("Document updated successfully!");
+	} catch (error) {
+		console.error("Error updating document:", error);
+	}
 }

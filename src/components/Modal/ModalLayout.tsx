@@ -1,9 +1,10 @@
 import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
-import type { TypeIngredientData } from "../../types/TypeIngredientData";
+import type { TypeAllergenStatus, TypeIngredientData } from "../../types/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
 import { useSetting } from "../../context/SettingsContext";
-import { AllergenCategory } from "../Filter/AllergenCategory";
+import { updateRecipe } from "../../firebase/firestore";
 
 export default function ModalLayout(
 	{
@@ -27,30 +28,67 @@ export default function ModalLayout(
 	const { setting } = settingContext;
 
 	const [formData, setFormData] = useState<TypeIngredientData>({ ...detailData });
+	const [tagInput, setTagInput] = useState<string>("");
+	const [isAllergenOpen, setAllergenOpen] = useState(false);
+	const [isTagOpen, setTagOpen] = useState(false);
 
-
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value, files } = e.target;
-		const selectedFile = files?.[0] || null;
-
+	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		console.log("name", name, "value", value);
 		setFormData((prev) => ({
 			...prev,
-			[name]: selectedFile ?? value,
+			[name]: value,
 		}));
 	}
 
-	const handleSubmit = () => {
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name } = e.target;
+		const file = e.target.files?.[0] || null;
+		setFormData((prev) => ({
+			...prev,
+			[name]: file,
+		}));
+	}
 
+	const handleAllergenChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+
+		setFormData((prev) => ({
+			...prev,
+			allergenForFilter: {
+				...prev.allergenForFilter,
+				[name]: value as TypeAllergenStatus,
+			},
+		}));
+	}
+
+	const handleTagChange = (tag: string, way: "add" | "delete") => {
+		if (way == "delete") {
+			setFormData((prev) => ({
+				...prev,
+				tag: [...prev.tag.filter(item => item !== tag)]
+			}));
+		} else if (way == "add") {
+			setFormData((prev) => ({
+				...prev,
+				tag: prev.tag.includes(tag) ? prev.tag : [...prev.tag, tag]
+			}));
+		}
+	}
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		updateRecipe(formData);
 	}
 
 	return (
 		<div className="absolute inset-0 bg-black/50">
-			<div className="absolute inset-0 rounded-lg m-20 bg-white p-10">
+			<div className="absolute inset-0 rounded-lg m-20 bg-white pt-5 px-5">
 				<div className="flex justify-between">
 					<FontAwesomeIcon icon={faXmark} size="xl" className="ml-auto" onClick={() => setIsOpen(false)} />
 				</div>
-				<form onSubmit={handleSubmit} className="h-[calc(100svh-22rem)] mt-3 overflow-scroll">
-					<table className="w-full h-full">
+				<form onSubmit={(e) => handleSubmit(e)} className="h-[calc(100svh-22rem)] mt-3 overflow-scroll">
+					<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">
 						<tbody>
 							<tr>
 								<td className="w-1/2 text-center">
@@ -68,7 +106,7 @@ export default function ModalLayout(
 									</div>
 									<label className="capitalize border border-black rounded-full py-1 px-3">
 										<span>upload image</span>
-										<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleChange(e)} />
+										<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleImageChange(e)} />
 									</label>
 								</td>
 								<td className="w-1/2">
@@ -79,45 +117,49 @@ export default function ModalLayout(
 												<td>
 													<label htmlFor="active" className="border border-black rounded-full py-1 px-3 mr-2 has-[:checked]:bg-black has-[:checked]:text-white">
 														<span className="capitalize">active</span>
-														<input type="radio" id="active" className="hidden" name="status" value="active" checked={formData.status == "active"} onChange={(e) => handleChange(e)} />
+														<input type="radio" id="active" className="hidden" name="status" value="active" checked={formData.status == "active"} onChange={(e) => handleTextChange(e)} />
 													</label>
 													<label htmlFor="inactive" className="border border-black rounded-full py-1 px-3 has-[:checked]:bg-black has-[:checked]:text-white">
 														<span className="capitalize">inactive</span>
-														<input type="radio" id="inactive" className="hidden" name="status" value="inactive" checked={formData.status == "inactive"} onChange={(e) => handleChange(e)} />
+														<input type="radio" id="inactive" className="hidden" name="status" value="inactive" checked={formData.status == "inactive"} onChange={(e) => handleTextChange(e)} />
 													</label>
 												</td>
 											</tr>
 											<tr>
 												<th><label htmlFor="kind" className="capitalize">kind</label></th>
-												<td><input type="text" className="lowercase border-gray-500 border rounded-md px-2 bg-gray-200" id="kind" defaultValue={detailData.kind} disabled /></td>
+												<td><input type="text" className="lowercase border-gray-500 border rounded-md px-2 bg-gray-200" id="kind" name="kind" defaultValue={detailData.kind} disabled onChange={(e) => handleTextChange(e)} /></td>
+											</tr>
+											<tr>
+												<th><label htmlFor="category" className="capitalize">category</label></th>
+												<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={detailData.category} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" defaultValue={detailData.nameJa} /></td>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={detailData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="name" className="capitalize">name</label></th>
-												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" defaultValue={detailData?.name} /></td>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={detailData?.name} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="store" className="capitalize">store</label></th>
-												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" defaultValue={detailData.store} /></td>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="purchasePrice" className="capitalize">purchasePrice</label></th>
-												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchasePrice" defaultValue={detailData.purchasePrice} /></td>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchasePrice" name="purchasePrice" defaultValue={detailData.purchasePrice} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="purchaseQuantity" className="capitalize">purchaseQuantity</label></th>
-												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchaseQuantity" defaultValue={detailData.purchaseQuantity} /></td>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchaseQuantity" name="purchaseQuantity" defaultValue={detailData.purchaseQuantity} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="purchaseUnit" className="capitalize">purchaseUnit</label></th>
-												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" defaultValue={detailData.purchaseUnit} /></td>
+												<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" name="purchaseUnit" defaultValue={detailData.purchaseUnit} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="unitConversionRate" className="capitalize">unitConversionRate</label></th>
-												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="unitConversionRate" defaultValue={detailData.unitConversionRate} /></td>
+												<td><input type="number" className="lowercase border-black border rounded-md px-2" id="unitConversionRate" name="unitConversionRate" defaultValue={detailData.unitConversionRate} onChange={(e) => handleTextChange(e)} /></td>
 											</tr>
 											<tr>
 												<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -153,43 +195,149 @@ export default function ModalLayout(
 														} />
 												</td>
 											</tr>
+											<tr>
+												<th><label htmlFor="updatePerson" className="capitalize">updatePerson</label></th>
+												<td>
+													<input
+														type="text"
+														className="lowercase border rounded-md px-2"
+														id="updatePerson"
+														name="updatePerson"
+														placeholder={detailData.updatePerson}
+														required
+														onChange={(e) => handleTextChange(e)} />
+												</td>
+											</tr>
 										</tbody>
 									</table>
 								</td>
 							</tr>
 							<tr>
 								<td colSpan={2}>
-									<div className="capitalize font-bold">allergen</div>
-									<div className="flex gap-2 flex-wrap">
+									<div className="capitalize font-bold text-xl pb-2 mx-2 flex items-center justify-between border-b-1 border-gray-300"
+										onClick={() => setAllergenOpen(prev => !prev)}>
+										<span>allergen</span>
+										<FontAwesomeIcon icon={faAngleRight} className={`transition-all duration-1000 ease-in-out ${isAllergenOpen && "rotate-90"}`} />
+									</div>
+									<div className={`grid grid-cols-2 gap-5 mt-3 overflow-hidden transition-all duration-1000 ease-in-out ${isAllergenOpen ? "max-h-[2000px]" : "max-h-0"}`}>
 										{setting.allergen.flatMap((allergenObj, allergenIndex) => {
 											const elements: JSX.Element[] = [];
 
-											Object.entries(detailData.allergenForFilter).flatMap(([detailAllergen, detailStatus], detailIndex) => {
+											Object.entries(formData.allergenForFilter).flatMap(([formAllergen, formStatus], formIndex) => {
 
-												if (allergenObj.category === detailAllergen) {
+												if (allergenObj.category === formAllergen) {
 													elements.unshift(
-														<div key={`cat-${allergenIndex}-${detailIndex}`}>
-															{allergenObj.category}
+														<div key={`cat-${allergenIndex}-${formIndex}`} className="flex items-center justify-between gap-2 capitalize">
+															<div>{allergenObj.category}</div>
+															{
+																formStatus == "contained"
+																	? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500 ml-auto" />
+																	: formStatus == "mayContained"
+																		? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500 ml-auto" />
+																		: formStatus == "notContained"
+																			? <FontAwesomeIcon icon={faCircleRegular} size="lg" className="text-blue-500 ml-auto" />
+																			: formStatus == "removable"
+																				? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500 ml-auto" />
+																				: ""
+															}
+															<select
+																className={`flex items-center gap-1 border border-black rounded capitalize ${formStatus == "contained" ? "bg-red-200" : formStatus == "mayContained" ? "bg-yellow-200" : formStatus == "notContained" ? "bg-blue-200" : formStatus == "removable" ? "bg-green-200" : ""}`}
+																defaultValue={formStatus}
+																name={allergenObj.category}
+																onChange={(e) => handleAllergenChange(e)}>
+																<option value="contained">contained</option>
+																<option value="mayContained">mayContained</option>
+																<option value="notContained">notContained</option>
+																<option value="removable">removable</option>
+																<option value="unknown">unknown</option>
+															</select>
 														</div>
 													);
 												}
 
 												allergenObj.items
-													.filter(item => detailAllergen === item)
+													.filter(item => formAllergen === item)
 													.forEach((item, itemIndex) => {
 														elements.push(
-															<div key={`item-${allergenIndex}-${itemIndex}-${detailIndex}`}>
-																{item}
+															<div key={`item-${allergenIndex}-${itemIndex}-${formIndex}`} className="flex items-center justify-between gap-2 capitalize">
+																<div>{item}</div>
+																{
+																	formStatus == "contained"
+																		? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500 ml-auto" />
+																		: formStatus == "mayContained"
+																			? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500 ml-auto" />
+																			: formStatus == "notContained"
+																				? <FontAwesomeIcon icon={faCircleRegular} size="lg" className="text-blue-500 ml-auto" />
+																				: formStatus == "removable"
+																					? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500 ml-auto" />
+																					: ""
+																}
+																<select
+																	className={`flex items-center gap-1 border border-black rounded capitalize ${formStatus == "contained" ? "bg-red-200" : formStatus == "mayContained" ? "bg-yellow-200" : formStatus == "notContained" ? "bg-blue-200" : formStatus == "removable" ? "bg-green-200" : ""}`}
+																	defaultValue={formStatus}
+																	name={item}
+																	onChange={(e) => handleAllergenChange(e)}>
+																	<option value="contained">contained</option>
+																	<option value="mayContained">mayContained</option>
+																	<option value="notContained">notContained</option>
+																	<option value="removable">removable</option>
+																	<option value="unknown">unknown</option>
+																</select>
 															</div>
 														);
 													});
 											})
 											return (
-												<div key={`allergen-wrapper-${allergenIndex}`} className="mb-2">
+												<fieldset key={`allergen-wrapper-${allergenIndex}`} className="flex flex-col gap-2 mb-2 border border-gray-400 rounded px-5 py-3">
+													<legend className="capitalize text-xl px-2">{allergenObj.category}</legend>
 													{elements}
-												</div>
+												</fieldset>
 											);
 										})}
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colSpan={2}>
+									<div className="capitalize font-bold text-xl pb-2 mx-2 flex items-center justify-between border-b-1 border-gray-300"
+										onClick={() => setTagOpen(prev => !prev)}>
+										<span>tag</span>
+										<FontAwesomeIcon icon={faAngleRight} className={`transition-all duration-1000 ease-in-out ${isTagOpen && "rotate-90"}`} />
+									</div>
+									<div className={`flex flex-col gap-3 mt-3 overflow-hidden transition-all duration-1000 ease-in-out ${isTagOpen ? "max-h-[2000px]" : "max-h-0"}`}>
+										<div className="text-center">
+											<span className="relative">
+												<FontAwesomeIcon icon={faTags} className="text-gray-400 absolute left-2 top-1/2 -translate-y-1/2" />
+												<input
+													type="text"
+													className="border rounded px-10 py-1 w-100 border-gray-400 bg-gray-100 placeholder:text-gray-400" placeholder="add tag ..."
+													value={tagInput}
+													onChange={(e) => setTagInput(e.target.value)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter") {
+															e.preventDefault();
+															const inputValue = (e.target as HTMLInputElement).value;
+															if (inputValue.trim() !== "") {
+																handleTagChange(inputValue.trim(), "add");
+																setTagInput("");
+															}
+														}
+													}} />
+											</span>
+										</div>
+										<div className="flex flex-wrap gap-3">
+											{
+												formData.tag.map((tag) => (
+													<div className="flex items-center gap-2 rounded-full border px-4 py-1 capitalize">
+														<span>{tag}</span>
+														<FontAwesomeIcon
+															icon={faXmark}
+															onClick={() => handleTagChange(tag, "delete")}
+														/>
+													</div>
+												))
+											}
+										</div>
 									</div>
 								</td>
 							</tr>
@@ -209,6 +357,6 @@ export default function ModalLayout(
 					</div>
 				</form>
 			</div>
-		</div>
+		</div >
 	);
 }

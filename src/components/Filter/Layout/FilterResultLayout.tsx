@@ -25,7 +25,7 @@ export default function FilterResultLayout() {
 		name: "",
 		nameJa: "",
 		searchKeywords: [],
-		category: {},
+		category: "",
 		image: "",
 		vendor: "",
 		purchasePrice: 0,
@@ -34,7 +34,7 @@ export default function FilterResultLayout() {
 		usageUnit: "",
 		unitConversionRate: 0,
 		yieldRate: 0,
-		tag: {},
+		tag: [],
 		allergenForFilter: {},
 		dishRefs: [],
 		prepRefs: [],
@@ -170,7 +170,7 @@ export default function FilterResultLayout() {
 							: filterItem.currentKind == "ingredient" ?
 								(
 									<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
-										<div className="flex gap-2">
+										<div className="flex gap-5">
 											<div className="flex items-center aspect-square w-2/5">
 												{
 													typeof detailData.image === "string" &&
@@ -189,18 +189,7 @@ export default function FilterResultLayout() {
 												<div className="flex flex-wrap gap-5 justify-start">
 													<div className="capitalize flex items-center gap-1">
 														<FontAwesomeIcon icon={faLayerGroup} />
-														{
-															Object.entries(detailData?.category ?? {}).map(([category, selected]) => {
-																let elements = [];
-																if (selected) {
-																	elements.push(
-																		<span key={category} className="capitalize">
-																			{category}
-																		</span>);
-																}
-																return elements;
-															})
-														}
+														<span>{detailData.category}</span>
 													</div>
 													<div className="capitalize flex items-center gap-1">
 														<FontAwesomeIcon icon={faStore} />
@@ -211,7 +200,7 @@ export default function FilterResultLayout() {
 														{detailData?.vendor}
 													</div>
 												</div>
-												<table className="w-full border-collapse">
+												<table className="w-full border-separate border-spacing-x-3">
 													<tbody>
 														<tr>
 															<th className="capitalize text-left">purchasePrice:</th>
@@ -256,17 +245,9 @@ export default function FilterResultLayout() {
 											<h4 className="capitalize text-2xl">tag</h4>
 											<div className="flex flex-wrap gap-2">
 												{
-													Object.entries(detailData?.tag ?? {}).map(([tag, status]) => {
-														let elements = [];
-														if (status == true) {
-															elements.push(<span
-																key={tag}
-																className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">
-																{tag}
-															</span>);
-														}
-														return elements;
-													})
+													detailData.tag.map((tag) => (
+														<span className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">{tag}</span>
+													))
 												}
 											</div>
 										</div>
