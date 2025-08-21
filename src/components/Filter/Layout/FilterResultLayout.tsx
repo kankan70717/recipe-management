@@ -3,9 +3,10 @@ import { useFilter } from "../../../context/FilterContext";
 import { fetchRecipe } from "../../../firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faLayerGroup, faPenToSquare, faSliders, faStore, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight, faCircleQuestion, faLayerGroup, faPenToSquare, faSliders, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import type { TypeIngredientData } from "../../../types/TypeIngredientData";
 import ModalLayout from "../../Modal/ModalLayout";
+import { initialIngredientData } from "../../../constants/initialIngredientData";
 
 export default function FilterResultLayout() {
 	const navigate = useNavigate();
@@ -16,38 +17,7 @@ export default function FilterResultLayout() {
 	const { filterItem } = context;
 
 	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | null>(null);
-	const [detailData, setDetailData] = useState<TypeIngredientData>({
-		docID: "",
-		id: "",
-		status: "active",
-		store: "",
-		kind: "ingredient",
-		name: "",
-		nameJa: "",
-		searchKeywords: [],
-		category: "",
-		image: "",
-		vendor: "",
-		purchasePrice: 0,
-		purchaseQuantity: 0,
-		purchaseUnit: "",
-		usageUnit: "",
-		unitConversionRate: 0,
-		yieldRate: 0,
-		tag: [],
-		allergenForFilter: {},
-		dishRefs: [],
-		prepRefs: [],
-		updatePerson: "",
-		updateDate: {
-			seconds: 0,
-			nanoseconds: 0,
-		},
-		createdDate: {
-			seconds: 0,
-			nanoseconds: 0,
-		}
-	});
+	const [detailData, setDetailData] = useState<TypeIngredientData>(initialIngredientData);
 
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -67,12 +37,12 @@ export default function FilterResultLayout() {
 
 	return (
 		<div className="relative pt-6 px-6">
-			<h2 className="text-2xl flex items-center gap-2">
+			<h2 className="text-xl flex items-center gap-2">
 				<Link to="/search"
 					className="capitalize">
 					{filterItem.currentKind}
 				</Link>
-				<FontAwesomeIcon icon={faAngleRight} className="" />
+				<FontAwesomeIcon icon={faAngleRight} size="2xs" />
 				Filter Result
 			</h2>
 			<div className="flex items-center gap-2 flex-wrap mt-3">
@@ -225,20 +195,92 @@ export default function FilterResultLayout() {
 										</div>
 										<div className="mt-3 flex flex-col gap-2">
 											<h4 className="capitalize text-2xl">allergen</h4>
-											<div className="flex flex-wrap gap-2">
-												{
-													Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
-														let elements = [];
-														if (status == "contained" || status == "removable") {
-															elements.push(<span
-																key={allergen}
-																className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">
-																{allergen}
-															</span>);
-														}
-														return elements;
-													})
-												}
+											<div className="flex flex-col gap-2">
+												<div className="flex gap-2">
+													{
+														Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
+															let elements = [];
+															if (status == "contained") {
+																elements.push(
+																	<div
+																		key={allergen}
+																		className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+																		${status == "contained"
+																				? "border-2 border-red-500"
+																				: status == "mayContained"
+																					? "border-2 border-yellow-500"
+																					: status == "removable"
+																						? "border-2 border-green-500"
+																						: ""}`}>
+																		{
+																			status == "contained"
+																				? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500" />
+																				: ""
+																		}
+																		<span>
+																			{allergen}
+																		</span>
+																	</div>
+																);
+															}
+															return elements;
+														})
+													}
+												</div>
+												<div className="flex gap-2">
+													{
+														Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
+															let elements = [];
+															if (status == "mayContained") {
+																elements.push(
+																	<div
+																		key={allergen}
+																		className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+																		${status == "mayContained"
+																				? "border-2 border-yellow-500"
+																				: ""}`}>
+																		{
+																			status == "mayContained"
+																				? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500" />
+																				: ""
+																		}
+																		<span>
+																			{allergen}
+																		</span>
+																	</div>
+																);
+															}
+															return elements;
+														})
+													}
+												</div>
+												<div className="flex gap-2">
+													{
+														Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
+															let elements = [];
+															if (status == "removable") {
+																elements.push(
+																	<div
+																		key={allergen}
+																		className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+																		${status == "removable"
+																				? "border-2 border-green-500"
+																				: ""}`}>
+																		{
+																			status == "removable"
+																				? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500" />
+																				: ""
+																		}
+																		<span>
+																			{allergen}
+																		</span>
+																	</div>
+																);
+															}
+															return elements;
+														})
+													}
+												</div>
 											</div>
 										</div>
 										<div className="mt-3 flex flex-col gap-2">
