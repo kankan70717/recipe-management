@@ -1,8 +1,9 @@
 // src/firebase/firestore.ts
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../components/Filter/types";
-import type { TypeIngredientData } from "../types/TypeIngredientData";
+import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../types/recipe/TypePrepData";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -76,12 +77,21 @@ export async function fetchRecipe(
 	}));
 }
 
-export async function updateRecipe(formData: TypeIngredientData) {
+export async function updateRecipe(formData: TypeIngredientData | TypePrepData) {
 	try {
 		const docRef = doc(db, "tamaru", formData.docID);
 		await updateDoc(docRef, formData);
 		console.log("Document updated successfully!");
 	} catch (error) {
 		console.error("Error updating document:", error);
+	}
+}
+
+export async function addRecipe(formData: TypeIngredientData | TypePrepData) {
+	try {
+		await addDoc(collection(db, "tamaru"), formData);
+		console.log("Document created successfully!");
+	} catch (error) {
+		console.error("Error creating document:", error);
 	}
 }

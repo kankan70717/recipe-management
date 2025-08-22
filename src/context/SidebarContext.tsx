@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
-import type { TypeToggle } from "../types/TypeToggle";
 
-
+type TypeToggle = {
+	isSidebarOpen: boolean;
+	toggleSidebar: () => void;
+}
 const SidebarContext = createContext<TypeToggle | undefined>(undefined);
 
 export const SidebarContextProvider = ({ children }: { children: React.ReactNode }) => {

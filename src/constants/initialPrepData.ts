@@ -1,24 +1,25 @@
-import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../types/recipe/TypePrepData";
+import { initialResourcesData } from "./initialResourcesData";
 
-export const initialIngredientData: TypeIngredientData = {
+export const initialIngredientData: TypePrepData = {
 	docID: "",
 	id: "",
 	status: "active",
 	store: "",
-	kind: "ingredient",
+	kind: "prep",
 	name: "",
 	nameJa: "",
 	searchKeywords: [],
 	category: "",
 	image: "",
-	vendor: "",
-	purchasePrice: 0,
-	purchaseQuantity: 0,
-	purchaseUnit: "",
+	instruction: "",
+	finishedAmount: 0,
 	usageUnit: "",
-	unitConversionRate: 0,
-	yieldRate: 0,
+	totalCost: 0,
 	tag: [],
+	resources: {
+		"sample": initialResourcesData
+	},
 	allergenForFilter: {},
 	dishRefs: [],
 	prepRefs: [],

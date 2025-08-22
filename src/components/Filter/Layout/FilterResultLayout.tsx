@@ -4,7 +4,7 @@ import { fetchRecipe } from "../../../firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faLayerGroup, faPenToSquare, faSliders, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import type { TypeIngredientData } from "../../../types/TypeIngredientData";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import ModalLayout from "../../Modal/ModalLayout";
 import { initialIngredientData } from "../../../constants/initialIngredientData";
 
@@ -297,7 +297,7 @@ export default function FilterResultLayout() {
 								) : ""
 				}
 			</div>
-			<ModalLayout isOpen={isOpen} setIsOpen={setIsOpen} detailData={detailData} />
+			<ModalLayout isOpen={isOpen} setIsOpen={setIsOpen} detailData={detailData} cucd="update" kind={detailData.kind} />
 		</div>
 	);
 }

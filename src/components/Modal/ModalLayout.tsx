@@ -1,40 +1,44 @@
 import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
-import type { TypeAllergenStatus, TypeIngredientData } from "../../types/TypeIngredientData";
+import type { TypeAllergenStatus, TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from '@fortawesome/free-regular-svg-icons';
 import { useSetting } from "../../context/SettingsContext";
-import { updateRecipe } from "../../firebase/firestore";
+import { addRecipe, updateRecipe } from "../../firebase/firestore";
+import type { TypeFilterKind } from "../Filter/types";
 
 export default function ModalLayout(
 	{
 		isOpen,
 		setIsOpen,
-		detailData
-
+		detailData,
+		cucd,
+		kind
 	}: {
 		isOpen: boolean;
 		setIsOpen: Dispatch<SetStateAction<boolean>>;
 		detailData: TypeIngredientData;
+		cucd: "update" | "create" | "delte" | "read";
+		kind: TypeFilterKind
 	}
 ) {
 
 	if (!isOpen) return null;
 
+	console.log(typeof detailData);
 	const settingContext = useSetting();
 	if (!settingContext) {
 		throw new Error("SettingContext must be used within a SettingProvider");
 	}
 	const { setting } = settingContext;
 
-	const [formData, setFormData] = useState<TypeIngredientData>({ ...detailData });
+	const [formData, setFormData] = useState<TypeIngredientData>(detailData);
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isAllergenOpen, setAllergenOpen] = useState(false);
 	const [isTagOpen, setTagOpen] = useState(false);
 
 	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		console.log("name", name, "value", value);
 		setFormData((prev) => ({
 			...prev,
 			[name]: value,
@@ -62,6 +66,16 @@ export default function ModalLayout(
 		}));
 	}
 
+	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+		console.log(value);
+
+		setFormData((prev) => ({
+			...prev,
+			[name]: value as TypeFilterKind,
+		}));
+	}
+
 	const handleTagChange = (tag: string, way: "add" | "delete") => {
 		if (way == "delete") {
 			setFormData((prev) => ({
@@ -78,7 +92,16 @@ export default function ModalLayout(
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		updateRecipe(formData);
+		const nowSeconds = Math.floor(Date.now() / 1000);
+		formData.updateDate.seconds = nowSeconds;
+
+		if (cucd == "update") {
+			updateRecipe(formData);
+		} else {
+			formData.createdDate.seconds = nowSeconds;
+			addRecipe(formData);
+		}
+		console.log(formData);
 	}
 
 	return (
@@ -115,19 +138,33 @@ export default function ModalLayout(
 											<tr>
 												<th className="capitalize">status</th>
 												<td>
-													<label htmlFor="active" className="border border-black rounded-full py-1 px-3 mr-2 has-[:checked]:bg-black has-[:checked]:text-white">
-														<span className="capitalize">active</span>
-														<input type="radio" id="active" className="hidden" name="status" value="active" checked={formData.status == "active"} onChange={(e) => handleTextChange(e)} />
-													</label>
-													<label htmlFor="inactive" className="border border-black rounded-full py-1 px-3 has-[:checked]:bg-black has-[:checked]:text-white">
-														<span className="capitalize">inactive</span>
-														<input type="radio" id="inactive" className="hidden" name="status" value="inactive" checked={formData.status == "inactive"} onChange={(e) => handleTextChange(e)} />
-													</label>
+													<select
+														className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
+														id="status"
+														name="status"
+														defaultValue={detailData.status}
+														onChange={(e) => handleSelectChange(e)}>
+														<option value="active">active</option>
+														<option value="inactive">inactive</option>
+														<option value="pending">pending</option>
+													</select>
 												</td>
 											</tr>
 											<tr>
 												<th><label htmlFor="kind" className="capitalize">kind</label></th>
-												<td><input type="text" className="lowercase border-gray-500 border rounded-md px-2 bg-gray-200" id="kind" name="kind" defaultValue={detailData.kind} disabled onChange={(e) => handleTextChange(e)} /></td>
+												<td>
+													<select
+														className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
+														id="kind"
+														name="kind"
+														defaultValue={detailData.kind}
+														disabled={cucd == "update"}
+														onChange={(e) => handleSelectChange(e)}>
+														<option value="dish">dish</option>
+														<option value="prep">prep</option>
+														<option value="ingredient">ingredient</option>
+													</select>
+												</td>
 											</tr>
 											<tr>
 												<th><label htmlFor="category" className="capitalize">category</label></th>
@@ -171,7 +208,11 @@ export default function ModalLayout(
 														disabled
 														defaultValue={
 															(() => {
-																const date = new Date(detailData.updateDate.seconds * 1000);
+																const ms = detailData.updateDate.seconds === 0
+																	? Date.now()
+																	: detailData.updateDate.seconds * 1000;
+
+																const date = new Date(ms);
 																const pad = (n: number) => n.toString().padStart(2, '0');
 																return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 															})()
@@ -188,7 +229,11 @@ export default function ModalLayout(
 														disabled
 														defaultValue={
 															(() => {
-																const date = new Date(detailData.createdDate.seconds * 1000);
+																const ms = detailData.createdDate.seconds === 0
+																	? Date.now()
+																	: detailData.createdDate.seconds * 1000;
+
+																const date = new Date(ms);
 																const pad = (n: number) => n.toString().padStart(2, '0');
 																return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 															})()

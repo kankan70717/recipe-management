@@ -2,9 +2,9 @@ export type TypeAllergenStatus = "contained" | "mayContained" | "notContained" |
 export type TypeIngredientData = {
 	docID: string;
 	id: string;
-	status: "active" | "inactive";
+	status: "active" | "inactive" | "pending";
 	store: string;
-	kind: "ingredient";
+	kind: "ingredient" | "prep" | "dish";
 	name: string;
 	nameJa: string;
 	searchKeywords: string[];
