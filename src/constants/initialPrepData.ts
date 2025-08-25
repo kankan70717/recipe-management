@@ -1,5 +1,4 @@
 import type { TypePrepData } from "../types/recipe/TypePrepData";
-import { initialResourcesData } from "./initialResourcesData";
 
 export const initialPrepData: TypePrepData = {
 	docID: "",
@@ -17,9 +16,7 @@ export const initialPrepData: TypePrepData = {
 	usageUnit: "",
 	totalCost: 0,
 	tag: [],
-	resources: {
-		"sample": initialResourcesData
-	},
+	resources: {},
 	allergenForFilter: {},
 	dishRefs: [],
 	prepRefs: [],

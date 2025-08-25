@@ -20,6 +20,7 @@ export const initialIngredientData: TypeIngredientData = {
 	yieldRate: 0,
 	tag: [],
 	allergenForFilter: {},
+	allergen: {},
 	dishRefs: [],
 	prepRefs: [],
 	updatePerson: "",

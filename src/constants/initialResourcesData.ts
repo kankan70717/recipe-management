@@ -8,10 +8,10 @@ export const initialResourcesData: TypeResource = {
 	"totalCost": 0,
 	"removable": false,
 	"resourceAllergens": {
-		"allergenCategory": {
+		"allergenCategoryName": {
 			"status": "unknown",
 			"items": {
-				"allergen": {
+				"allergenName": {
 					"status": "unknown"
 				}
 			}
@@ -25,10 +25,10 @@ export const initialResourcesData: TypeResource = {
 			"usageUnit": "",
 			"totalCost": 0,
 			"resourceAllergens": {
-				"allergenCategory": {
+				"allergenCategoryName": {
 					"status": "unknown",
 					"items": {
-						"allergen": {
+						"allergenName": {
 							"status": "unknown"
 						}
 					}

@@ -7,11 +7,18 @@ import { FilterSelectedLayout } from "../Filter/Layout/FilterSelectedLayout";
 import ModalFormResourceResult from "./ModalFormResourceResult";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { TypePrepData } from "../../types/recipe/TypePrepData";
+import type { TypeDishData } from "../../types/recipe/TypeDishData";
+import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 
 export default function ModalFormResourceFilter({
-	setShowFilter
+	setShowFilter,
+	formData,
+	setFormData
 }: {
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
+	formData: TypeDishData | TypePrepData | TypeIngredientData;
+	setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>;
 }) {
 	const [filterType, setFilterType] = useState<TypeFilterType>("allergen");
 	const [showResourceResult, setShowResourceResult] = useState(false);
@@ -76,7 +83,9 @@ export default function ModalFormResourceFilter({
 			{
 				showResourceResult
 				&& <ModalFormResourceResult
-					setShowResourceResult={setShowResourceResult} />
+					setShowResourceResult={setShowResourceResult}
+					formData={formData}
+					setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>} />
 			}
 		</div>
 	);

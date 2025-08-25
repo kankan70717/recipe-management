@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { TypeSetting } from "../types/TypeSetting";
+import { initialPrepData } from "../constants/initialPrepData";
 
 type SettingsContextType = {
 	setting: TypeSetting;
@@ -19,6 +20,8 @@ export const SettingProvider = ({
 }
 ) => {
 	const [setting, updateSetting] = useState<TypeSetting>(downloadedSetting);
+	const latestInitialPrepData = { ...initialPrepData };
+	console.log("latestInitialPrepData", latestInitialPrepData);
 
 	return (
 		<SettingsContext.Provider value={{ setting, updateSetting }}>

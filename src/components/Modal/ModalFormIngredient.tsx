@@ -1,11 +1,10 @@
-import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 import type { TypeFilterKind } from "../Filter/types";
-import { useSetting } from "../../context/SettingsContext";
-import type { TypeAllergenStatus } from "../../types/TypeAllergenStatus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
+import type { TypeAllergenStatus } from "../../types/TypeAllergenStatus";
 
 
 export function ModalFormIngredient({
@@ -21,15 +20,44 @@ export function ModalFormIngredient({
 }
 
 ) {
-	const settingContext = useSetting();
-	if (!settingContext) {
-		throw new Error("SettingContext must be used within a SettingProvider");
-	}
-	const { setting } = settingContext;
-
+	/* 	const settingContext = useSetting();
+		if (!settingContext) {
+			throw new Error("SettingContext must be used within a SettingProvider");
+		}
+		const { setting } = settingContext; */
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isAllergenOpen, setAllergenOpen] = useState(false);
 	const [isTagOpen, setTagOpen] = useState(false);
+
+	const getStatusIcon = (status: string) => {
+		switch (status) {
+			case "contained":
+				return <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500 ml-auto" />;
+			case "mayContained":
+				return <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500 ml-auto" />;
+			case "notContained":
+				return <FontAwesomeIcon icon={faCircleRegular} size="lg" className="text-blue-500 ml-auto" />;
+			case "removable":
+				return <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500 ml-auto" />;
+			default:
+				return null;
+		}
+	};
+
+	const getStatusClass = (status: string) => {
+		switch (status) {
+			case "contained":
+				return "bg-red-200";
+			case "mayContained":
+				return "bg-yellow-200";
+			case "notContained":
+				return "bg-blue-200";
+			case "removable":
+				return "bg-green-200";
+			default:
+				return "";
+		}
+	};
 
 	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -48,17 +76,45 @@ export function ModalFormIngredient({
 		}));
 	}
 
-	const handleAllergenChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+	const handleAllergenItemChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+		allergenCategoryName: string
+	) => {
 		const { name, value } = e.target;
 
 		setFormData((prev) => ({
 			...prev,
-			allergenForFilter: {
-				...prev.allergenForFilter,
-				[name]: value as TypeAllergenStatus,
-			},
+			allergen: {
+				...prev.allergen,
+				[allergenCategoryName]: {
+					...prev.allergen[allergenCategoryName],
+					items: {
+						...prev.allergen[allergenCategoryName].items,
+						[name]: { status: value as TypeAllergenStatus }
+					},
+				}
+			}
 		}));
-	}
+	};
+
+	const handleAllergenCategoryChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+		allergenCategoryName: string
+	) => {
+		const { value } = e.target;
+
+		setFormData((prev) => ({
+			...prev,
+			allergen: {
+				...prev.allergen,
+				[allergenCategoryName]: {
+					...prev.allergen[allergenCategoryName],
+					status: value as TypeAllergenStatus,
+				}
+			}
+		}));
+	};
+
 
 	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
@@ -83,7 +139,7 @@ export function ModalFormIngredient({
 			}));
 		}
 	}
-	
+
 	return (
 		<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">
 			<tbody>
@@ -238,81 +294,55 @@ export function ModalFormIngredient({
 							<span>allergen</span>
 							<FontAwesomeIcon icon={faAngleRight} className={`transition-all duration-1000 ease-in-out ${isAllergenOpen && "rotate-90"}`} />
 						</div>
-						<div className={`grid grid-cols-2 gap-5 mt-3 overflow-hidden transition-all duration-1000 ease-in-out ${isAllergenOpen ? "max-h-[2000px]" : "max-h-0"}`}>
-							{setting.allergen.flatMap((allergenObj, allergenIndex) => {
-								const elements: JSX.Element[] = [];
+						<div className={`grid grid-cols-2 gap-5 mt-3 overflow-hidden transition-all duration-1000 ease-in-out ${isAllergenOpen ? "max-h-[2000px]" : "max-h-0"}`}>{
+							Object.entries(formData.allergen ?? {}).map(([allergenCategoryName, allergenCategoryObj]) => (
+								<fieldset
+									key={`allergen-wrapper-${allergenCategoryName}`}
+									className="flex flex-col gap-2 mb-2 border border-gray-400 rounded px-5 py-3">
+									<legend className="capitalize text-xl px-2">{allergenCategoryName}</legend>
 
-								Object.entries(formData.allergenForFilter).flatMap(([formAllergen, formStatus], formIndex) => {
+									{/* Allergen Category */}
+									{allergenCategoryName == "other"
+										? ""
+										: (<div className="flex items-center justify-between gap-2 capitalize">
+											<div>{allergenCategoryName}</div>
+											{getStatusIcon(allergenCategoryObj.status)}
+											<select
+												className={`flex items-center gap-1 border border-black rounded capitalize ${getStatusClass(allergenCategoryObj.status)}`}
+												value={allergenCategoryObj.status}
+												name={allergenCategoryName}
+												onChange={(e) => handleAllergenCategoryChange(e, allergenCategoryName)}>
+												<option value="contained">contained</option>
+												<option value="mayContained">mayContained</option>
+												<option value="notContained">notContained</option>
+												<option value="removable">removable</option>
+												<option value="unknown">unknown</option>
+											</select>
+										</div>)}
 
-									if (allergenObj.category === formAllergen) {
-										elements.unshift(
-											<div key={`cat-${allergenIndex}-${formIndex}`} className="flex items-center justify-between gap-2 capitalize">
-												<div>{allergenObj.category}</div>
-												{
-													formStatus == "contained"
-														? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500 ml-auto" />
-														: formStatus == "mayContained"
-															? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500 ml-auto" />
-															: formStatus == "notContained"
-																? <FontAwesomeIcon icon={faCircleRegular} size="lg" className="text-blue-500 ml-auto" />
-																: formStatus == "removable"
-																	? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500 ml-auto" />
-																	: ""
-												}
-												<select
-													className={`flex items-center gap-1 border border-black rounded capitalize ${formStatus == "contained" ? "bg-red-200" : formStatus == "mayContained" ? "bg-yellow-200" : formStatus == "notContained" ? "bg-blue-200" : formStatus == "removable" ? "bg-green-200" : ""}`}
-													defaultValue={formStatus}
-													name={allergenObj.category}
-													onChange={(e) => handleAllergenChange(e)}>
-													<option value="contained">contained</option>
-													<option value="mayContained">mayContained</option>
-													<option value="notContained">notContained</option>
-													<option value="removable">removable</option>
-													<option value="unknown">unknown</option>
-												</select>
-											</div>
-										);
-									}
-
-									allergenObj.items
-										.filter(item => formAllergen === item)
-										.forEach((item, itemIndex) => {
-											elements.push(
-												<div key={`item-${allergenIndex}-${itemIndex}-${formIndex}`} className="flex items-center justify-between gap-2 capitalize">
-													<div>{item}</div>
-													{
-														formStatus == "contained"
-															? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500 ml-auto" />
-															: formStatus == "mayContained"
-																? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500 ml-auto" />
-																: formStatus == "notContained"
-																	? <FontAwesomeIcon icon={faCircleRegular} size="lg" className="text-blue-500 ml-auto" />
-																	: formStatus == "removable"
-																		? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500 ml-auto" />
-																		: ""
-													}
-													<select
-														className={`flex items-center gap-1 border border-black rounded capitalize ${formStatus == "contained" ? "bg-red-200" : formStatus == "mayContained" ? "bg-yellow-200" : formStatus == "notContained" ? "bg-blue-200" : formStatus == "removable" ? "bg-green-200" : ""}`}
-														defaultValue={formStatus}
-														name={item}
-														onChange={(e) => handleAllergenChange(e)}>
-														<option value="contained">contained</option>
-														<option value="mayContained">mayContained</option>
-														<option value="notContained">notContained</option>
-														<option value="removable">removable</option>
-														<option value="unknown">unknown</option>
-													</select>
-												</div>
-											);
-										});
-								})
-								return (
-									<fieldset key={`allergen-wrapper-${allergenIndex}`} className="flex flex-col gap-2 mb-2 border border-gray-400 rounded px-5 py-3">
-										<legend className="capitalize text-xl px-2">{allergenObj.category}</legend>
-										{elements}
-									</fieldset>
-								);
-							})}
+									{/* Items */}
+									{Object.entries(allergenCategoryObj.items ?? {}).map(([allergenName, allergenObj]) => (
+										<div
+											key={`${allergenCategoryName}-${allergenName}`}
+											className="flex items-center justify-between gap-2 capitalize">
+											<div>{allergenName}</div>
+											{getStatusIcon(allergenObj.status)}
+											<select
+												className={`flex items-center gap-1 border border-black rounded capitalize ${getStatusClass(allergenObj.status)}`}
+												value={allergenObj.status}
+												name={allergenName}
+												onChange={(e) => handleAllergenItemChange(e, allergenCategoryName)}>
+												<option value="contained">contained</option>
+												<option value="mayContained">mayContained</option>
+												<option value="notContained">notContained</option>
+												<option value="removable">removable</option>
+												<option value="unknown">unknown</option>
+											</select>
+										</div>
+									))}
+								</fieldset>
+							))
+						}
 						</div>
 					</td>
 				</tr>

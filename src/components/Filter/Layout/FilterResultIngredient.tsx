@@ -77,30 +77,58 @@ export function FilterResultIngredient({
 				<div className="flex flex-col gap-2">
 					<div className="flex gap-2">
 						{
-							Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
+							Object.entries(detailData.allergen ?? {}).map(([allergenCategoryName, allergenCategoryObj]) => {
 								let elements = [];
-								if (status == "contained") {
+								if (allergenCategoryObj.status == "contained") {
 									elements.push(
 										<div
-											key={allergen}
-											className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
-																			${status == "contained"
+											key={allergenCategoryName}
+											className={
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												${allergenCategoryObj.status == "contained"
 													? "border-2 border-red-500"
-													: status == "mayContained"
+													: allergenCategoryObj.status == "mayContained"
 														? "border-2 border-yellow-500"
-														: status == "removable"
+														: allergenCategoryObj.status == "removable"
 															? "border-2 border-green-500"
 															: ""}`}>
 											{
-												status == "contained"
+												allergenCategoryObj.status == "contained"
 													? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500" />
 													: ""
 											}
 											<span>
-												{allergen}
+												{allergenCategoryName}
 											</span>
 										</div>
 									);
+								} else {
+									Object.entries(allergenCategoryObj.items ?? {}).forEach(([allergenName, allergenObj]) => {
+										if (allergenObj.status == "contained") {
+											elements.push(
+												<div
+													key={allergenName}
+													className={
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														${allergenObj.status == "contained"
+															? "border-2 border-red-500"
+															: allergenObj.status == "mayContained"
+																? "border-2 border-yellow-500"
+																: allergenObj.status == "removable"
+																	? "border-2 border-green-500"
+																	: ""}`}>
+													{
+														allergenObj.status == "contained"
+															? <FontAwesomeIcon icon={faXmark} size="lg" className="text-red-500" />
+															: ""
+													}
+													<span>
+														{allergenName}
+													</span>
+												</div>
+											);
+										}
+									})
 								}
 								return elements;
 							})
@@ -108,26 +136,54 @@ export function FilterResultIngredient({
 					</div>
 					<div className="flex gap-2">
 						{
-							Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
+							Object.entries(detailData.allergen ?? {}).map(([allergenCategoryName, allergenCategoryObj]) => {
 								let elements = [];
-								if (status == "mayContained") {
+								if (allergenCategoryObj.status == "mayContained") {
 									elements.push(
 										<div
-											key={allergen}
-											className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
-																			${status == "mayContained"
-													? "border-2 border-yellow-500"
-													: ""}`}>
+											key={allergenCategoryName}
+											className={
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												${allergenCategoryObj.status == "mayContained"
+														? "border-2 border-yellow-500"
+														: allergenCategoryObj.status == "removable"
+															? "border-2 border-green-500"
+															: ""}`}>
 											{
-												status == "mayContained"
+												allergenCategoryObj.status == "mayContained"
 													? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500" />
 													: ""
 											}
 											<span>
-												{allergen}
+												{allergenCategoryName}
 											</span>
 										</div>
 									);
+								} else {
+									Object.entries(allergenCategoryObj.items ?? {}).forEach(([allergenName, allergenObj]) => {
+										if (allergenObj.status == "mayContained") {
+											elements.push(
+												<div
+													key={allergenName}
+													className={
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														${allergenObj.status == "mayContained"
+																? "border-2 border-yellow-500"
+																: allergenObj.status == "removable"
+																	? "border-2 border-green-500"
+																	: ""}`}>
+													{
+														allergenObj.status == "mayContained"
+															? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500" />
+															: ""
+													}
+													<span>
+														{allergenName}
+													</span>
+												</div>
+											);
+										}
+									})
 								}
 								return elements;
 							})
@@ -155,6 +211,55 @@ export function FilterResultIngredient({
 											</span>
 										</div>
 									);
+								}
+								return elements;
+							})
+						}
+						{
+							Object.entries(detailData.allergen ?? {}).map(([allergenCategoryName, allergenCategoryObj]) => {
+								let elements = [];
+								if (allergenCategoryObj.status == "removable") {
+									elements.push(
+										<div
+											key={allergenCategoryName}
+											className={
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												${allergenCategoryObj.status == "removable"
+															? "border-2 border-green-500"
+															: ""}`}>
+											{
+												allergenCategoryObj.status == "removable"
+													? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500" />
+													: ""
+											}
+											<span>
+												{allergenCategoryName}
+											</span>
+										</div>
+									);
+								} else {
+									Object.entries(allergenCategoryObj.items ?? {}).forEach(([allergenName, allergenObj]) => {
+										if (allergenObj.status == "removable") {
+											elements.push(
+												<div
+													key={allergenName}
+													className={
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														${allergenObj.status == "removable"
+																	? "border-2 border-green-500"
+																	: ""}`}>
+													{
+														allergenObj.status == "removable"
+															? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-green-500" />
+															: ""
+													}
+													<span>
+														{allergenName}
+													</span>
+												</div>
+											);
+										}
+									})
 								}
 								return elements;
 							})

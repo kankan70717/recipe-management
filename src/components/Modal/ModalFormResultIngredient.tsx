@@ -1,18 +1,11 @@
-import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faLayerGroup, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../Filter/types";
-import type { Dispatch, SetStateAction } from "react";
 
 export function ModalFormResultIngredient({
 	detailData,
-	setFormState
 }: {
 	detailData: TypeIngredientData;
-	setFormState: Dispatch<SetStateAction<{
-		isFormOpen: boolean;
-		kind: TypeFilterKind | undefined
-	}>>
 }) {
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
@@ -26,13 +19,6 @@ export function ModalFormResultIngredient({
 				<div className="flex-1 flex flex-col gap-1 justify-center">
 					<div className="flex items-center justify-between">
 						<h3 className="capitalize text-2xl">{detailData?.name}</h3>
-						<FontAwesomeIcon
-							icon={faPenToSquare}
-							className="ml-10"
-							onClick={() => setFormState({
-								isFormOpen: true,
-								kind: "ingredient"
-							})} />
 					</div>
 					<div className="flex flex-wrap gap-3 justify-start">
 						<div className="capitalize flex items-center gap-1">

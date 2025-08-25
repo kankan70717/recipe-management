@@ -32,7 +32,8 @@ export default function ModalFormLayout(
 
 	if (!formState.isFormOpen) return null;
 
-	const [formData, setFormData] = useState<TypeIngredientData | TypePrepData>(detailData);
+	const [formData, setFormData] = useState<TypeIngredientData | TypePrepData>({ ...detailData });
+	console.log("formData", formData);
 	const [showFilter, setShowFilter] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +95,9 @@ export default function ModalFormLayout(
 				{
 					showFilter
 					&& <ModalFormResourceFilter
-						setShowFilter={setShowFilter} />
+						setShowFilter={setShowFilter}
+						formData={formData}
+						setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>} />
 				}
 			</div>
 		</div >

@@ -1,4 +1,6 @@
+import type { TypeResourceAllergen } from "./TypeResourceAllergen";
 export type TypeAllergenStatus = "contained" | "mayContained" | "notContained" | "removable" | "unknown";
+
 export type TypeIngredientData = {
 	docID: string;
 	id: string;
@@ -19,6 +21,7 @@ export type TypeIngredientData = {
 	yieldRate: number;
 	tag: string[];
 	allergenForFilter: Record<string, TypeAllergenStatus>;
+	allergen: Record<string, TypeResourceAllergen>;
 	dishRefs: string[];
 	prepRefs: string[];
 	updatePerson: string;
