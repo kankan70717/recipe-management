@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FilterItem } from "./FilterItem";
 import { useFilter } from "../../context/FilterContext";
-import type { TypeFilterPath } from "./types";
+import type { TypeFilterKind } from "./types";
 
 export const AllergenCategory = ({
 	currentPath,
 	allergenObj
 }: {
-	currentPath: TypeFilterPath;
+	currentPath: TypeFilterKind;
 	allergenObj: {
 		category: string;
 		items: string[]

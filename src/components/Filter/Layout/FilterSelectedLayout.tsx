@@ -17,7 +17,7 @@ export function FilterSelectedLayout({
 		<h2 className="text-md">Filter Selected</h2>
 		<ul className="list-none capitalize flex flex-col gap-3">
 			<li className="border-b-1 border-gray-200 pb-2">
-				<h3 className="capitalize text-lg font-bold py-2">allergen (not contained or removable)</h3>
+				<h3 className="capitalize text-md font-bold py-2">allergen (not contained or removable)</h3>
 				<ul className="flex flex-wrap gap-1">
 					{
 						Object.entries(filterItem[currentKind].allergen).flatMap(([allergenCategory, obj]) => {
@@ -57,7 +57,7 @@ export function FilterSelectedLayout({
 				</ul>
 			</li>
 			<li className="border-b-1 border-gray-200 pb-2">
-				<h3 className="capitalize text-lg font-bold py-2">category</h3>
+				<h3 className="capitalize text-md font-bold py-2">category</h3>
 				<ul className="flex flex-wrap gap-1">
 					{
 						Object.entries(filterItem[currentKind].category).map(([itemName, selected]) => (
@@ -72,7 +72,7 @@ export function FilterSelectedLayout({
 				</ul>
 			</li>
 			<li className="border-b-1 border-gray-200 pb-2">
-				<h3 className="capitalize text-lg font-bold py-2">tag</h3>
+				<h3 className="capitalize text-md font-bold py-2">tag</h3>
 				<ul className="flex flex-wrap gap-1">
 					{
 						Object.entries(filterItem[currentKind].tag).map(([itemName, selected]) => (

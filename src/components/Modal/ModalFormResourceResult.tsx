@@ -1,19 +1,23 @@
-import { useEffect, useState } from "react";
-import { useFilter } from "../../../context/FilterContext";
-import { fetchRecipe } from "../../../firebase/firestore";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useFilter } from "../../context/FilterContext";
+import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../../types/recipe/TypePrepData";
+import type { TypeDishData } from "../../types/recipe/TypeDishData";
+import { initialIngredientData } from "../../constants/initialIngredientData";
+import type { TypeFilterKind } from "../Filter/types";
+import { fetchRecipe } from "../../firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faSliders } from "@fortawesome/free-solid-svg-icons";
-import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
-import ModalLayout from "../../Modal/ModalFormLayout";
-import { initialIngredientData } from "../../../constants/initialIngredientData";
-import type { TypeFilterKind } from "../types";
-import type { TypePrepData } from "../../../types/recipe/TypePrepData";
-import type { TypeDishData } from "../../../types/recipe/TypeDishData";
-import { FilterResultIngredient } from "./FilterResultIngredient";
+import { faAngleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ModalFormLayout from "./ModalFormLayout";
+import { ModalFormResultIngredient } from "./ModalFormResultIngredient";
 
-export default function FilterResultLayout() {
-	const navigate = useNavigate();
+export default function ModalFormResourceResult(
+	{
+		setShowResourceResult
+	}: {
+		setShowResourceResult: Dispatch<SetStateAction<boolean>>;
+	}
+) {
 	const context = useFilter();
 	if (!context) {
 		throw new Error("FilterContext must be used within a FilterProvider");
@@ -45,16 +49,18 @@ export default function FilterResultLayout() {
 	}, []);
 
 	return (
-		<div className="relative pt-6 px-6">
+		<div className={`absolute inset-0 rounded-lg p-5 bg-white flex flex-col`}>
 			<h2 className="text-xl flex items-center gap-2">
-				<Link to="/search"
-					className="capitalize">
+				<div className="capitalize">
 					{filterItem.currentKind}
-				</Link>
+				</div>
 				<FontAwesomeIcon icon={faAngleRight} size="2xs" />
 				Filter Result
+				<div className="flex items-center justify-center ml-auto p-1 w-10 h-10">
+					<FontAwesomeIcon icon={faXmark} onClick={() => setShowResourceResult(false)} />
+				</div>
 			</h2>
-			<div className="flex items-center gap-2 flex-wrap mt-3">
+			<div className="flex items-center gap-2 flex-wrap mt-2">
 				<div>Filtered by:</div>
 				<div className="flex gap-2 flex-wrap">
 					{
@@ -107,11 +113,8 @@ export default function FilterResultLayout() {
 						})
 					}
 				</div>
-				<div className="flex items-center justify-center ml-auto p-1 rounded-full border-1 border-black w-10 h-10">
-					<FontAwesomeIcon icon={faSliders} onClick={() => navigate(-1)} />
-				</div>
 			</div>
-			<div className="flex h-[78svh] mt-3 border-t-1 border-gray-200">
+			<div className="flex mt-3 border-t-1 border-gray-200 grow">
 				<div className="flex-1/3 flex flex-col overflow-scroll">
 					{
 						!recipeData ? (
@@ -147,12 +150,12 @@ export default function FilterResultLayout() {
 					!recipeData ? ""
 						: recipeData?.length === 0 ? ""
 							: filterItem.currentKind == "ingredient" ?
-								<FilterResultIngredient
+								<ModalFormResultIngredient
 									detailData={detailData as TypeIngredientData}
 									setFormState={setFormState} /> : ""
 				}
 			</div>
-			<ModalLayout
+			<ModalFormLayout
 				formState={formState}
 				setFormState={setFormState}
 				detailData={detailData}

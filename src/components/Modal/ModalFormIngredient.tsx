@@ -1,11 +1,89 @@
-import { useState } from "react";
+import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
+import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
+import type { TypeFilterKind } from "../Filter/types";
+import { useSetting } from "../../context/SettingsContext";
+import type { TypeAllergenStatus } from "../../types/TypeAllergenStatus";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
 
-export function ModalIngredient(
+
+export function ModalFormIngredient({
+	detailData,
+	cucd,
+	formData,
+	setFormData
+}: {
+	detailData: TypeIngredientData;
+	cucd: "update" | "create" | "delte" | "read";
+	formData: TypeIngredientData;
+	setFormData: Dispatch<SetStateAction<TypeIngredientData>>;
+}
 
 ) {
+	const settingContext = useSetting();
+	if (!settingContext) {
+		throw new Error("SettingContext must be used within a SettingProvider");
+	}
+	const { setting } = settingContext;
+
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isAllergenOpen, setAllergenOpen] = useState(false);
 	const [isTagOpen, setTagOpen] = useState(false);
+
+	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	}
+
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name } = e.target;
+		const file = e.target.files?.[0] || null;
+		setFormData((prev) => ({
+			...prev,
+			[name]: file,
+		}));
+	}
+
+	const handleAllergenChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+
+		setFormData((prev) => ({
+			...prev,
+			allergenForFilter: {
+				...prev.allergenForFilter,
+				[name]: value as TypeAllergenStatus,
+			},
+		}));
+	}
+
+	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+		console.log(value);
+
+		setFormData((prev) => ({
+			...prev,
+			[name]: value as TypeFilterKind,
+		}));
+	}
+
+	const handleTagChange = (tag: string, way: "add" | "delete") => {
+		if (way == "delete") {
+			setFormData((prev) => ({
+				...prev,
+				tag: [...prev.tag.filter(item => item !== tag)]
+			}));
+		} else if (way == "add") {
+			setFormData((prev) => ({
+				...prev,
+				tag: prev.tag.includes(tag) ? prev.tag : [...prev.tag, tag]
+			}));
+		}
+	}
+	
 	return (
 		<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">
 			<tbody>
@@ -14,12 +92,12 @@ export function ModalIngredient(
 						<div className="flex items-center justify-center w-full aspect-square mb-5 border border-black">
 							{formData.image instanceof File ? (
 								<img
-									src={URL.createObjectURL(formData.image)}
+									src={formData.image ? URL.createObjectURL(formData.image) : "/src/assets/noImage.jpg"}
 									className="object-cover"
 								/>
 							) : (
 								<img
-									src={formData.image}
+									src={formData.image || "/src/assets/noImage.jpg"}
 								/>
 							)}
 						</div>
@@ -50,11 +128,11 @@ export function ModalIngredient(
 									<th><label htmlFor="kind" className="capitalize">kind</label></th>
 									<td>
 										<select
-											className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
+											className={`capitalize w-full py-1 border rounded-md px-2 bg-gray-200 border-gray-500}`}
 											id="kind"
 											name="kind"
 											defaultValue={detailData.kind}
-											disabled={cucd == "update"}
+											disabled={true}
 											onChange={(e) => handleSelectChange(e)}>
 											<option value="dish">dish</option>
 											<option value="prep">prep</option>

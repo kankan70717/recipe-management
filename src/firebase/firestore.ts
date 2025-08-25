@@ -4,6 +4,7 @@ import { db } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../components/Filter/types";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
+import type { TypeDishData } from "../types/recipe/TypeDishData";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -77,7 +78,7 @@ export async function fetchRecipe(
 	}));
 }
 
-export async function updateRecipe(formData: TypeIngredientData | TypePrepData) {
+export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
 		const docRef = doc(db, "tamaru", formData.docID);
 		await updateDoc(docRef, formData);
@@ -87,7 +88,7 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData) 
 	}
 }
 
-export async function addRecipe(formData: TypeIngredientData | TypePrepData) {
+export async function addRecipe(formData: TypeIngredientData | TypePrepData| TypeDishData) {
 	try {
 		await addDoc(collection(db, "tamaru"), formData);
 		console.log("Document created successfully!");

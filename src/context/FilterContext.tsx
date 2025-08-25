@@ -6,7 +6,7 @@ import { useSetting } from "./SettingsContext";
 type TypeFilterContext = {
 	filterItem: TypeFilterItem,
 	handleSelect: (
-		filterPath: TypeFilterKind,
+		filterKind: TypeFilterKind,
 		filterType: TypeFilterType | undefined,
 		filterAllergenCategory: string | undefined,
 		filterItemName: string,

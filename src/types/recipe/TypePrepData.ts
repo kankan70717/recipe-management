@@ -6,7 +6,7 @@ export type TypePrepData = {
 	id: string;
 	status: "active" | "inactive" | "pending";
 	store: string;
-	kind: "ingredient" | "prep" | "dish";
+	kind: "prep";
 	name: string;
 	nameJa: string;
 	searchKeywords: string[];

@@ -1,7 +1,7 @@
-import type { TypePrepData } from "../types/recipe/TypePrepData";
+import type { TypeDishData } from "../types/recipe/TypeDishData";
 import { initialResourcesData } from "./initialResourcesData";
 
-export const initialPrepData: TypePrepData = {
+export const initialDishData: TypeDishData = {
 	docID: "",
 	id: "",
 	status: "active",

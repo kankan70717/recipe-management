@@ -16,12 +16,12 @@ export const FilterTypeLayout = ({
 				<li>
 					<input
 						type="radio"
-						id="allergen"
+						id="filterAllergen"
 						name="filterType"
 						className="hidden peer"
 						onChange={() => setFilterType("allergen")}
 						defaultChecked />
-					<label htmlFor="allergen" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
+					<label htmlFor="filterAllergen" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
 						<FontAwesomeIcon className="w-4" icon={faSkullCrossbones} />
 						allergens
 					</label>
@@ -29,11 +29,11 @@ export const FilterTypeLayout = ({
 				<li>
 					<input
 						type="radio"
-						id="category"
+						id="filterCategory"
 						name="filterType"
 						className="hidden peer"
 						onChange={() => setFilterType("category")} />
-					<label htmlFor="category" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
+					<label htmlFor="filterCategory" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
 						<FontAwesomeIcon className="w-4" icon={faLayerGroup} />
 						category
 					</label>
@@ -41,11 +41,11 @@ export const FilterTypeLayout = ({
 				<li>
 					<input
 						type="radio"
-						id="tag"
+						id="filterTag"
 						name="filterType"
 						className="hidden peer"
 						onClick={() => setFilterType("tag")} />
-					<label htmlFor="tag" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
+					<label htmlFor="filterTag" className="flex items-center gap-2 w-full rounded-lg py-2 px-4 bg-white peer-checked:bg-gray-200">
 						<FontAwesomeIcon className="w-4" icon={faTag} />
 						tag
 					</label>
