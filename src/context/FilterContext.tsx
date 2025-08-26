@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { TypeFilterItem, TypeFilterKind, TypeFilterType } from "../components/Filter/types";
-import { createFilterItem } from "../components/Filter/utils/createFilterItem";
+import type { TypeFilterItem, TypeFilterKind, TypeFilterType } from "../pages/Filter/type/TypeFilter";
+import { createFilterItem } from "../pages/Filter/utils/createFilterItem";
 import { useSetting } from "./SettingsContext";
 
 type TypeFilterContext = {

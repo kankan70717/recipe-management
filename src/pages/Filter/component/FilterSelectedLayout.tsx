@@ -1,6 +1,6 @@
 import { useFilter } from "../../../context/FilterContext";
-import { SelectedFilterItem } from "../SelectedFilterItem";
-import type { TypeFilterKind } from "../types";
+import { SelectedFilterItem } from "./SelectedFilterItem";
+import type { TypeFilterKind } from "../type/TypeFilter";
 
 export function FilterSelectedLayout({
 	currentKind
@@ -27,7 +27,7 @@ export function FilterSelectedLayout({
 								elements.push(
 									<SelectedFilterItem
 										key={`all-${allergenCategory}`}
-										filterPath={currentKind}
+										filterkind={currentKind}
 										filterType="allergen"
 										filterAllergenCategory={allergenCategory}
 										filterItemName={allergenCategory}
@@ -41,7 +41,7 @@ export function FilterSelectedLayout({
 										elements.push(
 											<SelectedFilterItem
 												key={`${allergenCategory}-${allergenName}`}
-												filterPath={currentKind}
+												filterkind={currentKind}
 												filterType="allergen"
 												filterAllergenCategory={allergenCategory}
 												filterItemName={allergenName}
@@ -63,7 +63,7 @@ export function FilterSelectedLayout({
 						Object.entries(filterItem[currentKind].category).map(([itemName, selected]) => (
 							selected ? <SelectedFilterItem
 								key={itemName}
-								filterPath={currentKind}
+								filterkind={currentKind}
 								filterType="category"
 								filterAllergenCategory={undefined}
 								filterItemName={itemName}/> : ""
@@ -78,7 +78,7 @@ export function FilterSelectedLayout({
 						Object.entries(filterItem[currentKind].tag).map(([itemName, selected]) => (
 							selected ? <SelectedFilterItem
 								key={itemName}
-								filterPath={currentKind}
+								filterkind={currentKind}
 								filterType="tag"
 								filterAllergenCategory={undefined}
 								filterItemName={itemName} /> : ""

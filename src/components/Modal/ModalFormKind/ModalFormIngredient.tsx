@@ -1,10 +1,10 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../Filter/types";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
+import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
-import type { TypeAllergenStatus } from "../../types/TypeAllergenStatus";
+import type { TypeAllergenStatus } from "../../../types/TypeAllergenStatus";
 
 
 export function ModalFormIngredient({
@@ -20,11 +20,6 @@ export function ModalFormIngredient({
 }
 
 ) {
-	/* 	const settingContext = useSetting();
-		if (!settingContext) {
-			throw new Error("SettingContext must be used within a SettingProvider");
-		}
-		const { setting } = settingContext; */
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isAllergenOpen, setAllergenOpen] = useState(false);
 	const [isTagOpen, setTagOpen] = useState(false);

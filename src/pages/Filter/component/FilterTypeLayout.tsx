@@ -1,5 +1,5 @@
 import { faLayerGroup, faSkullCrossbones, faTag } from "@fortawesome/free-solid-svg-icons";
-import type { TypeFilterType } from "../types";
+import type { TypeFilterType } from "../type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const FilterTypeLayout = ({

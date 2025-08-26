@@ -1,13 +1,15 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { useFilter } from "../../context/FilterContext";
-import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
-import type { TypePrepData } from "../../types/recipe/TypePrepData";
-import type { TypeDishData } from "../../types/recipe/TypeDishData";
-import { initialIngredientData } from "../../constants/initialIngredientData";
-import { fetchRecipe } from "../../firebase/firestore";
+import { useFilter } from "../../../context/FilterContext";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
+import type { TypeDishData } from "../../../types/recipe/TypeDishData";
+import { initialIngredientData } from "../../../constants/initialIngredientData";
+import { fetchRecipe } from "../../../firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { ModalFormResultIngredient } from "./ModalFormResultIngredient";
+import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
+import { initialResourcesData } from "../../../constants/initialResourcesData";
+import type { TypeResource } from "../../../types/recipe/TypeResource";
 
 export default function ModalFormResourceResult(
 	{
@@ -16,8 +18,8 @@ export default function ModalFormResourceResult(
 		setFormData
 	}: {
 		setShowResourceResult: Dispatch<SetStateAction<boolean>>;
-		formData: TypeDishData | TypePrepData | TypeIngredientData;
-		setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>;
+		formData: TypeDishData | TypePrepData;
+		setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData>>;
 	}
 ) {
 	const context = useFilter();
@@ -28,6 +30,7 @@ export default function ModalFormResourceResult(
 
 	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | TypePrepData[] | TypeDishData[] | null>(null);
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
+	console.log("formData", formData);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -45,8 +48,34 @@ export default function ModalFormResourceResult(
 
 	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData | TypeDishData) => {
 		console.log("item", item);
-		const updatedFormData = { ...formData }
+		const resource: TypeResource = { ...initialResourcesData };
 		if (e.target.checked) {
+			resource.kind = item.kind;
+			resource.name = item.name;
+			resource.usageAmount = 0;
+			resource.totalCost = 0;
+			resource.removable = false;
+
+			switch (item.kind) {
+				case "ingredient":
+					resource.resourceAllergens = structuredClone(item.allergen);
+					setFormData((prev) => {
+						return {
+							...structuredClone(prev),
+							resources: {
+								...structuredClone(prev.resources),
+								[item.docID]: structuredClone(resource)
+							}
+						};
+					});
+					break;
+
+				case "prep":
+					break;
+
+				case "dish":
+					break;
+			}
 
 		}
 	}
@@ -126,7 +155,7 @@ export default function ModalFormResourceResult(
 							<p>No recipes found.</p>
 						) : (
 							recipeData.map((item, index) => (
-								<div className="flex items-center">
+								<div key={index} className="flex items-center">
 									<label
 										key={index}
 										htmlFor={item.id}
@@ -160,7 +189,7 @@ export default function ModalFormResourceResult(
 					!recipeData ? ""
 						: recipeData?.length === 0 ? ""
 							: filterItem.currentKind == "ingredient" ?
-								<ModalFormResultIngredient
+								<ModalFormResourceResultIngredient
 									detailData={detailData as TypeIngredientData} />
 								: ""
 				}

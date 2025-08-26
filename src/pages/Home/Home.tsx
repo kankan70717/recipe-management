@@ -1,11 +1,11 @@
 import { initialIngredientData } from "../../constants/initialIngredientData";
 import { useState } from "react";
-import type { TypeFilterKind } from "../Filter/types";
+import type { TypeFilterKind } from "../Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFireBurner, faSeedling, faUtensils } from "@fortawesome/free-solid-svg-icons";
 import { initialPrepData } from "../../constants/initialPrepData";
 import { initialDishData } from "../../constants/initialDishData";
-import ModalFormLayout from "../Modal/ModalFormLayout";
+import ModalFormLayout from "../../components/Modal/ModalFormLayout";
 
 export default function Home() {
 	const [formState, setFormState] = useState<{

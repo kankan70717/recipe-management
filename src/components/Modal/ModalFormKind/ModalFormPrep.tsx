@@ -1,8 +1,8 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { TypeFilterKind } from "../Filter/types";
+import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
-import type { TypePrepData } from "../../types/recipe/TypePrepData";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 
 export function ModalFormPrep({
 	detailData,

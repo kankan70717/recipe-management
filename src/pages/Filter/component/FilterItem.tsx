@@ -1,5 +1,5 @@
-import { useFilter } from "../../context/FilterContext";
-import type {  TypeFilterKind, TypeFilterType } from "./types";
+import { useFilter } from "../../../context/FilterContext";
+import type {  TypeFilterKind, TypeFilterType } from "../type/TypeFilter";
 
 export const FilterItem = ({
 	filterPath,

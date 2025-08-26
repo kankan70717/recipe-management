@@ -1,4 +1,4 @@
-import type { TypeFilterKind } from "../../components/Filter/types";
+import type { TypeFilterKind } from "../../pages/Filter/type/TypeFilter";
 import type { TypeResourceAllergen } from "./TypeResourceAllergen";
 
 export type TypeResourceSubstitute = {

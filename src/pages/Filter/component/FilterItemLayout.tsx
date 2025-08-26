@@ -1,8 +1,8 @@
 import { useFilter } from "../../../context/FilterContext";
 import { useSetting } from "../../../context/SettingsContext";
-import { AllergenCategory } from "../AllergenCategory";
-import { FilterItem } from "../FilterItem";
-import type { TypeFilterKind, TypeFilterType } from "../types";
+import { AllergenCategory } from "./AllergenCategory";
+import { FilterItem } from "./FilterItem";
+import type { TypeFilterKind, TypeFilterType } from "../type/TypeFilter";
 
 export const FilterItemLayout = ({
 	currentKind,

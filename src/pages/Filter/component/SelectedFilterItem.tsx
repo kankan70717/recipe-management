@@ -1,15 +1,15 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { TypeFilterPath, TypeFilterType } from "./types";
+import type { TypeFilterKind, TypeFilterType } from "../type/TypeFilter";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useFilter } from "../../context/FilterContext";
+import { useFilter } from "../../../context/FilterContext";
 
 export function SelectedFilterItem({
-	filterPath,
+	filterkind,
 	filterType,
 	filterAllergenCategory,
 	filterItemName,
 }: {
-	filterPath: TypeFilterPath,
+	filterkind: TypeFilterKind,
 	filterType: TypeFilterType,
 	filterAllergenCategory: string | undefined,
 	filterItemName: string,
@@ -24,7 +24,7 @@ export function SelectedFilterItem({
 		<li>
 			<button
 				className="flex items-center gap-1 py-2 px-4 rounded-full bg-gray-200 text-xs capitalize"
-				onClick={() => handleSelect(filterPath, filterType, filterAllergenCategory, filterItemName, false)}>
+				onClick={() => handleSelect(filterkind, filterType, filterAllergenCategory, filterItemName, false)}>
 				{filterAllergenCategory == filterItemName ? "All " + filterItemName : filterItemName}
 				<FontAwesomeIcon icon={faXmark} />
 			</button>

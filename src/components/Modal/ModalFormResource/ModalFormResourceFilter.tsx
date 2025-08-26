@@ -1,15 +1,14 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import type { TypeFilterType } from "../Filter/types";
-import { useFilter } from "../../context/FilterContext";
-import { FilterTypeLayout } from "../Filter/Layout/FilterTypeLayout";
-import { FilterItemLayout } from "../Filter/Layout/FilterItemLayout";
-import { FilterSelectedLayout } from "../Filter/Layout/FilterSelectedLayout";
+import type { TypeFilterType } from "../../../pages/Filter/type/TypeFilter";
+import { useFilter } from "../../../context/FilterContext";
 import ModalFormResourceResult from "./ModalFormResourceResult";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { TypePrepData } from "../../types/recipe/TypePrepData";
-import type { TypeDishData } from "../../types/recipe/TypeDishData";
-import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
+import type { TypeDishData } from "../../../types/recipe/TypeDishData";
+import { FilterTypeLayout } from "../../../pages/Filter/component/FilterTypeLayout";
+import { FilterItemLayout } from "../../../pages/Filter/component/FilterItemLayout";
+import { FilterSelectedLayout } from "../../../pages/Filter/component/FilterSelectedLayout";
 
 export default function ModalFormResourceFilter({
 	setShowFilter,
@@ -17,8 +16,8 @@ export default function ModalFormResourceFilter({
 	setFormData
 }: {
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
-	formData: TypeDishData | TypePrepData | TypeIngredientData;
-	setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>;
+	formData: TypeDishData | TypePrepData;
+	setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData>>;
 }) {
 	const [filterType, setFilterType] = useState<TypeFilterType>("allergen");
 	const [showResourceResult, setShowResourceResult] = useState(false);
@@ -85,7 +84,7 @@ export default function ModalFormResourceFilter({
 				&& <ModalFormResourceResult
 					setShowResourceResult={setShowResourceResult}
 					formData={formData}
-					setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>} />
+					setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData>>} />
 			}
 		</div>
 	);

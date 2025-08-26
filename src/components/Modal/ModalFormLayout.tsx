@@ -3,12 +3,12 @@ import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { addRecipe, updateRecipe } from "../../firebase/firestore";
-import type { TypeFilterKind } from "../Filter/types";
+import type { TypeFilterKind } from "../../pages/Filter/type/TypeFilter";
 import type { TypePrepData } from "../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../types/recipe/TypeDishData";
-import { ModalFormIngredient } from "./ModalFormIngredient";
-import { ModalFormPrep } from "./ModalFormPrep";
-import ModalFormResourceFilter from "./ModalFormResourceFilter";
+import { ModalFormIngredient } from "./ModalFormKind/ModalFormIngredient";
+import { ModalFormPrep } from "./ModalFormKind/ModalFormPrep";
+import ModalFormResourceFilter from "./ModalFormResource/ModalFormResourceFilter";
 
 export default function ModalFormLayout(
 	{

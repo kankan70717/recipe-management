@@ -2,8 +2,8 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FilterItem } from "./FilterItem";
-import { useFilter } from "../../context/FilterContext";
-import type { TypeFilterKind } from "./types";
+import { useFilter } from "../../../context/FilterContext";
+import type { TypeFilterKind } from "../type/TypeFilter";
 
 export const AllergenCategory = ({
 	currentPath,

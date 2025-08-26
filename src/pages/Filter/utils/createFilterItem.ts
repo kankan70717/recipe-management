@@ -1,4 +1,4 @@
-import type { TypeFilterItem, TypeFilterKind } from "../types";
+import type { TypeFilterItem, TypeFilterKind } from "../type/TypeFilter";
 
 export function createFilterItem(setting: any): TypeFilterItem {
 	const initFilterItem: TypeFilterItem = {

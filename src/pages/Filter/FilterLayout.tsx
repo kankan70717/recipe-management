@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import type { TypeFilterType } from "../types";
-import { FilterItemLayout } from "./FilterItemLayout";
-import { FilterTypeLayout } from "./FilterTypeLayout";
-import { FilterSelectedLayout } from "./FilterSelectedLayout";
+import type { TypeFilterType } from "./type/TypeFilter";
+import { FilterItemLayout } from "./component/FilterItemLayout";
+import { FilterTypeLayout } from "./component/FilterTypeLayout";
+import { FilterSelectedLayout } from "./component/FilterSelectedLayout";
 import { useState } from "react";
-import { useFilter } from "../../../context/FilterContext";
+import { useFilter } from "../../context/FilterContext";
 
 export default function FilterLayout() {
 	const [filterType, setFilterType] = useState<TypeFilterType>("allergen");
@@ -59,8 +59,7 @@ export default function FilterLayout() {
 					<FilterSelectedLayout currentKind={filterItem.currentKind} />
 				</div>
 			</div>
-			<div className="h-[10%] px-10 border-t-1 border-gray-200
-			flex items-center">
+			<div className="h-[10%] px-10 border-t-1 border-gray-200 flex items-center">
 				<button className="capitalize mr-auto">reset filter</button>
 				<button className="uppercase py-2 px-4 rounded-full w-30 border border-black bg-white text-black">cancel</button>
 				<button

@@ -1,7 +1,7 @@
 // src/firebase/firestore.ts
 import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "./config";
-import type { TypeFilterItem, TypeFilterKind } from "../components/Filter/types";
+import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";

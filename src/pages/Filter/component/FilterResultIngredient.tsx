@@ -1,7 +1,7 @@
 import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../types";
+import type { TypeFilterKind } from "../type/TypeFilter";
 import type { Dispatch, SetStateAction } from "react";
 
 export function FilterResultIngredient({
@@ -190,31 +190,6 @@ export function FilterResultIngredient({
 						}
 					</div>
 					<div className="flex gap-2">
-						{
-							Object.entries(detailData?.allergenForFilter ?? {}).map(([allergen, status]) => {
-								let elements = [];
-								if (status == "removable") {
-									elements.push(
-										<div
-											key={allergen}
-											className={`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
-																			${status == "removable"
-													? "border-2 border-green-500"
-													: ""}`}>
-											{
-												status == "removable"
-													? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500" />
-													: ""
-											}
-											<span>
-												{allergen}
-											</span>
-										</div>
-									);
-								}
-								return elements;
-							})
-						}
 						{
 							Object.entries(detailData.allergen ?? {}).map(([allergenCategoryName, allergenCategoryObj]) => {
 								let elements = [];
