@@ -11,6 +11,7 @@ import type { TypeFilterKind } from "../type/TypeFilter";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { FilterResultIngredient } from "./FilterResultIngredient";
+import { FilterResultPrep } from "./FilterResultPrep";
 
 export default function FilterResultLayout() {
 	const navigate = useNavigate();
@@ -127,7 +128,7 @@ export default function FilterResultLayout() {
 									{
 										typeof item.image === "string" &&
 										(<img
-											src={item.image}
+											src={item.image ? item.image : "/src/assets/noImage.jpg"}
 											className="h-20 aspect-square object-cover" />)
 									}
 									<h2 className="capitalize">{item.name}</h2>
@@ -149,7 +150,11 @@ export default function FilterResultLayout() {
 							: filterItem.currentKind == "ingredient" ?
 								<FilterResultIngredient
 									detailData={detailData as TypeIngredientData}
-									setFormState={setFormState} /> : ""
+									setFormState={setFormState} />
+								: filterItem.currentKind == "prep" ?
+									<FilterResultPrep
+										detailData={detailData as TypePrepData}
+										setFormState={setFormState} /> : ""
 				}
 			</div>
 			<ModalLayout

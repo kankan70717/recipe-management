@@ -1,19 +1,21 @@
-import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import type { TypeFilterKind } from "../type/TypeFilter";
 import type { Dispatch, SetStateAction } from "react";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 
-export function FilterResultIngredient({
+export function FilterResultPrep({
 	detailData,
 	setFormState
 }: {
-	detailData: TypeIngredientData;
+	detailData: TypePrepData;
 	setFormState: Dispatch<SetStateAction<{
 		isFormOpen: boolean;
 		kind: TypeFilterKind | undefined
 	}>>
 }) {
+	console.log("detailData.allergen", detailData.allergen);
+
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
 			<div className="flex gap-5">
@@ -32,7 +34,7 @@ export function FilterResultIngredient({
 							className="ml-10"
 							onClick={() => setFormState({
 								isFormOpen: true,
-								kind: "ingredient"
+								kind: "prep"
 							})} />
 					</div>
 					<div className="flex flex-wrap gap-5 justify-start">
@@ -44,29 +46,19 @@ export function FilterResultIngredient({
 							<FontAwesomeIcon icon={faStore} />
 							{detailData?.store}
 						</div>
-						<div className="capitalize flex items-center gap-1">
-							<FontAwesomeIcon icon={faTruck} />
-							{detailData?.vendor}
-						</div>
 					</div>
 					<table className="w-full border-separate border-spacing-x-3">
 						<tbody>
 							<tr>
-								<th className="capitalize text-left">purchasePrice:</th>
-								<td className="lowercase w-40">${detailData?.purchasePrice}</td>
+								<th className="capitalize text-left">finishedAmount:</th>
+								<td className="lowercase w-40">${detailData.finishedAmount}</td>
 							</tr>
 							<tr>
-								<th className="capitalize text-left">purchaseQuantity:</th>
-								<td className="lowercase">{detailData?.purchaseQuantity}</td>
+								<th className="capitalize text-left">usageUnit:</th>
+								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
-							<tr><th className="capitalize text-left">purchaseUnit:</th>
-								<td className="lowercase">{detailData?.purchaseUnit}</td>
-							</tr>
-							<tr><th className="capitalize text-left">unitConversionRate:</th>
-								<td className="lowercase">{detailData?.unitConversionRate}</td>
-							</tr>
-							<tr><th className="capitalize text-left">usageUnit:</th>
-								<td className="lowercase">{detailData?.usageUnit}</td>
+							<tr><th className="capitalize text-left">totalCost:</th>
+								<td className="lowercase">{detailData.totalCost}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -145,10 +137,10 @@ export function FilterResultIngredient({
 											className={
 												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
 												${allergenCategoryObj.status == "mayContained"
-														? "border-2 border-yellow-500"
-														: allergenCategoryObj.status == "removable"
-															? "border-2 border-green-500"
-															: ""}`}>
+													? "border-2 border-yellow-500"
+													: allergenCategoryObj.status == "removable"
+														? "border-2 border-green-500"
+														: ""}`}>
 											{
 												allergenCategoryObj.status == "mayContained"
 													? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500" />
@@ -168,10 +160,10 @@ export function FilterResultIngredient({
 													className={
 														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
 														${allergenObj.status == "mayContained"
-																? "border-2 border-yellow-500"
-																: allergenObj.status == "removable"
-																	? "border-2 border-green-500"
-																	: ""}`}>
+															? "border-2 border-yellow-500"
+															: allergenObj.status == "removable"
+																? "border-2 border-green-500"
+																: ""}`}>
 													{
 														allergenObj.status == "mayContained"
 															? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-yellow-500" />
@@ -200,8 +192,8 @@ export function FilterResultIngredient({
 											className={
 												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
 												${allergenCategoryObj.status == "removable"
-															? "border-2 border-green-500"
-															: ""}`}>
+													? "border-2 border-green-500"
+													: ""}`}>
 											{
 												allergenCategoryObj.status == "removable"
 													? <FontAwesomeIcon icon={faCircleQuestion} size="lg" className="text-green-500" />
@@ -221,8 +213,8 @@ export function FilterResultIngredient({
 													className={
 														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
 														${allergenObj.status == "removable"
-																	? "border-2 border-green-500"
-																	: ""}`}>
+															? "border-2 border-green-500"
+															: ""}`}>
 													{
 														allergenObj.status == "removable"
 															? <FontAwesomeIcon icon={faTriangleExclamation} size="lg" className="text-green-500" />

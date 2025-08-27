@@ -1,4 +1,3 @@
-import { initialIngredientData } from "../../constants/initialIngredientData";
 import { useState } from "react";
 import type { TypeFilterKind } from "../Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,6 +5,8 @@ import { faFireBurner, faSeedling, faUtensils } from "@fortawesome/free-solid-sv
 import { initialPrepData } from "../../constants/initialPrepData";
 import { initialDishData } from "../../constants/initialDishData";
 import ModalFormLayout from "../../components/Modal/ModalFormLayout";
+import { useSetting } from "../../context/SettingsContext";
+import { initializeIngredientData } from "../../firebase/initializeIngredientData";
 
 export default function Home() {
 	const [formState, setFormState] = useState<{
@@ -15,6 +16,12 @@ export default function Home() {
 		isFormOpen: false,
 		kind: undefined
 	});
+	const settingContext = useSetting();
+	if (!settingContext) {
+		throw new Error("SettingContext must be used within a SettingProvider");
+	}
+	const { setting } = settingContext;
+	const updatedInitialIngredientData = initializeIngredientData(setting);
 
 	return (
 		<div className="relative h-full">
@@ -58,9 +65,10 @@ export default function Home() {
 				setFormState={setFormState}
 				detailData={
 					formState.kind == "ingredient"
-						? initialIngredientData
+						? updatedInitialIngredientData
 						: formState.kind == "prep"
-							? initialPrepData : formState.kind == "dish"
+							? initialPrepData
+							: formState.kind == "dish"
 								? initialDishData
 								: initialDishData
 				}

@@ -1,10 +1,12 @@
 // src/firebase/firestore.ts
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";
+import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
+import { resoucesToAllergen } from "./resoucesToAllergen";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -81,16 +83,40 @@ export async function fetchRecipe(
 export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
 		const docRef = doc(db, "tamaru", formData.docID);
-		await updateDoc(docRef, formData);
+
+		if (formData.kind == "prep" || formData.kind == "dish") {
+			const updatedAllergen = resoucesToAllergen((formData as TypePrepData | TypeDishData).resources);
+			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+			await updateDoc(docRef, {
+				...structuredClone(formData),
+				allergen: structuredClone(updatedAllergen),
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+			});
+
+		} else {
+			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
+			await updateDoc(docRef, {
+				...structuredClone(formData),
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+			});
+		}
 		console.log("Document updated successfully!");
 	} catch (error) {
 		console.error("Error updating document:", error);
 	}
 }
 
-export async function addRecipe(formData: TypeIngredientData | TypePrepData| TypeDishData) {
+export async function addRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
-		await addDoc(collection(db, "tamaru"), formData);
+		const colRef = collection(db, "tamaru");
+		const docRef = doc(colRef);
+		const id = docRef.id;
+		const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
+		await setDoc(docRef, {
+			...structuredClone(formData),
+			docID: id,
+			allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+		});
 		console.log("Document created successfully!");
 	} catch (error) {
 		console.error("Error creating document:", error);

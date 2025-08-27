@@ -9,6 +9,7 @@ import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { FilterTypeLayout } from "../../../pages/Filter/component/FilterTypeLayout";
 import { FilterItemLayout } from "../../../pages/Filter/component/FilterItemLayout";
 import { FilterSelectedLayout } from "../../../pages/Filter/component/FilterSelectedLayout";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 
 export default function ModalFormResourceFilter({
 	setShowFilter,
@@ -16,8 +17,8 @@ export default function ModalFormResourceFilter({
 	setFormData
 }: {
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
-	formData: TypeDishData | TypePrepData;
-	setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData>>;
+	formData: TypeDishData | TypePrepData | TypeIngredientData;
+	setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>;
 }) {
 	const [filterType, setFilterType] = useState<TypeFilterType>("allergen");
 	const [showResourceResult, setShowResourceResult] = useState(false);

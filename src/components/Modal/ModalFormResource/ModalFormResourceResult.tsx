@@ -18,7 +18,7 @@ export default function ModalFormResourceResult(
 		setFormData
 	}: {
 		setShowResourceResult: Dispatch<SetStateAction<boolean>>;
-		formData: TypeDishData | TypePrepData;
+		formData: TypeDishData | TypePrepData | TypeIngredientData;
 		setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData>>;
 	}
 ) {
@@ -53,6 +53,7 @@ export default function ModalFormResourceResult(
 			resource.kind = item.kind;
 			resource.name = item.name;
 			resource.usageAmount = 0;
+			resource.usageUnit = item.usageUnit;
 			resource.totalCost = 0;
 			resource.removable = false;
 
@@ -77,6 +78,26 @@ export default function ModalFormResourceResult(
 					break;
 			}
 
+		} else {
+			switch (item.kind) {
+				case "ingredient":
+					setFormData((prev) => {
+						const updatedResources = { ...prev.resources };
+						delete updatedResources[item.docID];
+
+						return {
+							...structuredClone(prev),
+							resources: updatedResources
+						};
+					});
+					break;
+
+				case "prep":
+					break;
+
+				case "dish":
+					break;
+			}
 		}
 	}
 
@@ -146,7 +167,7 @@ export default function ModalFormResourceResult(
 					}
 				</div>
 			</div>
-			<div className="flex mt-3 border-t-1 border-gray-200 h-[calc(100svh-24rem)]">
+			<div className="grow flex mt-3 border-t-1 border-gray-200">
 				<div className="flex-1/3 flex flex-col overflow-scroll">
 					{
 						!recipeData ? (
@@ -163,7 +184,7 @@ export default function ModalFormResourceResult(
 										{
 											typeof item.image === "string" &&
 											(<img
-												src={item.image}
+												src={item.image ? item.image : "/src/assets/noImage.jpg"}
 												className="h-20 aspect-square object-cover" />)
 										}
 										<h2 className="capitalize">{item.name}</h2>
@@ -178,6 +199,13 @@ export default function ModalFormResourceResult(
 									<label className="h-full flex items-center px-2">
 										<input
 											type="checkbox"
+											defaultChecked={
+												formData.kind === "prep" || formData.kind === "dish"
+													? Object.keys((formData as TypePrepData | TypeDishData).resources).some(
+														(resourceID) => resourceID === item.docID
+													)
+													: false
+											}
 											onChange={(e) => handleResource(e, item)} />
 									</label>
 								</div>
@@ -193,18 +221,6 @@ export default function ModalFormResourceResult(
 									detailData={detailData as TypeIngredientData} />
 								: ""
 				}
-			</div>
-			<div className="absolute bottom-0 left-0 w-full py-2  px-10 border-t-1 border-gray-200 flex items-center bg-white">
-				<button className="capitalize mr-auto">reset filter</button>
-				<button
-					className="uppercase py-2 px-4 rounded-full w-30 border border-black bg-white text-black"
-					onClick={() => { setShowResourceResult(false) }}>
-					cancel
-				</button>
-				<button
-					className="uppercase py-2 px-4 rounded-full w-30 ml-3 bg-black text-white"
-					onClick={() => setShowResourceResult(false)}>
-					apply</button>
 			</div>
 		</div>
 	);

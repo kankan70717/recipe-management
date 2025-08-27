@@ -32,7 +32,7 @@ export default function ModalFormLayout(
 
 	if (!formState.isFormOpen) return null;
 
-	const [formData, setFormData] = useState<TypeIngredientData | TypePrepData>({ ...detailData });
+	const [formData, setFormData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(structuredClone(detailData));
 	console.log("formData", formData);
 	const [showFilter, setShowFilter] = useState(false);
 
@@ -76,7 +76,7 @@ export default function ModalFormLayout(
 									setShowFilter={setShowFilter} />
 								: null
 					}
-					<div className={`flex gap-5 justify-end py-3 pr-10 rounded-lg border-gray-200 absolute bottom-0 right-0 left-0 ${showFilter ? "" : "bg-white"}`}>
+					<div className={`flex gap-5 justify-end py-3 pr-10 rounded-lg border border-gray-200 absolute bottom-0 right-0 left-0 ${showFilter ? "" : "bg-white"}`}>
 						<button
 							className="capitalize text-center w-30 py-1 px-3 rounded-full border border-black"
 							onClick={() => setFormState({

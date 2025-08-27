@@ -18,6 +18,7 @@ export const initialPrepData: TypePrepData = {
 	tag: [],
 	resources: {},
 	allergenForFilter: {},
+	allergen: {},
 	dishRefs: [],
 	prepRefs: [],
 	updatePerson: "",

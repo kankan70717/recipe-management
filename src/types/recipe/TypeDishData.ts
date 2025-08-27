@@ -1,5 +1,6 @@
 import type { TypeAllergenStatus } from "./TypeIngredientData";
 import type { TypeResource } from "./TypeResource";
+import type { TypeResourceAllergen } from "./TypeResourceAllergen";
 
 export type TypeDishData = {
 	docID: string;
@@ -19,6 +20,7 @@ export type TypeDishData = {
 	tag: string[];
 	resources: Record<string, TypeResource>;
 	allergenForFilter: Record<string, TypeAllergenStatus>;
+	allergen: Record<string, TypeResourceAllergen>;
 	dishRefs: string[];
 	prepRefs: string[];
 	updatePerson: string;

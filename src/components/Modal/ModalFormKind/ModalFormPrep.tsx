@@ -19,8 +19,6 @@ export function ModalFormPrep({
 }
 
 ) {
-	console.log("Prep Form Data", formData);
-
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isTagOpen, setTagOpen] = useState(false);
 	const [isResourceOpen, setResourceOpen] = useState(false);
@@ -66,9 +64,26 @@ export function ModalFormPrep({
 		}
 	}
 
+	const handleResourceUsageAmount = (
+		docID: string,
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+	) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({
+			...structuredClone(prev),
+			resources: {
+				...prev.resources,
+				[docID]: {
+					...prev.resources[docID],
+					[name]: value,
+				},
+			},
+		}));
+	};
+
 	return (
 		<>
-			<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">
+			<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full pb-20">
 				<tbody>
 					<tr>
 						<td className="w-1/2 text-center">
@@ -230,8 +245,25 @@ export function ModalFormPrep({
 								<span>resources</span>
 								<FontAwesomeIcon icon={faAngleRight} className={`transition-all duration-1000 ease-in-out ${isResourceOpen && "rotate-90"}`} />
 							</div>
-							<div className={`flex flex-col gap-3 mt-3 overflow-hidden transition-all duration-1000 ease-in-out ${isResourceOpen ? "max-h-[2000px]" : "max-h-0"}`}>
-								<div className="text-center">
+							<div className={`flex flex-col transition-all duration-1000 ease-in-out overflow-hidden ${isResourceOpen ? "max-h-100" : "max-h-0"}`}>
+								{
+									Object.entries(formData.resources).map(([docID, resourceObj]) => (
+										<div key={docID} className="flex justify-between items-center mx-10 py-2 border-gray-300 border-b-1">
+											<div className="capitalize">{resourceObj.name}</div>
+											<div className="flex gap-x-1 items-center">
+												<input
+													type="number"
+													id={docID}
+													name="usageAmount"
+													className="border border-black rounded py-1 text-right"
+													defaultValue={resourceObj.usageAmount}
+													onChange={(e) => handleResourceUsageAmount(docID, e)} />
+												<span>{resourceObj.usageUnit}</span>
+											</div>
+										</div>
+									))
+								}
+								<div className="text-center mt-5">
 									<button
 										type="button"
 										className="capitalize border border-black rounded-full py-1 px-3 w-1/2"
