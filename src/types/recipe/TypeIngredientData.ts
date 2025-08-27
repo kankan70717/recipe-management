@@ -19,6 +19,7 @@ export type TypeIngredientData = {
 	usageUnit: string;
 	unitConversionRate: number;
 	yieldRate: number;
+	costPerUsageUnit:number;
 	tag: string[];
 	allergenForFilter: Record<string, TypeAllergenStatus>;
 	allergen: Record<string, TypeResourceAllergen>;

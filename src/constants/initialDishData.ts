@@ -1,28 +1,24 @@
 import type { TypeDishData } from "../types/recipe/TypeDishData";
-import { initialResourcesData } from "./initialResourcesData";
 
 export const initialDishData: TypeDishData = {
 	docID: "",
 	id: "",
 	status: "active",
 	store: "",
-	kind: "prep",
+	kind: "dish",
 	name: "",
 	nameJa: "",
 	searchKeywords: [],
 	category: "",
 	image: "",
+	description: "",
 	instruction: "",
-	finishedAmount: 0,
-	usageUnit: "",
+	sellPrice: 0,
 	totalCost: 0,
 	tag: [],
-	resources: {
-		"sample": initialResourcesData
-	},
+	resources: {},
 	allergenForFilter: {},
-	dishRefs: [],
-	prepRefs: [],
+	allergen: {},
 	updatePerson: "",
 	updateDate: {
 		seconds: 0,

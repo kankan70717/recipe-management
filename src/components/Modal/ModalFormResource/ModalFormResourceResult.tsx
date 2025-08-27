@@ -10,6 +10,7 @@ import { faAngleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
 import { initialResourcesData } from "../../../constants/initialResourcesData";
 import type { TypeResource } from "../../../types/recipe/TypeResource";
+import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
 
 export default function ModalFormResourceResult(
 	{
@@ -28,7 +29,7 @@ export default function ModalFormResourceResult(
 	}
 	const { filterItem } = context;
 
-	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | TypePrepData[] | TypeDishData[] | null>(null);
+	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | TypePrepData[] | null>(null);
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
 	console.log("formData", formData);
 
@@ -46,9 +47,9 @@ export default function ModalFormResourceResult(
 		fetchData();
 	}, []);
 
-	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData | TypeDishData) => {
-		console.log("item", item);
+	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData) => {
 		const resource: TypeResource = { ...initialResourcesData };
+
 		if (e.target.checked) {
 			resource.kind = item.kind;
 			resource.name = item.name;
@@ -60,6 +61,9 @@ export default function ModalFormResourceResult(
 			switch (item.kind) {
 				case "ingredient":
 					resource.resourceAllergens = structuredClone(item.allergen);
+					const pricePerUsageUnit = item.purchasePrice / (item.purchaseQuantity / item.unitConversionRate);
+					resource.totalCost = pricePerUsageUnit;
+
 					setFormData((prev) => {
 						return {
 							...structuredClone(prev),
@@ -167,7 +171,7 @@ export default function ModalFormResourceResult(
 					}
 				</div>
 			</div>
-			<div className="grow flex mt-3 border-t-1 border-gray-200">
+			<div className="grow flex mt-3 border-t-1 border-gray-200 h-[calc(100svh-21rem)]">
 				<div className="flex-1/3 flex flex-col overflow-scroll">
 					{
 						!recipeData ? (
@@ -219,7 +223,10 @@ export default function ModalFormResourceResult(
 							: filterItem.currentKind == "ingredient" ?
 								<ModalFormResourceResultIngredient
 									detailData={detailData as TypeIngredientData} />
-								: ""
+								: filterItem.currentKind == "prep" ?
+									<ModalFormResourceResultPrep
+										detailData={detailData as TypePrepData} />
+									: ""
 				}
 			</div>
 		</div>

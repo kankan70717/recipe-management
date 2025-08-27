@@ -1,20 +1,20 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
-import type { TypePrepData } from "../../../types/recipe/TypePrepData";
+import { faAngleRight, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
+import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 
-export function ModalFormPrep({
+export function ModalFormDish({
 	detailData,
 	cucd,
 	formData,
 	setFormData,
 	setShowFilter
 }: {
-	detailData: TypePrepData;
+	detailData: TypeDishData;
 	cucd: "update" | "create" | "delte" | "read";
-	formData: TypePrepData;
-	setFormData: Dispatch<SetStateAction<TypePrepData>>;
+	formData: TypeDishData;
+	setFormData: Dispatch<SetStateAction<TypeDishData>>;
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -80,20 +80,6 @@ export function ModalFormPrep({
 			},
 		}));
 	};
-
-	const removeResource = (docID: string) => {
-
-		setFormData((prev) => {
-			const updatedResources = structuredClone(prev.resources);
-			delete updatedResources[docID];
-
-			return {
-				...structuredClone(prev),
-				resources: updatedResources
-			};
-		});
-
-	}
 
 	return (
 		<>
@@ -169,16 +155,12 @@ export function ModalFormPrep({
 										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
-										<th><label htmlFor="finishedAmount" className="capitalize">finishedAmount</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="finishedAmount" name="finishedAmount" defaultValue={detailData.finishedAmount} onChange={(e) => handleTextChange(e)} /></td>
+										<th><label htmlFor="sellPrice" className="capitalize">sellPrice</label></th>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" defaultValue={detailData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
-										<th><label htmlFor="usageUnit" className="capitalize">usageUnit</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="purchaseUnit" defaultValue={detailData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
-									</tr>
-									<tr>
-										<th><label htmlFor="costPerUnit" className="capitalize">costPerUnit</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="costPerUnit" name="costPerUnit" defaultValue={detailData.costPerUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<th><label htmlFor="totalCost" className="capitalize">totalCost</label></th>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="totalCost" name="totalCost" defaultValue={detailData.totalCost} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -254,6 +236,19 @@ export function ModalFormPrep({
 					</tr>
 					<tr>
 						<td colSpan={2}>
+							<div className="flex flex-col gap-2 w-full">
+								<div className="capitalize font-bold">description</div>
+								<textarea
+									name="description"
+									id="description"
+									className="lowercase border-black border rounded-md px-2 mb-3"
+									defaultValue={detailData.description}
+									onChange={(e) => handleTextChange(e)}></textarea>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colSpan={2}>
 							<div className="capitalize font-bold pb-2 flex items-center justify-between border-b-1 border-gray-300"
 								onClick={() => setResourceOpen(prev => !prev)}>
 								<span>resources</span>
@@ -263,11 +258,7 @@ export function ModalFormPrep({
 								{
 									Object.entries(formData.resources).map(([docID, resourceObj]) => (
 										<div key={docID} className="flex justify-between items-center mx-10 py-2 border-gray-300 border-b-1">
-											<FontAwesomeIcon icon={faCircleXmark} onClick={() => {
-												removeResource(docID);
-											}} />
-											<div className="capitalize ml-2 mr-auto">{resourceObj.name}</div>
-											<div className="capitalize mr-2 ml-auto">${resourceObj.totalCost}</div>
+											<div className="capitalize">{resourceObj.name}</div>
 											<div className="flex gap-x-1 items-center">
 												<input
 													type="number"

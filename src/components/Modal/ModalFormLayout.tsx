@@ -9,6 +9,7 @@ import type { TypeDishData } from "../../types/recipe/TypeDishData";
 import { ModalFormIngredient } from "./ModalFormKind/ModalFormIngredient";
 import { ModalFormPrep } from "./ModalFormKind/ModalFormPrep";
 import ModalFormResourceFilter from "./ModalFormResource/ModalFormResourceFilter";
+import { ModalFormDish } from "./ModalFormKind/ModalFormDish";
 
 export default function ModalFormLayout(
 	{
@@ -74,7 +75,14 @@ export default function ModalFormLayout(
 									formData={formData as TypePrepData}
 									setFormData={setFormData as Dispatch<SetStateAction<TypePrepData>>}
 									setShowFilter={setShowFilter} />
-								: null
+								: formState.kind == "dish"
+									? <ModalFormDish
+										detailData={detailData as TypeDishData}
+										cucd={cucd}
+										formData={formData as TypeDishData}
+										setFormData={setFormData as Dispatch<SetStateAction<TypeDishData>>}
+										setShowFilter={setShowFilter} />
+									: null
 					}
 					<div className={`flex gap-5 justify-end py-3 pr-10 rounded-lg border border-gray-200 absolute bottom-0 right-0 left-0 ${showFilter ? "" : "bg-white"}`}>
 						<button

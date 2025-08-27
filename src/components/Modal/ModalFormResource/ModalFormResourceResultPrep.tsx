@@ -1,18 +1,11 @@
-import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faLayerGroup, faStore, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../type/TypeFilter";
-import type { Dispatch, SetStateAction } from "react";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 
-export function FilterResultIngredient({
+export function ModalFormResourceResultPrep({
 	detailData,
-	setFormState
 }: {
-	detailData: TypeIngredientData;
-	setFormState: Dispatch<SetStateAction<{
-		isFormOpen: boolean;
-		kind: TypeFilterKind | undefined
-	}>>
+	detailData: TypePrepData;
 }) {
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
@@ -23,64 +16,46 @@ export function FilterResultIngredient({
 						(<img src={detailData.image ? detailData.image : "/src/assets/noImage.jpg"} />)
 					}
 				</div>
-				<div className="flex-1 flex flex-col gap-3 justify-center">
-					<div className="flex items-center justify-between">
-						<h3 className="capitalize text-3xl">{detailData?.name}</h3>
-						<FontAwesomeIcon
-							icon={faPenToSquare}
-							size="xl"
-							className="ml-10"
-							onClick={() => setFormState({
-								isFormOpen: true,
-								kind: "ingredient"
-							})} />
+				<div className="flex-1 flex flex-col gap-1 justify-center">
+					<div className="flex items-center justify-center">
+						<h3 className="capitalize text-2xl">{detailData.name}</h3>
 					</div>
-					<div className="flex flex-wrap gap-5 justify-start">
+					<div className="flex flex-wrap gap-3 justify-center">
 						<div className="capitalize flex items-center gap-1">
 							<FontAwesomeIcon icon={faLayerGroup} />
 							<span>{detailData.category}</span>
 						</div>
 						<div className="capitalize flex items-center gap-1">
 							<FontAwesomeIcon icon={faStore} />
-							{detailData?.store}
-						</div>
-						<div className="capitalize flex items-center gap-1">
-							<FontAwesomeIcon icon={faTruck} />
-							{detailData?.vendor}
+							{detailData.store}
 						</div>
 					</div>
 					<table className="w-full border-separate border-spacing-x-3">
 						<tbody>
 							<tr>
-								<th className="capitalize text-left">purchasePrice:</th>
-								<td className="lowercase w-40">${detailData?.purchasePrice}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">purchaseQuantity:</th>
-								<td className="lowercase">{detailData?.purchaseQuantity}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">purchaseUnit:</th>
-								<td className="lowercase">{detailData?.purchaseUnit}</td>
+								<th className="capitalize text-left">finishedAmount:</th>
+								<td className="lowercase w-40">{detailData.finishedAmount}</td>
 							</tr>
 							<tr>
 								<th className="capitalize text-left">usageUnit:</th>
-								<td className="lowercase">{detailData?.usageUnit}</td>
+								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
 							<tr>
-								<th className="capitalize text-left">yieldRate (%):</th>
-								<td className="lowercase">{detailData?.yieldRate}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">unitConversionRate:</th>
-								<td className="lowercase">{detailData?.unitConversionRate}</td>
+								<th className="capitalize text-left">costPerUnit:</th>
+								<td className="lowercase">${detailData.costPerUnit}</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">allergen</h4>
+				<h4 className="capitalize text-lg font-bold">instruction</h4>
+				<div className="border border-gray-500 rounded px-2">
+					{detailData.instruction}
+				</div>
+			</div>
+			<div className="mt-3 flex flex-col gap-2">
+				<h4 className="capitalize text-lg font-bold">allergen</h4>
 				<div className="flex flex-col gap-2">
 					<div className="flex gap-2">
 						{
@@ -91,13 +66,13 @@ export function FilterResultIngredient({
 										<div
 											key={allergenCategoryName}
 											className={
-												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 												${allergenCategoryObj.status == "contained"
-													? "border-2 border-red-500"
+													? "border border-red-500"
 													: allergenCategoryObj.status == "mayContained"
-														? "border-2 border-yellow-500"
+														? "border border-yellow-500"
 														: allergenCategoryObj.status == "removable"
-															? "border-2 border-green-500"
+															? "border border-green-500"
 															: ""}`}>
 											{
 												allergenCategoryObj.status == "contained"
@@ -116,13 +91,13 @@ export function FilterResultIngredient({
 												<div
 													key={allergenName}
 													className={
-														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 														${allergenObj.status == "contained"
-															? "border-2 border-red-500"
+															? "border border-red-500"
 															: allergenObj.status == "mayContained"
-																? "border-2 border-yellow-500"
+																? "border border-yellow-500"
 																: allergenObj.status == "removable"
-																	? "border-2 border-green-500"
+																	? "border border-green-500"
 																	: ""}`}>
 													{
 														allergenObj.status == "contained"
@@ -150,11 +125,11 @@ export function FilterResultIngredient({
 										<div
 											key={allergenCategoryName}
 											className={
-												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 												${allergenCategoryObj.status == "mayContained"
-													? "border-2 border-yellow-500"
+													? "border border-yellow-500"
 													: allergenCategoryObj.status == "removable"
-														? "border-2 border-green-500"
+														? "border border-green-500"
 														: ""}`}>
 											{
 												allergenCategoryObj.status == "mayContained"
@@ -173,11 +148,11 @@ export function FilterResultIngredient({
 												<div
 													key={allergenName}
 													className={
-														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 														${allergenObj.status == "mayContained"
-															? "border-2 border-yellow-500"
+															? "border border-yellow-500"
 															: allergenObj.status == "removable"
-																? "border-2 border-green-500"
+																? "border border-green-500"
 																: ""}`}>
 													{
 														allergenObj.status == "mayContained"
@@ -205,9 +180,9 @@ export function FilterResultIngredient({
 										<div
 											key={allergenCategoryName}
 											className={
-												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+												`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 												${allergenCategoryObj.status == "removable"
-													? "border-2 border-green-500"
+													? "border border-green-500"
 													: ""}`}>
 											{
 												allergenCategoryObj.status == "removable"
@@ -226,9 +201,9 @@ export function FilterResultIngredient({
 												<div
 													key={allergenName}
 													className={
-														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-sm font-bold
+														`flex items-center justify-start gap-2 rounded-full px-4 py-1 capitalize text-xs
 														${allergenObj.status == "removable"
-															? "border-2 border-green-500"
+															? "border border-green-500"
 															: ""}`}>
 													{
 														allergenObj.status == "removable"
@@ -250,7 +225,7 @@ export function FilterResultIngredient({
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">tag</h4>
+				<h4 className="capitalize text-lg font-bold">tag</h4>
 				<div className="flex flex-wrap gap-2">
 					{
 						detailData.tag.map((tag) => (

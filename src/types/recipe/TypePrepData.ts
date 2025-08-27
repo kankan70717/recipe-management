@@ -16,7 +16,7 @@ export type TypePrepData = {
 	instruction: string;
 	finishedAmount: number;
 	usageUnit: string;
-	totalCost: number;
+	costPerUnit: number;
 	tag: string[];
 	resources: Record<string, TypeResource>;
 	allergenForFilter: Record<string, TypeAllergenStatus>;

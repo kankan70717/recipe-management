@@ -56,11 +56,22 @@ export function ModalFormIngredient({
 
 	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	}
+
+		setFormData((prev) => {
+			const updated = {
+				...structuredClone(prev),
+				[name]: value,
+			};
+
+			const costPerUsageUnitValue =
+				updated.purchasePrice / (updated.purchaseQuantity / updated.unitConversionRate);
+
+			return {
+				...updated,
+				costPerUsageUnit: Number(costPerUsageUnitValue.toFixed(5)),
+			};
+		});
+	};
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name } = e.target;
@@ -208,8 +219,12 @@ export function ModalFormIngredient({
 									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
+									<th><label htmlFor="vendor" className="capitalize">vendor</label></th>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="vendor" name="vendor" defaultValue={detailData.vendor} onChange={(e) => handleTextChange(e)} /></td>
+								</tr>
+								<tr>
 									<th><label htmlFor="purchasePrice" className="capitalize">purchasePrice</label></th>
-									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchasePrice" name="purchasePrice" defaultValue={detailData.purchasePrice} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" step={0.01} className="lowercase border-black border rounded-md px-2" id="purchasePrice" name="purchasePrice" defaultValue={detailData.purchasePrice} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="purchaseQuantity" className="capitalize">purchaseQuantity</label></th>
@@ -220,8 +235,20 @@ export function ModalFormIngredient({
 									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" name="purchaseUnit" defaultValue={detailData.purchaseUnit} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
+									<th><label htmlFor="usageUnit" className="capitalize">usageUnit</label></th>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={detailData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
+								</tr>
+								<tr>
+									<th><label htmlFor="yieldRate" className="capitalize">yieldRate (%)</label></th>
+									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="yieldRate" name="yieldRate" defaultValue={detailData.yieldRate} onChange={(e) => handleTextChange(e)} /></td>
+								</tr>
+								<tr>
 									<th><label htmlFor="unitConversionRate" className="capitalize">unitConversionRate</label></th>
-									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="unitConversionRate" name="unitConversionRate" defaultValue={detailData.unitConversionRate} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" step={0.0001} className="lowercase border-black border rounded-md px-2" id="unitConversionRate" name="unitConversionRate" defaultValue={detailData.unitConversionRate} onChange={(e) => handleTextChange(e)} /></td>
+								</tr>
+								<tr>
+									<th><label htmlFor="costPerUsageUnit" className="capitalize">costPerUsageUnit ($)</label></th>
+									<td><input type="number" className="lowercase bg-gray-200 border-gray-500 border rounded-md px-2" id="costPerUsageUnit" name="costPerUsageUnit" defaultValue={detailData.costPerUsageUnit} disabled={true} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -372,7 +399,7 @@ export function ModalFormIngredient({
 							<div className="flex flex-wrap gap-3">
 								{
 									formData.tag.map((tag) => (
-										<div className="flex items-center gap-2 rounded-full border px-4 py-1 capitalize">
+										<div key={tag} className="flex items-center gap-2 rounded-full border px-4 py-1 capitalize">
 											<span>{tag}</span>
 											<FontAwesomeIcon
 												icon={faXmark}

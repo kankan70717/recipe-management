@@ -26,7 +26,7 @@ export function FilterResultPrep({
 					}
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">
-					<div className="flex items-center justify-between">
+					<div className="flex items-center justify-center">
 						<h3 className="capitalize text-3xl">{detailData?.name}</h3>
 						<FontAwesomeIcon
 							icon={faPenToSquare}
@@ -37,7 +37,7 @@ export function FilterResultPrep({
 								kind: "prep"
 							})} />
 					</div>
-					<div className="flex flex-wrap gap-5 justify-start">
+					<div className="flex flex-wrap gap-5 justify-center">
 						<div className="capitalize flex items-center gap-1">
 							<FontAwesomeIcon icon={faLayerGroup} />
 							<span>{detailData.category}</span>
@@ -51,21 +51,27 @@ export function FilterResultPrep({
 						<tbody>
 							<tr>
 								<th className="capitalize text-left">finishedAmount:</th>
-								<td className="lowercase w-40">${detailData.finishedAmount}</td>
+								<td className="lowercase w-40">{detailData.finishedAmount}</td>
 							</tr>
 							<tr>
 								<th className="capitalize text-left">usageUnit:</th>
 								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
-							<tr><th className="capitalize text-left">totalCost:</th>
-								<td className="lowercase">{detailData.totalCost}</td>
+							<tr><th className="capitalize text-left">costPerUnit:</th>
+								<td className="lowercase">{detailData.costPerUnit}</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">allergen</h4>
+				<h4 className="capitalize text-lg font-bold">instruction</h4>
+				<div className="border border-gray-500 rounded px-2">
+					{detailData.instruction}
+				</div>
+			</div>
+			<div className="mt-3 flex flex-col gap-2">
+				<h4 className="capitalize text-lg font-bold">allergen</h4>
 				<div className="flex flex-col gap-2">
 					<div className="flex gap-2">
 						{
@@ -235,7 +241,7 @@ export function FilterResultPrep({
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">tag</h4>
+				<h4 className="capitalize text-lg font-bold">tag</h4>
 				<div className="flex flex-wrap gap-2">
 					{
 						detailData.tag.map((tag) => (
