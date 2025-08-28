@@ -37,7 +37,7 @@ export default function FilterResultLayout() {
 				const data = await fetchRecipe(filterItem.currentKind, filterItem);
 				console.log(data);
 				setRecipeData(data as TypeIngredientData[]);
-				setDetailData(data[0] as TypeIngredientData);
+				setDetailData(structuredClone(data[0] as TypeIngredientData));
 			} catch (error) {
 				console.error(error);
 			}
@@ -123,7 +123,6 @@ export default function FilterResultLayout() {
 							recipeData.map((item, index) => (
 								<label
 									key={index}
-									htmlFor={item.id}
 									className="flex items-center gap-2 p-2 border-b-1 border-gray-200 has-checked:bg-gray-200">
 									{
 										typeof item.image === "string" &&
@@ -137,8 +136,10 @@ export default function FilterResultLayout() {
 										id={item.id}
 										name="filterResult"
 										className="hidden"
-										checked={detailData?.id == item.id}
-										onChange={() => setDetailData(item)} />
+										checked={detailData.id == item.id}
+										onChange={() => {
+											setDetailData(structuredClone(item));
+										}} />
 								</label>
 							))
 						)

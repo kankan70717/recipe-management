@@ -7,6 +7,7 @@ export type TypeResource = {
 	"name": string;
 	"usageAmount": number;
 	"usageUnit": string;
+	"costPerUsageUnit":number;
 	"totalCost": number;
 	"removable": boolean;
 	"resourceAllergens": Record<string, TypeResourceAllergen>;

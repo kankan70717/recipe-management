@@ -69,13 +69,16 @@ export function ModalFormPrep({
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 	) => {
 		const { name, value } = e.target;
+		console.log("value", value);
+
 		setFormData((prev) => ({
 			...structuredClone(prev),
 			resources: {
 				...prev.resources,
 				[docID]: {
 					...prev.resources[docID],
-					[name]: value,
+					[name]: Number(value),
+					totalCost: parseFloat(((prev.resources[docID].costPerUsageUnit ?? 0) * Number(value)).toFixed(4))
 				},
 			},
 		}));
@@ -177,8 +180,8 @@ export function ModalFormPrep({
 										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="purchaseUnit" defaultValue={detailData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
-										<th><label htmlFor="costPerUnit" className="capitalize">costPerUnit</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="costPerUnit" name="costPerUnit" defaultValue={detailData.costPerUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<th><label htmlFor="costPerUsageUnit" className="capitalize">costPerUsageUnit</label></th>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="costPerUsageUnit" name="costPerUsageUnit" defaultValue={detailData.costPerUsageUnit} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -274,7 +277,7 @@ export function ModalFormPrep({
 													id={docID}
 													name="usageAmount"
 													className="border border-black rounded py-1 text-right"
-													defaultValue={resourceObj.usageAmount}
+													value={resourceObj.usageAmount}
 													onChange={(e) => handleResourceUsageAmount(docID, e)} />
 												<span>{resourceObj.usageUnit}</span>
 											</div>

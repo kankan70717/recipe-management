@@ -2,7 +2,8 @@ import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExcla
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import type { TypeFilterKind } from "../type/TypeFilter";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { deleteRecipe } from "../../../firebase/firestore";
 
 export function FilterResultIngredient({
 	detailData,
@@ -14,9 +15,30 @@ export function FilterResultIngredient({
 		kind: TypeFilterKind | undefined
 	}>>
 }) {
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [showConfirm, setShowConfirm] = useState(false);
+
+	const handleDelete = async () => {
+		setIsDeleting(true);
+		try {
+			const result = await deleteRecipe(detailData.docID);
+			if (!result) {
+				alert("Recipe not found. It may have already been deleted.");
+			} else {
+				alert("Recipe deleted successfully!");
+				setShowConfirm(false);
+			}
+		} catch (err) {
+			console.error(err);
+			alert("Failed to delete recipe.");
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
-			<div className="flex gap-5">
+			<div className="flex gap-5 pt-5">
 				<div className="flex items-center aspect-square w-2/5">
 					{
 						typeof detailData.image === "string" &&
@@ -25,7 +47,7 @@ export function FilterResultIngredient({
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">
 					<div className="flex items-center justify-between">
-						<h3 className="capitalize text-3xl">{detailData?.name}</h3>
+						<h3 className="capitalize text-xl">{detailData?.name}</h3>
 						<FontAwesomeIcon
 							icon={faPenToSquare}
 							size="xl"
@@ -49,11 +71,11 @@ export function FilterResultIngredient({
 							{detailData?.vendor}
 						</div>
 					</div>
-					<table className="w-full border-separate border-spacing-x-3">
+					<table className="w-full border-separate">
 						<tbody>
 							<tr>
 								<th className="capitalize text-left">purchasePrice:</th>
-								<td className="lowercase w-40">${detailData?.purchasePrice}</td>
+								<td className="lowercase w-30">${detailData?.purchasePrice}</td>
 							</tr>
 							<tr>
 								<th className="capitalize text-left">purchaseQuantity:</th>
@@ -74,6 +96,10 @@ export function FilterResultIngredient({
 							<tr>
 								<th className="capitalize text-left">unitConversionRate:</th>
 								<td className="lowercase">{detailData?.unitConversionRate}</td>
+							</tr>
+							<tr>
+								<th className="capitalize text-left">costPerUsageUnit ($):</th>
+								<td className="lowercase">{detailData.costPerUsageUnit}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -258,6 +284,36 @@ export function FilterResultIngredient({
 						))
 					}
 				</div>
+			</div>
+			<div className="text-right">
+				<button
+					onClick={() => setShowConfirm(true)}
+					className="px-4 py-2 bg-black text-white rounded-full">
+					Delete
+				</button>
+
+				{showConfirm && (
+					<div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+						<div className="bg-white p-6 rounded-lg shadow-lg text-center">
+							<p className="mb-4">Are you sure you want to delete this recipe?</p>
+							<div className="flex justify-center gap-4">
+								<button
+									onClick={handleDelete}
+									disabled={isDeleting}
+									className="px-4 py-2 bg-black text-white rounded-full disabled:opacity-50"
+								>
+									{isDeleting ? "Deleting..." : "Yes, Delete"}
+								</button>
+								<button
+									onClick={() => setShowConfirm(false)}
+									className="px-4 py-2 bg-gray-300 rounded-full"
+								>
+									Cancel
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

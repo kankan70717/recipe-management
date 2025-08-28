@@ -60,15 +60,16 @@ export function ModalFormIngredient({
 		setFormData((prev) => {
 			const updated = {
 				...structuredClone(prev),
-				[name]: value,
+				[name]: value.toLowerCase(),
 			};
 
 			const costPerUsageUnitValue =
-				updated.purchasePrice / (updated.purchaseQuantity / updated.unitConversionRate);
+				updated.purchasePrice /
+				((updated.purchaseQuantity * (updated.yieldRate / 100)) / updated.unitConversionRate);
 
 			return {
 				...updated,
-				costPerUsageUnit: Number(costPerUsageUnitValue.toFixed(5)),
+				costPerUsageUnit: Number(costPerUsageUnitValue.toFixed(4)),
 			};
 		});
 	};

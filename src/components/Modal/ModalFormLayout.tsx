@@ -34,21 +34,30 @@ export default function ModalFormLayout(
 	if (!formState.isFormOpen) return null;
 
 	const [formData, setFormData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(structuredClone(detailData));
-	console.log("formData", formData);
 	const [showFilter, setShowFilter] = useState(false);
+	const [submitStatus, setSubmitStatus] = useState<"success" | "pending" | "failure" | undefined>(undefined);
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		setSubmitStatus("pending");
 		const nowSeconds = Math.floor(Date.now() / 1000);
 		formData.updateDate.seconds = nowSeconds;
 
-		if (cucd == "update") {
-			updateRecipe(formData);
-		} else {
-			formData.createdDate.seconds = nowSeconds;
-			addRecipe(formData);
+		try {
+			if (cucd == "update") {
+				await updateRecipe(formData);
+			} else {
+				formData.createdDate.seconds = nowSeconds;
+				await addRecipe(formData);
+			}
+			setSubmitStatus("success");
+			console.log("Saved Form Data:", formData);
+		} catch (error) {
+			setSubmitStatus("failure");
+			console.error(error);
 		}
-		console.log(formData);
+
 	}
 
 	return (
@@ -108,6 +117,42 @@ export default function ModalFormLayout(
 						setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>} />
 				}
 			</div>
+			{submitStatus === "success" && (
+				<div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+					<div className="bg-white p-5 rounded-lg shadow-lg text-center">
+						<p>Success to save!</p>
+						<button
+							className="mt-2 px-4 py-1 rounded border border-black"
+							onClick={() => setSubmitStatus(undefined)}
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
+
+			{submitStatus === "pending" && (
+				<div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+					<div className="bg-white p-5 rounded-lg shadow-lg text-center">
+						<p>Saving, please wait...</p>
+					</div>
+				</div>
+			)}
+
+			{submitStatus === "failure" && (
+				<div className="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
+					<div className="bg-red-100 p-5 rounded-lg shadow-lg text-center">
+						<p>Failed to save. Please try again.</p>
+						<button
+							className="mt-2 px-4 py-1 rounded border border-black"
+							onClick={() => setSubmitStatus("success")}
+						>
+							Close
+						</button>
+					</div>
+				</div>
+			)}
+
 		</div >
 	);
 }

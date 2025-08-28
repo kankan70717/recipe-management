@@ -6,7 +6,7 @@ import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { initialIngredientData } from "../../../constants/initialIngredientData";
 import { fetchRecipe } from "../../../firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
 import { initialResourcesData } from "../../../constants/initialResourcesData";
 import type { TypeResource } from "../../../types/recipe/TypeResource";
@@ -47,6 +47,26 @@ export default function ModalFormResourceResult(
 		fetchData();
 	}, []);
 
+	const handleResourceUsageAmount = (
+		docID: string,
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+	) => {
+		const { name, value } = e.target;
+		console.log("value", value);
+
+		setFormData((prev) => ({
+			...structuredClone(prev),
+			resources: {
+				...prev.resources,
+				[docID]: {
+					...prev.resources[docID],
+					[name]: Number(value),
+					totalCost: parseFloat(((prev.resources[docID].costPerUsageUnit ?? 0) * Number(value)).toFixed(4))
+				},
+			},
+		}));
+	};
+
 	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData) => {
 		const resource: TypeResource = { ...initialResourcesData };
 
@@ -55,14 +75,14 @@ export default function ModalFormResourceResult(
 			resource.name = item.name;
 			resource.usageAmount = 0;
 			resource.usageUnit = item.usageUnit;
+			resource.costPerUsageUnit = item.costPerUsageUnit;
 			resource.totalCost = 0;
 			resource.removable = false;
 
 			switch (item.kind) {
 				case "ingredient":
 					resource.resourceAllergens = structuredClone(item.allergen);
-					const pricePerUsageUnit = item.purchasePrice / (item.purchaseQuantity / item.unitConversionRate);
-					resource.totalCost = pricePerUsageUnit;
+					resource.totalCost = item.costPerUsageUnit * resource.usageAmount;
 
 					setFormData((prev) => {
 						return {
@@ -172,7 +192,7 @@ export default function ModalFormResourceResult(
 				</div>
 			</div>
 			<div className="grow flex mt-3 border-t-1 border-gray-200 h-[calc(100svh-21rem)]">
-				<div className="flex-1/3 flex flex-col overflow-scroll">
+				<div className="flex-1/2 flex flex-col overflow-scroll">
 					{
 						!recipeData ? (
 							<p>Loading...</p>
@@ -180,7 +200,7 @@ export default function ModalFormResourceResult(
 							<p>No recipes found.</p>
 						) : (
 							recipeData.map((item, index) => (
-								<div key={index} className="flex items-center">
+								<div key={index} className="flex items-center border-b-1 border-gray-200">
 									<label
 										key={index}
 										htmlFor={item.id}
@@ -200,18 +220,52 @@ export default function ModalFormResourceResult(
 											checked={detailData?.id == item.id}
 											onChange={() => setDetailData(item)} />
 									</label>
-									<label className="h-full flex items-center px-2">
-										<input
-											type="checkbox"
-											defaultChecked={
-												formData.kind === "prep" || formData.kind === "dish"
-													? Object.keys((formData as TypePrepData | TypeDishData).resources).some(
-														(resourceID) => resourceID === item.docID
-													)
-													: false
-											}
-											onChange={(e) => handleResource(e, item)} />
-									</label>
+									<div className="h-full flex gap-2 flex-col justify-center items-center px-2 w-25">
+										<div>
+											<label htmlFor={item.docID + "_add"} className="capitalize py-1 px-2">
+												{
+													formData.kind === "prep" || formData.kind === "dish"
+														? Object.keys((formData as TypePrepData | TypeDishData).resources).some(
+															(resourceID) => resourceID === item.docID
+														)
+															? (<FontAwesomeIcon icon={faXmark} />)
+															: (<FontAwesomeIcon icon={faPlus} />)
+														: null
+												}
+											</label>
+											<input
+												type="checkbox"
+												id={item.docID + "_add"}
+												className="hidden"
+												defaultChecked={
+													formData.kind === "prep" || formData.kind === "dish"
+														? Object.keys((formData as TypePrepData | TypeDishData).resources).some(
+															(resourceID) => resourceID === item.docID
+														)
+														: false
+												}
+												onChange={(e) => handleResource(e, item)} />
+										</div>
+										{
+											formData.kind === "prep" || formData.kind === "dish"
+												? Object.keys((formData as TypePrepData | TypeDishData).resources).some(
+													(resourceID) => resourceID === item.docID
+												)
+													? (
+														<>
+															<label htmlFor="resourceUsageAmount" className="text-xs">usageAmount</label>
+															<input
+																type="number"
+																id="resourceUsageAmount"
+																name="usageAmount"
+																defaultValue={0}
+																className="text-right border border-black rounded w-15"
+																onChange={(e) => handleResourceUsageAmount(item.docID, e)} />
+														</>)
+													: null
+												: null
+										}
+									</div>
 								</div>
 							))
 						)

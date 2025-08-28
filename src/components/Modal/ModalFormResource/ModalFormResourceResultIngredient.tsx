@@ -8,7 +8,7 @@ export function ModalFormResourceResultIngredient({
 	detailData: TypeIngredientData;
 }) {
 	return (
-		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
+		<div className="flex-1/2 border-l-1 border-gray-200 pl-5 pt-5 overflow-scroll">
 			<div className="flex gap-5">
 				<div className="flex items-center aspect-square w-2/5">
 					{
@@ -18,9 +18,9 @@ export function ModalFormResourceResultIngredient({
 				</div>
 				<div className="flex-1 flex flex-col gap-1 justify-center">
 					<div className="flex items-center justify-between">
-						<h3 className="capitalize text-2xl">{detailData?.name}</h3>
+						<h3 className="capitalize text-lg">{detailData?.name}</h3>
 					</div>
-					<div className="flex flex-wrap gap-3 justify-start">
+					<div className="flex flex-wrap gap-x-3 justify-start">
 						<div className="capitalize flex items-center gap-1">
 							<FontAwesomeIcon icon={faLayerGroup} />
 							<span>{detailData.category}</span>
@@ -58,7 +58,7 @@ export function ModalFormResourceResultIngredient({
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">allergen</h4>
+				<h4 className="capitalize text-lg">allergen</h4>
 				<div className="flex flex-col gap-2">
 					<div className="flex gap-2">
 						{
@@ -228,7 +228,7 @@ export function ModalFormResourceResultIngredient({
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">tag</h4>
+				<h4 className="capitalize text-lg">tag</h4>
 				<div className="flex flex-wrap gap-2">
 					{
 						detailData.tag.map((tag) => (

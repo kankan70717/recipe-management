@@ -1,5 +1,5 @@
 // src/firebase/firestore.ts
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
@@ -115,10 +115,31 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 		await setDoc(docRef, {
 			...structuredClone(formData),
 			docID: id,
+			id: Math.floor(Math.random() * 1000000).toString(),
 			allergenForFilter: structuredClone(updateDatedAllergenForFilter)
 		});
 		console.log("Document created successfully!");
 	} catch (error) {
 		console.error("Error creating document:", error);
 	}
+}
+
+export async function deleteRecipe(docID: string) {
+  const docRef = doc(db, "tamaru", docID);
+
+  try {
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      console.warn(`Document ${docID} does not exist.`);
+      return false;
+    }
+
+    await deleteDoc(docRef);
+    console.log(`Recipe ${docID} deleted successfully.`);
+    return true;
+	
+  } catch (error) {
+    console.error("Error deleting recipe:", error);
+    throw error;
+  }
 }
