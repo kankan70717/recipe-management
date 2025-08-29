@@ -5,13 +5,11 @@ import { faAngleRight, faTags, faXmark } from "@fortawesome/free-solid-svg-icons
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 
 export function ModalFormDish({
-	detailData,
 	cucd,
 	formData,
 	setFormData,
 	setShowFilter
 }: {
-	detailData: TypeDishData;
 	cucd: "update" | "create" | "delte" | "read";
 	formData: TypeDishData;
 	setFormData: Dispatch<SetStateAction<TypeDishData>>;
@@ -114,7 +112,7 @@ export function ModalFormDish({
 												className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
 												id="status"
 												name="status"
-												defaultValue={detailData.status}
+												defaultValue={formData.status}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="active">active</option>
 												<option value="inactive">inactive</option>
@@ -129,7 +127,7 @@ export function ModalFormDish({
 												className={`capitalize w-full py-1 border rounded-md px-2 bg-gray-200 border-gray-500}`}
 												id="kind"
 												name="kind"
-												defaultValue={detailData.kind}
+												defaultValue={formData.kind}
 												disabled={true}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="dish">dish</option>
@@ -140,27 +138,27 @@ export function ModalFormDish({
 									</tr>
 									<tr>
 										<th><label htmlFor="category" className="capitalize">category</label></th>
-										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={detailData.category} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={formData.category} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={detailData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="name" className="capitalize">name</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={detailData?.name} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="store" className="capitalize">store</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="sellPrice" className="capitalize">sellPrice</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" defaultValue={detailData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" defaultValue={formData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="totalCost" className="capitalize">totalCost</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="totalCost" name="totalCost" defaultValue={detailData.totalCost} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="totalCost" name="totalCost" defaultValue={formData.totalCost} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -172,9 +170,9 @@ export function ModalFormDish({
 												disabled
 												defaultValue={
 													(() => {
-														const ms = detailData.updateDate.seconds === 0
+														const ms = formData.updateDate.seconds === 0
 															? Date.now()
-															: detailData.updateDate.seconds * 1000;
+															: formData.updateDate.seconds * 1000;
 
 														const date = new Date(ms);
 														const pad = (n: number) => n.toString().padStart(2, '0');
@@ -193,9 +191,9 @@ export function ModalFormDish({
 												disabled
 												defaultValue={
 													(() => {
-														const ms = detailData.createdDate.seconds === 0
+														const ms = formData.createdDate.seconds === 0
 															? Date.now()
-															: detailData.createdDate.seconds * 1000;
+															: formData.createdDate.seconds * 1000;
 
 														const date = new Date(ms);
 														const pad = (n: number) => n.toString().padStart(2, '0');
@@ -212,7 +210,7 @@ export function ModalFormDish({
 												className="lowercase border rounded-md px-2"
 												id="updatePerson"
 												name="updatePerson"
-												placeholder={detailData.updatePerson}
+												placeholder={formData.updatePerson}
 												required
 												onChange={(e) => handleTextChange(e)} />
 										</td>
@@ -229,7 +227,7 @@ export function ModalFormDish({
 									name="instruction"
 									id="instruction"
 									className="lowercase border-black border rounded-md px-2 mb-3"
-									defaultValue={detailData.instruction}
+									defaultValue={formData.instruction}
 									onChange={(e) => handleTextChange(e)}></textarea>
 							</div>
 						</td>
@@ -242,7 +240,7 @@ export function ModalFormDish({
 									name="description"
 									id="description"
 									className="lowercase border-black border rounded-md px-2 mb-3"
-									defaultValue={detailData.description}
+									defaultValue={formData.description}
 									onChange={(e) => handleTextChange(e)}></textarea>
 							</div>
 						</td>

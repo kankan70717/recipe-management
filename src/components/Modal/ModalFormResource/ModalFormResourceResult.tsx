@@ -258,7 +258,7 @@ export default function ModalFormResourceResult(
 																type="number"
 																id="resourceUsageAmount"
 																name="usageAmount"
-																defaultValue={0}
+																value={(formData as TypePrepData | TypeDishData).resources[item.docID].usageAmount}
 																className="text-right border border-black rounded w-15"
 																onChange={(e) => handleResourceUsageAmount(item.docID, e)} />
 														</>)

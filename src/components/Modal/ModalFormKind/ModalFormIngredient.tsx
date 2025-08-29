@@ -1,19 +1,16 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
-import type { TypeAllergenStatus } from "../../../types/TypeAllergenStatus";
+import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 
 export function ModalFormIngredient({
-	detailData,
 	cucd,
 	formData,
 	setFormData
 }: {
-	detailData: TypeIngredientData;
 	cucd: "update" | "create" | "delte" | "read";
 	formData: TypeIngredientData;
 	setFormData: Dispatch<SetStateAction<TypeIngredientData>>;
@@ -54,98 +51,14 @@ export function ModalFormIngredient({
 		}
 	};
 
-	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-
-		setFormData((prev) => {
-			const updated = {
-				...structuredClone(prev),
-				[name]: value.toLowerCase(),
-			};
-
-			const costPerUsageUnitValue =
-				updated.purchasePrice /
-				((updated.purchaseQuantity * (updated.yieldRate / 100)) / updated.unitConversionRate);
-
-			return {
-				...updated,
-				costPerUsageUnit: Number(costPerUsageUnitValue.toFixed(4)),
-			};
-		});
-	};
-
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name } = e.target;
-		const file = e.target.files?.[0] || null;
-		setFormData((prev) => ({
-			...prev,
-			[name]: file,
-		}));
-	}
-
-	const handleAllergenItemChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-		allergenCategoryName: string
-	) => {
-		const { name, value } = e.target;
-
-		setFormData((prev) => ({
-			...prev,
-			allergen: {
-				...prev.allergen,
-				[allergenCategoryName]: {
-					...prev.allergen[allergenCategoryName],
-					items: {
-						...prev.allergen[allergenCategoryName].items,
-						[name]: { status: value as TypeAllergenStatus }
-					},
-				}
-			}
-		}));
-	};
-
-	const handleAllergenCategoryChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-		allergenCategoryName: string
-	) => {
-		const { value } = e.target;
-
-		setFormData((prev) => ({
-			...prev,
-			allergen: {
-				...prev.allergen,
-				[allergenCategoryName]: {
-					...prev.allergen[allergenCategoryName],
-					status: value as TypeAllergenStatus,
-				}
-			}
-		}));
-	};
-
-
-	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		console.log(value);
-
-		setFormData((prev) => ({
-			...prev,
-			[name]: value as TypeFilterKind,
-		}));
-	}
-
-	const handleTagChange = (tag: string, way: "add" | "delete") => {
-		if (way == "delete") {
-			setFormData((prev) => ({
-				...prev,
-				tag: [...prev.tag.filter(item => item !== tag)]
-			}));
-		} else if (way == "add") {
-			setFormData((prev) => ({
-				...prev,
-				tag: prev.tag.includes(tag) ? prev.tag : [...prev.tag, tag]
-			}));
-		}
-	}
+	const {
+		handleTextChange,
+		handleImageChange,
+		handleSelectChange,
+		handleTagChange,
+		handleAllergenCategoryChange,
+		handleAllergenItemChange
+	} = usePrepFormHandlers(setFormData);
 
 	return (
 		<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">
@@ -179,7 +92,7 @@ export function ModalFormIngredient({
 											className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
 											id="status"
 											name="status"
-											defaultValue={detailData.status}
+											defaultValue={formData.status}
 											onChange={(e) => handleSelectChange(e)}>
 											<option value="active">active</option>
 											<option value="inactive">inactive</option>
@@ -194,7 +107,7 @@ export function ModalFormIngredient({
 											className={`capitalize w-full py-1 border rounded-md px-2 bg-gray-200 border-gray-500}`}
 											id="kind"
 											name="kind"
-											defaultValue={detailData.kind}
+											defaultValue={formData.kind}
 											disabled={true}
 											onChange={(e) => handleSelectChange(e)}>
 											<option value="dish">dish</option>
@@ -205,51 +118,51 @@ export function ModalFormIngredient({
 								</tr>
 								<tr>
 									<th><label htmlFor="category" className="capitalize">category</label></th>
-									<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={detailData.category} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={formData.category} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={detailData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="name" className="capitalize">name</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={detailData?.name} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="store" className="capitalize">store</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="vendor" className="capitalize">vendor</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="vendor" name="vendor" defaultValue={detailData.vendor} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="vendor" name="vendor" defaultValue={formData.vendor} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="purchasePrice" className="capitalize">purchasePrice</label></th>
-									<td><input type="number" step={0.01} className="lowercase border-black border rounded-md px-2" id="purchasePrice" name="purchasePrice" defaultValue={detailData.purchasePrice} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" step={0.01} className="lowercase border-black border rounded-md px-2" id="purchasePrice" name="purchasePrice" defaultValue={formData.purchasePrice} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="purchaseQuantity" className="capitalize">purchaseQuantity</label></th>
-									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchaseQuantity" name="purchaseQuantity" defaultValue={detailData.purchaseQuantity} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="purchaseQuantity" name="purchaseQuantity" defaultValue={formData.purchaseQuantity} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="purchaseUnit" className="capitalize">purchaseUnit</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" name="purchaseUnit" defaultValue={detailData.purchaseUnit} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="purchaseUnit" name="purchaseUnit" defaultValue={formData.purchaseUnit} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="usageUnit" className="capitalize">usageUnit</label></th>
-									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={detailData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={formData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="yieldRate" className="capitalize">yieldRate (%)</label></th>
-									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="yieldRate" name="yieldRate" defaultValue={detailData.yieldRate} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" className="lowercase border-black border rounded-md px-2" id="yieldRate" name="yieldRate" defaultValue={formData.yieldRate} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="unitConversionRate" className="capitalize">unitConversionRate</label></th>
-									<td><input type="number" step={0.0001} className="lowercase border-black border rounded-md px-2" id="unitConversionRate" name="unitConversionRate" defaultValue={detailData.unitConversionRate} onChange={(e) => handleTextChange(e)} /></td>
+									<td><input type="number" step={0.0001} className="lowercase border-black border rounded-md px-2" id="unitConversionRate" name="unitConversionRate" value={formData.unitConversionRate} onChange={(e) => handleTextChange(e)} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="costPerUsageUnit" className="capitalize">costPerUsageUnit ($)</label></th>
-									<td><input type="number" className="lowercase bg-gray-200 border-gray-500 border rounded-md px-2" id="costPerUsageUnit" name="costPerUsageUnit" defaultValue={detailData.costPerUsageUnit} disabled={true} /></td>
+									<td><input type="number" className="lowercase bg-gray-200 border-gray-500 border rounded-md px-2" id="costPerUsageUnit" name="costPerUsageUnit" value={formData.costPerUsageUnit} disabled={true} /></td>
 								</tr>
 								<tr>
 									<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -261,9 +174,9 @@ export function ModalFormIngredient({
 											disabled
 											defaultValue={
 												(() => {
-													const ms = detailData.updateDate.seconds === 0
+													const ms = formData.updateDate.seconds === 0
 														? Date.now()
-														: detailData.updateDate.seconds * 1000;
+														: formData.updateDate.seconds * 1000;
 
 													const date = new Date(ms);
 													const pad = (n: number) => n.toString().padStart(2, '0');
@@ -282,9 +195,9 @@ export function ModalFormIngredient({
 											disabled
 											defaultValue={
 												(() => {
-													const ms = detailData.createdDate.seconds === 0
+													const ms = formData.createdDate.seconds === 0
 														? Date.now()
-														: detailData.createdDate.seconds * 1000;
+														: formData.createdDate.seconds * 1000;
 
 													const date = new Date(ms);
 													const pad = (n: number) => n.toString().padStart(2, '0');
@@ -301,7 +214,7 @@ export function ModalFormIngredient({
 											className="lowercase border rounded-md px-2"
 											id="updatePerson"
 											name="updatePerson"
-											placeholder={detailData.updatePerson}
+											placeholder={formData.updatePerson}
 											required
 											onChange={(e) => handleTextChange(e)} />
 									</td>

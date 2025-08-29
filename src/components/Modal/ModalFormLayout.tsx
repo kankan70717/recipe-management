@@ -60,6 +60,8 @@ export default function ModalFormLayout(
 
 	}
 
+	console.log("formData", formData);
+
 	return (
 		<div className="absolute inset-0 bg-black/50">
 			<div className={`absolute inset-0 rounded-lg m-10 pt-5 px-5 ${showFilter == true ? "bg-black/50" : "bg-white"}`}>
@@ -73,20 +75,17 @@ export default function ModalFormLayout(
 					{
 						formState.kind == "ingredient"
 							? <ModalFormIngredient
-								detailData={detailData as TypeIngredientData}
 								cucd={cucd}
 								formData={formData as TypeIngredientData}
 								setFormData={setFormData as Dispatch<SetStateAction<TypeIngredientData>>} />
 							: formState.kind == "prep"
 								? <ModalFormPrep
-									detailData={detailData as TypePrepData}
 									cucd={cucd}
 									formData={formData as TypePrepData}
 									setFormData={setFormData as Dispatch<SetStateAction<TypePrepData>>}
 									setShowFilter={setShowFilter} />
 								: formState.kind == "dish"
 									? <ModalFormDish
-										detailData={detailData as TypeDishData}
 										cucd={cucd}
 										formData={formData as TypeDishData}
 										setFormData={setFormData as Dispatch<SetStateAction<TypeDishData>>}

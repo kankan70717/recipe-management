@@ -111,13 +111,28 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 		const colRef = collection(db, "tamaru");
 		const docRef = doc(colRef);
 		const id = docRef.id;
-		const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
-		await setDoc(docRef, {
-			...structuredClone(formData),
-			docID: id,
-			id: Math.floor(Math.random() * 1000000).toString(),
-			allergenForFilter: structuredClone(updateDatedAllergenForFilter)
-		});
+
+		if (formData.kind == "prep" || formData.kind == "dish") {
+			const updatedAllergen = resoucesToAllergen((formData as TypePrepData | TypeDishData).resources);
+			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+			await setDoc(docRef, {
+				...structuredClone(formData),
+				docID: id,
+				id: Math.floor(Math.random() * 1000000).toString(),
+				allergen: structuredClone(updatedAllergen),
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+			});
+
+		} else {
+			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
+			await setDoc(docRef, {
+				...structuredClone(formData),
+				docID: id,
+				id: Math.floor(Math.random() * 1000000).toString(),
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+			});
+		}
+
 		console.log("Document created successfully!");
 	} catch (error) {
 		console.error("Error creating document:", error);
@@ -125,21 +140,21 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 }
 
 export async function deleteRecipe(docID: string) {
-  const docRef = doc(db, "tamaru", docID);
+	const docRef = doc(db, "tamaru", docID);
 
-  try {
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      console.warn(`Document ${docID} does not exist.`);
-      return false;
-    }
+	try {
+		const docSnap = await getDoc(docRef);
+		if (!docSnap.exists()) {
+			console.warn(`Document ${docID} does not exist.`);
+			return false;
+		}
 
-    await deleteDoc(docRef);
-    console.log(`Recipe ${docID} deleted successfully.`);
-    return true;
-	
-  } catch (error) {
-    console.error("Error deleting recipe:", error);
-    throw error;
-  }
+		await deleteDoc(docRef);
+		console.log(`Recipe ${docID} deleted successfully.`);
+		return true;
+
+	} catch (error) {
+		console.error("Error deleting recipe:", error);
+		throw error;
+	}
 }

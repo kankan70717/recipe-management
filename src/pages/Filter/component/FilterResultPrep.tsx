@@ -14,8 +14,6 @@ export function FilterResultPrep({
 		kind: TypeFilterKind | undefined
 	}>>
 }) {
-	console.log("detailData.allergen", detailData.allergen);
-
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
 			<div className="flex gap-5">
@@ -27,7 +25,7 @@ export function FilterResultPrep({
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">
 					<div className="flex items-center justify-center">
-						<h3 className="capitalize text-3xl">{detailData?.name}</h3>
+						<h3 className="capitalize text-3xl">{detailData.name}</h3>
 						<FontAwesomeIcon
 							icon={faPenToSquare}
 							size="xl"
@@ -57,8 +55,8 @@ export function FilterResultPrep({
 								<th className="capitalize text-left">usageUnit:</th>
 								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
-							<tr><th className="capitalize text-left">costPerUnit:</th>
-								<td className="lowercase">{detailData.costPerUnit}</td>
+							<tr><th className="capitalize text-left">costPerUsageUnit:</th>
+								<td className="lowercase">{detailData.costPerUsageUnit}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -66,7 +64,7 @@ export function FilterResultPrep({
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
 				<h4 className="capitalize text-lg font-bold">instruction</h4>
-				<div className="border border-gray-500 rounded px-2">
+				<div className="px-2">
 					{detailData.instruction}
 				</div>
 			</div>

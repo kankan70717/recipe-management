@@ -1,17 +1,15 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
+import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 export function ModalFormPrep({
-	detailData,
 	cucd,
 	formData,
 	setFormData,
 	setShowFilter
 }: {
-	detailData: TypePrepData;
 	cucd: "update" | "create" | "delte" | "read";
 	formData: TypePrepData;
 	setFormData: Dispatch<SetStateAction<TypePrepData>>;
@@ -23,80 +21,14 @@ export function ModalFormPrep({
 	const [isTagOpen, setTagOpen] = useState(false);
 	const [isResourceOpen, setResourceOpen] = useState(false);
 
-	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	}
-
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name } = e.target;
-		const file = e.target.files?.[0] || null;
-		setFormData((prev) => ({
-			...prev,
-			[name]: file,
-		}));
-	}
-
-	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		console.log(value);
-
-		setFormData((prev) => ({
-			...prev,
-			[name]: value as TypeFilterKind,
-		}));
-	}
-
-	const handleTagChange = (tag: string, way: "add" | "delete") => {
-		if (way == "delete") {
-			setFormData((prev) => ({
-				...prev,
-				tag: [...prev.tag.filter(item => item !== tag)]
-			}));
-		} else if (way == "add") {
-			setFormData((prev) => ({
-				...prev,
-				tag: prev.tag.includes(tag) ? prev.tag : [...prev.tag, tag]
-			}));
-		}
-	}
-
-	const handleResourceUsageAmount = (
-		docID: string,
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { name, value } = e.target;
-		console.log("value", value);
-
-		setFormData((prev) => ({
-			...structuredClone(prev),
-			resources: {
-				...prev.resources,
-				[docID]: {
-					...prev.resources[docID],
-					[name]: Number(value),
-					totalCost: parseFloat(((prev.resources[docID].costPerUsageUnit ?? 0) * Number(value)).toFixed(4))
-				},
-			},
-		}));
-	};
-
-	const removeResource = (docID: string) => {
-
-		setFormData((prev) => {
-			const updatedResources = structuredClone(prev.resources);
-			delete updatedResources[docID];
-
-			return {
-				...structuredClone(prev),
-				resources: updatedResources
-			};
-		});
-
-	}
+	const {
+		handleTextChange,
+		handleImageChange,
+		handleSelectChange,
+		handleTagChange,
+		removeResource,
+		handleResourceUsageAmount
+	} = usePrepFormHandlers(setFormData);
 
 	return (
 		<>
@@ -131,7 +63,7 @@ export function ModalFormPrep({
 												className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
 												id="status"
 												name="status"
-												defaultValue={detailData.status}
+												defaultValue={formData.status}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="active">active</option>
 												<option value="inactive">inactive</option>
@@ -146,7 +78,7 @@ export function ModalFormPrep({
 												className={`capitalize w-full py-1 border rounded-md px-2 bg-gray-200 border-gray-500}`}
 												id="kind"
 												name="kind"
-												defaultValue={detailData.kind}
+												defaultValue={formData.kind}
 												disabled={true}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="dish">dish</option>
@@ -157,31 +89,31 @@ export function ModalFormPrep({
 									</tr>
 									<tr>
 										<th><label htmlFor="category" className="capitalize">category</label></th>
-										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={detailData.category} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={formData.category} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={detailData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="name" className="capitalize">name</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={detailData?.name} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="store" className="capitalize">store</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={detailData.store} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="finishedAmount" className="capitalize">finishedAmount</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="finishedAmount" name="finishedAmount" defaultValue={detailData.finishedAmount} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="finishedAmount" name="finishedAmount" defaultValue={formData.finishedAmount} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="usageUnit" className="capitalize">usageUnit</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="purchaseUnit" defaultValue={detailData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={formData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="costPerUsageUnit" className="capitalize">costPerUsageUnit</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="costPerUsageUnit" name="costPerUsageUnit" defaultValue={detailData.costPerUsageUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="costPerUsageUnit" name="costPerUsageUnit" disabled value={formData.costPerUsageUnit} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -193,9 +125,9 @@ export function ModalFormPrep({
 												disabled
 												defaultValue={
 													(() => {
-														const ms = detailData.updateDate.seconds === 0
+														const ms = formData.updateDate.seconds === 0
 															? Date.now()
-															: detailData.updateDate.seconds * 1000;
+															: formData.updateDate.seconds * 1000;
 
 														const date = new Date(ms);
 														const pad = (n: number) => n.toString().padStart(2, '0');
@@ -214,9 +146,9 @@ export function ModalFormPrep({
 												disabled
 												defaultValue={
 													(() => {
-														const ms = detailData.createdDate.seconds === 0
+														const ms = formData.createdDate.seconds === 0
 															? Date.now()
-															: detailData.createdDate.seconds * 1000;
+															: formData.createdDate.seconds * 1000;
 
 														const date = new Date(ms);
 														const pad = (n: number) => n.toString().padStart(2, '0');
@@ -233,7 +165,7 @@ export function ModalFormPrep({
 												className="lowercase border rounded-md px-2"
 												id="updatePerson"
 												name="updatePerson"
-												placeholder={detailData.updatePerson}
+												placeholder={formData.updatePerson}
 												required
 												onChange={(e) => handleTextChange(e)} />
 										</td>
@@ -250,7 +182,7 @@ export function ModalFormPrep({
 									name="instruction"
 									id="instruction"
 									className="lowercase border-black border rounded-md px-2 mb-3"
-									defaultValue={detailData.instruction}
+									defaultValue={formData.instruction}
 									onChange={(e) => handleTextChange(e)}></textarea>
 							</div>
 						</td>
@@ -279,7 +211,7 @@ export function ModalFormPrep({
 													className="border border-black rounded py-1 text-right"
 													value={resourceObj.usageAmount}
 													onChange={(e) => handleResourceUsageAmount(docID, e)} />
-												<span>{resourceObj.usageUnit}</span>
+												<span className="w-10 max-w-20 text-center">{resourceObj.usageUnit}</span>
 											</div>
 										</div>
 									))
