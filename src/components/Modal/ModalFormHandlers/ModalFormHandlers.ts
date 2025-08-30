@@ -5,6 +5,8 @@ import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientDat
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import type { TypeAllergenStatus } from "../../../types/TypeAllergenStatus";
+import type { TypeResource } from "../../../types/recipe/TypeResource";
+import { initialResourcesData } from "../../../constants/initialResourcesData";
 
 export function usePrepFormHandlers<T extends TypeIngredientData | TypePrepData | TypeDishData>(
 	setFormData: Dispatch<SetStateAction<T>>
@@ -92,10 +94,52 @@ export function usePrepFormHandlers<T extends TypeIngredientData | TypePrepData 
 			return {
 				...prev,
 				resources: updatedResources,
-				totalCost: calculatedTotalCost,
+				totalCost: parseFloat(calculatedTotalCost.toFixed(10)),
+				costPerUsageUnit: parseFloat((calculatedTotalCost / prev.finishedAmount).toFixed(10)),
 			};
 		});
 	};
+
+	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData) => {
+		const resource: TypeResource = { ...initialResourcesData };
+
+		if (e.target.checked) {
+			resource.kind = item.kind;
+			resource.name = item.name;
+			resource.usageAmount = 0;
+			resource.usageUnit = item.usageUnit;
+			resource.costPerUsageUnit = item.costPerUsageUnit;
+			resource.totalCost = 0;
+			resource.removable = false;
+
+			resource.resourceAllergens = structuredClone(item.allergen);
+			resource.totalCost = item.costPerUsageUnit * resource.usageAmount;
+
+			setFormData((prev) => {
+				if (!("resources" in prev)) return prev;
+				return {
+					...structuredClone(prev),
+					resources: {
+						...structuredClone(prev.resources),
+						[item.docID]: structuredClone(resource)
+					}
+				};
+			});
+
+
+		} else {
+			setFormData((prev) => {
+				if (!("resources" in prev)) return prev;
+				const updatedResources = { ...prev.resources };
+				delete updatedResources[item.docID];
+
+				return {
+					...structuredClone(prev),
+					resources: updatedResources
+				};
+			});
+		}
+	}
 
 	const removeResource = (docID: string) => {
 		setFormData(prev => {
@@ -151,6 +195,7 @@ export function usePrepFormHandlers<T extends TypeIngredientData | TypePrepData 
 		handleSelectChange,
 		handleTagChange,
 		handleResourceUsageAmount,
+		handleResource,
 		removeResource,
 		handleAllergenCategoryChange,
 		handleAllergenItemChange

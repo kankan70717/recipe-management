@@ -55,7 +55,12 @@ export function FilterResultPrep({
 								<th className="capitalize text-left">usageUnit:</th>
 								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
-							<tr><th className="capitalize text-left">costPerUsageUnit:</th>
+							<tr>
+								<th className="capitalize text-left">totalCost:</th>
+								<td className="lowercase">{detailData.totalCost}</td>
+							</tr>
+							<tr>
+								<th className="capitalize text-left">costPerUsageUnit:</th>
 								<td className="lowercase">{detailData.costPerUsageUnit}</td>
 							</tr>
 						</tbody>

@@ -8,9 +8,8 @@ import { fetchRecipe } from "../../../firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
-import { initialResourcesData } from "../../../constants/initialResourcesData";
-import type { TypeResource } from "../../../types/recipe/TypeResource";
 import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
+import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 export default function ModalFormResourceResult(
 	{
@@ -47,83 +46,10 @@ export default function ModalFormResourceResult(
 		fetchData();
 	}, []);
 
-	const handleResourceUsageAmount = (
-		docID: string,
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { name, value } = e.target;
-		console.log("value", value);
-
-		setFormData((prev) => ({
-			...structuredClone(prev),
-			resources: {
-				...prev.resources,
-				[docID]: {
-					...prev.resources[docID],
-					[name]: Number(value),
-					totalCost: parseFloat(((prev.resources[docID].costPerUsageUnit ?? 0) * Number(value)).toFixed(4))
-				},
-			},
-		}));
-	};
-
-	const handleResource = (e: React.ChangeEvent<HTMLInputElement>, item: TypeIngredientData | TypePrepData) => {
-		const resource: TypeResource = { ...initialResourcesData };
-
-		if (e.target.checked) {
-			resource.kind = item.kind;
-			resource.name = item.name;
-			resource.usageAmount = 0;
-			resource.usageUnit = item.usageUnit;
-			resource.costPerUsageUnit = item.costPerUsageUnit;
-			resource.totalCost = 0;
-			resource.removable = false;
-
-			switch (item.kind) {
-				case "ingredient":
-					resource.resourceAllergens = structuredClone(item.allergen);
-					resource.totalCost = item.costPerUsageUnit * resource.usageAmount;
-
-					setFormData((prev) => {
-						return {
-							...structuredClone(prev),
-							resources: {
-								...structuredClone(prev.resources),
-								[item.docID]: structuredClone(resource)
-							}
-						};
-					});
-					break;
-
-				case "prep":
-					break;
-
-				case "dish":
-					break;
-			}
-
-		} else {
-			switch (item.kind) {
-				case "ingredient":
-					setFormData((prev) => {
-						const updatedResources = { ...prev.resources };
-						delete updatedResources[item.docID];
-
-						return {
-							...structuredClone(prev),
-							resources: updatedResources
-						};
-					});
-					break;
-
-				case "prep":
-					break;
-
-				case "dish":
-					break;
-			}
-		}
-	}
+	const {
+		handleResource,
+		handleResourceUsageAmount
+	} = usePrepFormHandlers(setFormData);
 
 	return (
 		<div className={`absolute inset-0 rounded-lg p-5 bg-white flex flex-col`}>

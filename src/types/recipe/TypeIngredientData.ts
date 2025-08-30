@@ -19,12 +19,12 @@ export type TypeIngredientData = {
 	usageUnit: string;
 	unitConversionRate: number;
 	yieldRate: number;
-	costPerUsageUnit:number;
+	costPerUsageUnit: number;
 	tag: string[];
 	allergenForFilter: Record<string, TypeAllergenStatus>;
 	allergen: Record<string, TypeResourceAllergen>;
-	dishRefs: string[];
-	prepRefs: string[];
+	dishRefs: Record<string, string>;
+	prepRefs: Record<string, string>;
 	updatePerson: string;
 	updateDate: {
 		seconds: number;

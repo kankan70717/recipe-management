@@ -285,6 +285,16 @@ export function FilterResultIngredient({
 					}
 				</div>
 			</div>
+			<div>
+				<h4 className="capitalize text-2xl">related recipe</h4>
+				<div className="flex flex-wrap gap-2">
+					{
+						Object.entries(detailData.prepRefs).map(([relatedRecipeID, relatedRecipeName]) => (
+							<span key={relatedRecipeID} className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">{relatedRecipeName}</span>
+						))
+					}
+				</div>
+			</div>
 			<div className="text-right">
 				<button
 					onClick={() => setShowConfirm(true)}

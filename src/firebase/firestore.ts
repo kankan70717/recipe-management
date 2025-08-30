@@ -93,6 +93,14 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
 			});
 
+			if ("resources" in formData) {
+				await Promise.all(
+					Object.entries(formData.resources).map(([resourceID, resourceObj]) =>
+						handleRelatedRecipe(resourceObj.kind, resourceID, formData.docID, formData.name)
+					)
+				);
+			}
+
 		} else {
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
 			await updateDoc(docRef, {
@@ -158,3 +166,29 @@ export async function deleteRecipe(docID: string) {
 		throw error;
 	}
 }
+
+export async function handleRelatedRecipe(
+	resourceKind: TypeFilterKind,
+	resourceDocID: string,
+	relatedRecipeID: string,
+	relatedRecipeName: string
+) {
+	try {
+		const docRef = doc(db, "tamaru", resourceDocID);
+
+		if (resourceKind === "prep") {
+			await updateDoc(docRef, {
+				[`prepRefs.${relatedRecipeID}`]: relatedRecipeName,
+			});
+		} else if (resourceKind === "dish") {
+			await updateDoc(docRef, {
+				[`dishRefs.${relatedRecipeID}`]: relatedRecipeName,
+			});
+		}
+
+		console.log(`${relatedRecipeName} is added in ${resourceDocID}`);
+	} catch (error) {
+		console.error("Error updating related recipe:", error);
+	}
+}
+
