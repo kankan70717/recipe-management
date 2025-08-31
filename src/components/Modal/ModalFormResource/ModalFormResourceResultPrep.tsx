@@ -41,8 +41,8 @@ export function ModalFormResourceResultPrep({
 								<td className="lowercase">{detailData.usageUnit}</td>
 							</tr>
 							<tr>
-								<th className="capitalize text-left">costPerUnit:</th>
-								<td className="lowercase">${detailData.costPerUnit}</td>
+								<th className="capitalize text-left">costPerUsageUnit:</th>
+								<td className="lowercase">${detailData.costPerUsageUnit}</td>
 							</tr>
 						</tbody>
 					</table>

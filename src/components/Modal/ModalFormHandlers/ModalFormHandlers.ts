@@ -8,7 +8,7 @@ import type { TypeAllergenStatus } from "../../../types/TypeAllergenStatus";
 import type { TypeResource } from "../../../types/recipe/TypeResource";
 import { initialResourcesData } from "../../../constants/initialResourcesData";
 
-export function usePrepFormHandlers<T extends TypeIngredientData | TypePrepData | TypeDishData>(
+export function useFormHandlers<T extends TypeIngredientData | TypePrepData | TypeDishData>(
 	setFormData: Dispatch<SetStateAction<T>>
 ) {
 
@@ -69,34 +69,56 @@ export function usePrepFormHandlers<T extends TypeIngredientData | TypePrepData 
 		const newValue = Number(value);
 
 		setFormData(prev => {
-			// Skip if the current type doesn't have `resources`
-			if (!("resources" in prev)) return prev;
+			if ("resources" in prev && "finishedAmount" in prev) {
+				const updatedResources = {
+					...prev.resources,
+					[docID]: {
+						...prev.resources[docID],
+						[name]: newValue,
+						totalCost: parseFloat(
+							((prev.resources[docID].costPerUsageUnit ?? 0) * newValue).toFixed(10)
+						),
+					},
+				};
 
-			// Update the specific resource
-			const updatedResources = {
-				...prev.resources,
-				[docID]: {
-					...prev.resources[docID],
-					[name]: newValue,
-					totalCost: parseFloat(
-						((prev.resources[docID].costPerUsageUnit ?? 0) * newValue).toFixed(10)
-					),
-				},
-			};
+				const calculatedTotalCost = Object.values(updatedResources).reduce(
+					(sum, r) => sum + (r.totalCost ?? 0),
+					0
+				);
 
-			// Recalculate total cost
-			const calculatedTotalCost = Object.values(updatedResources).reduce(
-				(sum, r) => sum + (r.totalCost ?? 0),
-				0
-			);
+				return {
+					...prev,
+					resources: updatedResources,
+					totalCost: parseFloat(calculatedTotalCost.toFixed(10)),
+					costPerUsageUnit: parseFloat((calculatedTotalCost / prev.finishedAmount).toFixed(10)),
+				};
 
-			// Return updated state
-			return {
-				...prev,
-				resources: updatedResources,
-				totalCost: parseFloat(calculatedTotalCost.toFixed(10)),
-				costPerUsageUnit: parseFloat((calculatedTotalCost / prev.finishedAmount).toFixed(10)),
-			};
+			} else if ("totalCost" in prev && "sellPrice" in prev) {
+				const updatedResources = {
+					...prev.resources,
+					[docID]: {
+						...prev.resources[docID],
+						[name]: newValue,
+						totalCost: parseFloat(
+							((prev.resources[docID].costPerUsageUnit ?? 0) * newValue).toFixed(10)
+						),
+					},
+				};
+
+				const calculatedCost = Object.values(updatedResources).reduce(
+					(sum, r) => sum + (r.totalCost ?? 0),
+					0
+				);
+
+				return {
+					...prev,
+					resources: updatedResources,
+					totalCost: parseFloat(calculatedCost.toFixed(10)),
+				};
+				
+			} else {
+				return prev;
+			}
 		});
 	};
 

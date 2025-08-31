@@ -1,8 +1,8 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
+import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 export function ModalFormDish({
 	cucd,
@@ -21,63 +21,14 @@ export function ModalFormDish({
 	const [isTagOpen, setTagOpen] = useState(false);
 	const [isResourceOpen, setResourceOpen] = useState(false);
 
-	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	}
-
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name } = e.target;
-		const file = e.target.files?.[0] || null;
-		setFormData((prev) => ({
-			...prev,
-			[name]: file,
-		}));
-	}
-
-	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		console.log(value);
-
-		setFormData((prev) => ({
-			...prev,
-			[name]: value as TypeFilterKind,
-		}));
-	}
-
-	const handleTagChange = (tag: string, way: "add" | "delete") => {
-		if (way == "delete") {
-			setFormData((prev) => ({
-				...prev,
-				tag: [...prev.tag.filter(item => item !== tag)]
-			}));
-		} else if (way == "add") {
-			setFormData((prev) => ({
-				...prev,
-				tag: prev.tag.includes(tag) ? prev.tag : [...prev.tag, tag]
-			}));
-		}
-	}
-
-	const handleResourceUsageAmount = (
-		docID: string,
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...structuredClone(prev),
-			resources: {
-				...prev.resources,
-				[docID]: {
-					...prev.resources[docID],
-					[name]: value,
-				},
-			},
-		}));
-	};
+	const {
+		handleTextChange,
+		handleImageChange,
+		handleSelectChange,
+		handleTagChange,
+		removeResource,
+		handleResourceUsageAmount
+	} = useFormHandlers(setFormData);
 
 	return (
 		<>
@@ -112,7 +63,7 @@ export function ModalFormDish({
 												className={`capitalize w-full py-1 border rounded-md px-2 ${cucd == "update" ? "bg-gray-200 border-gray-500" : "border-black"}`}
 												id="status"
 												name="status"
-												defaultValue={formData.status}
+												value={formData.status}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="active">active</option>
 												<option value="inactive">inactive</option>
@@ -127,7 +78,7 @@ export function ModalFormDish({
 												className={`capitalize w-full py-1 border rounded-md px-2 bg-gray-200 border-gray-500}`}
 												id="kind"
 												name="kind"
-												defaultValue={formData.kind}
+												value={formData.kind}
 												disabled={true}
 												onChange={(e) => handleSelectChange(e)}>
 												<option value="dish">dish</option>
@@ -138,27 +89,27 @@ export function ModalFormDish({
 									</tr>
 									<tr>
 										<th><label htmlFor="category" className="capitalize">category</label></th>
-										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={formData.category} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" value={formData.category} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" value={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="name" className="capitalize">name</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" value={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="store" className="capitalize">store</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleTextChange(e)} /></td>
-									</tr>
-									<tr>
-										<th><label htmlFor="sellPrice" className="capitalize">sellPrice</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" defaultValue={formData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" value={formData.store} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="totalCost" className="capitalize">totalCost</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="totalCost" name="totalCost" defaultValue={formData.totalCost} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="cost" name="cost" value={formData.totalCost} disabled onChange={(e) => handleTextChange(e)} /></td>
+									</tr>
+									<tr>
+										<th><label htmlFor="sellPrice" className="capitalize">sellPrice</label></th>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" value={formData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -227,20 +178,7 @@ export function ModalFormDish({
 									name="instruction"
 									id="instruction"
 									className="lowercase border-black border rounded-md px-2 mb-3"
-									defaultValue={formData.instruction}
-									onChange={(e) => handleTextChange(e)}></textarea>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colSpan={2}>
-							<div className="flex flex-col gap-2 w-full">
-								<div className="capitalize font-bold">description</div>
-								<textarea
-									name="description"
-									id="description"
-									className="lowercase border-black border rounded-md px-2 mb-3"
-									defaultValue={formData.description}
+									value={formData.instruction}
 									onChange={(e) => handleTextChange(e)}></textarea>
 							</div>
 						</td>
@@ -256,16 +194,20 @@ export function ModalFormDish({
 								{
 									Object.entries(formData.resources).map(([docID, resourceObj]) => (
 										<div key={docID} className="flex justify-between items-center mx-10 py-2 border-gray-300 border-b-1">
-											<div className="capitalize">{resourceObj.name}</div>
+											<FontAwesomeIcon icon={faCircleXmark} onClick={() => {
+												removeResource(docID);
+											}} />
+											<div className="capitalize ml-2 mr-auto">{resourceObj.name}</div>
+											<div className="capitalize mr-2 ml-auto">${resourceObj.totalCost}</div>
 											<div className="flex gap-x-1 items-center">
 												<input
 													type="number"
 													id={docID}
 													name="usageAmount"
 													className="border border-black rounded py-1 text-right"
-													defaultValue={resourceObj.usageAmount}
+													value={resourceObj.usageAmount}
 													onChange={(e) => handleResourceUsageAmount(docID, e)} />
-												<span>{resourceObj.usageUnit}</span>
+												<span className="w-10 max-w-20 text-center">{resourceObj.usageUnit}</span>
 											</div>
 										</div>
 									))

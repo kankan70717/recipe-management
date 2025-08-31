@@ -14,9 +14,8 @@ export type TypeDishData = {
 	category: string;
 	image: string | File;
 	instruction: string;
-	finishedAmount: number;
-	usageUnit: string;
-	costPerUsageUnit: number;
+	totalCost: number;
+	sellPrice: number;
 	tag: string[];
 	resources: Record<string, TypeResource>;
 	allergenForFilter: Record<string, TypeAllergenStatus>;

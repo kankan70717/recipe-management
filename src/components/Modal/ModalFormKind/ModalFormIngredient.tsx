@@ -3,7 +3,7 @@ import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientDat
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
-import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
+import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 
 export function ModalFormIngredient({
@@ -58,7 +58,7 @@ export function ModalFormIngredient({
 		handleTagChange,
 		handleAllergenCategoryChange,
 		handleAllergenItemChange
-	} = usePrepFormHandlers(setFormData);
+	} = useFormHandlers(setFormData);
 
 	return (
 		<table className="border-separate border-spacing-y-3 border-spacing-x-5 w-full h-full mb-3">

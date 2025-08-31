@@ -7,9 +7,10 @@ export const initialResourcesData: TypeResource = {
 	"usageUnit": "",
 	"totalCost": 0,
 	"removable": false,
+	"costPerUsageUnit": 0,
 	"resourceAllergens": {
 	},
 	"substitute": {
-	
+
 	}
 }

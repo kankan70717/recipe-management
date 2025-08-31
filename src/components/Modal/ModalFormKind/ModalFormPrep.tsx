@@ -2,7 +2,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-solid-svg-icons";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
-import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
+import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 export function ModalFormPrep({
 	cucd,
@@ -28,7 +28,7 @@ export function ModalFormPrep({
 		handleTagChange,
 		removeResource,
 		handleResourceUsageAmount
-	} = usePrepFormHandlers(setFormData);
+	} = useFormHandlers(setFormData);
 
 	return (
 		<>

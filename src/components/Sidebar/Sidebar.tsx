@@ -1,7 +1,7 @@
 import { useSidebarContext } from "../../context/SidebarContext";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faHouse, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 export default function Sidebar() {
 
@@ -21,6 +21,11 @@ export default function Sidebar() {
 					onClick={() => navigate("/search")}>
 					<FontAwesomeIcon icon={faMagnifyingGlass} className={`w-8 ${isSidebarOpen ? "text-lg" : "text-xl"}`} />
 					{isSidebarOpen == true ? "search" : ""}
+				</li>
+				<li className={`capitalize flex items-center rounded-full mb-3 px-5 py-2 text-center ${currentPath == "setting" ? "bg-gray-200" : ""} hover:bg-gray-200 ${isSidebarOpen == true ? "flex-row gap-2 w-full" : "justify-center w-12 h-12 flex-col text-xs align-middle"}`}
+					onClick={() => navigate("/setting")}>
+					<FontAwesomeIcon icon={faGear} className={`w-8 ${isSidebarOpen ? "text-lg" : "text-xl"}`} />
+					{isSidebarOpen == true ? "setting" : ""}
 				</li>
 			</ul>
 		</div>

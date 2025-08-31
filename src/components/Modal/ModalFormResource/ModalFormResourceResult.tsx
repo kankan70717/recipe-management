@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
 import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
-import { usePrepFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
+import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 
 export default function ModalFormResourceResult(
 	{
@@ -49,7 +49,7 @@ export default function ModalFormResourceResult(
 	const {
 		handleResource,
 		handleResourceUsageAmount
-	} = usePrepFormHandlers(setFormData);
+	} = useFormHandlers(setFormData);
 
 	return (
 		<div className={`absolute inset-0 rounded-lg p-5 bg-white flex flex-col`}>
