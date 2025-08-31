@@ -14,7 +14,7 @@ export type TypePrepData = {
 	category: string;
 	image: string | File;
 	instruction: string;
-	totalCost:number;
+	totalCost: number;
 	finishedAmount: number;
 	usageUnit: string;
 	costPerUsageUnit: number;
@@ -22,7 +22,8 @@ export type TypePrepData = {
 	resources: Record<string, TypeResource>;
 	allergenForFilter: Record<string, TypeAllergenStatus>;
 	allergen: Record<string, TypeResourceAllergen>;
-	dishRefs: Record<string, string>;
+	dishRefs: Record<string, { name: string, image: string }>;
+	prepRefs: Record<string, { name: string, image: string }>;
 	updatePerson: string;
 	updateDate: {
 		seconds: number;

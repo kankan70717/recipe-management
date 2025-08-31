@@ -95,8 +95,8 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 
 			if ("resources" in formData) {
 				await Promise.all(
-					Object.entries(formData.resources).map(([resourceID, resourceObj]) =>
-						handleRelatedRecipe(resourceObj.kind, resourceID, formData.docID, formData.name)
+					Object.entries(formData.resources).map(([resourceID, _]) =>
+						handleRelatedRecipe(formData.kind, resourceID, formData.docID, formData.name, formData.image as string)
 					)
 				);
 			}
@@ -171,22 +171,30 @@ export async function handleRelatedRecipe(
 	resourceKind: TypeFilterKind,
 	resourceDocID: string,
 	relatedRecipeID: string,
-	relatedRecipeName: string
+	relatedRecipeName: string,
+	relatedRecipeImage: string,
 ) {
 	try {
 		const docRef = doc(db, "tamaru", resourceDocID);
+		console.log(`${resourceKind}`);
 
 		if (resourceKind === "prep") {
+			console.log(`${relatedRecipeID}:${relatedRecipeName} is added in ${resourceDocID}`);
 			await updateDoc(docRef, {
-				[`prepRefs.${relatedRecipeID}`]: relatedRecipeName,
+				[`prepRefs.${relatedRecipeID}`]: {
+					name: relatedRecipeName,
+					image: relatedRecipeImage
+				},
 			});
 		} else if (resourceKind === "dish") {
 			await updateDoc(docRef, {
-				[`dishRefs.${relatedRecipeID}`]: relatedRecipeName,
+				[`dishRefs.${relatedRecipeID}`]: {
+					name: relatedRecipeName,
+					image: relatedRecipeImage
+				},
 			});
 		}
 
-		console.log(`${relatedRecipeName} is added in ${resourceDocID}`);
 	} catch (error) {
 		console.error("Error updating related recipe:", error);
 	}

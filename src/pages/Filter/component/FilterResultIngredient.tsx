@@ -1,4 +1,4 @@
-import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleChevronRight, faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import type { TypeFilterKind } from "../type/TypeFilter";
@@ -287,10 +287,15 @@ export function FilterResultIngredient({
 			</div>
 			<div>
 				<h4 className="capitalize text-2xl">related recipe</h4>
-				<div className="flex flex-wrap gap-2">
+				<div className="flex flex-col">
 					{
-						Object.entries(detailData.prepRefs).map(([relatedRecipeID, relatedRecipeName]) => (
-							<span key={relatedRecipeID} className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">{relatedRecipeName}</span>
+						detailData.prepRefs
+						&& Object.entries(detailData.prepRefs).map(([relatedRecipeID, relatedRecipeObj]) => (
+							<div key={relatedRecipeID} className="flex items-center gap-3 py-1 border-b-gray-200 border-b-1">
+								<img src={relatedRecipeObj.image} className="h-10 w-10 rounded-full object-cover" />
+								<span className="capitalize text-sm">{relatedRecipeObj.name}</span>
+								<FontAwesomeIcon icon={faCircleChevronRight} />
+							</div>
 						))
 					}
 				</div>

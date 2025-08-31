@@ -23,8 +23,8 @@ export type TypeIngredientData = {
 	tag: string[];
 	allergenForFilter: Record<string, TypeAllergenStatus>;
 	allergen: Record<string, TypeResourceAllergen>;
-	dishRefs: Record<string, string>;
-	prepRefs: Record<string, string>;
+	dishRefs: Record<string, { name: string, image: string }>;
+	prepRefs: Record<string, { name: string, image: string }>;
 	updatePerson: string;
 	updateDate: {
 		seconds: number;
