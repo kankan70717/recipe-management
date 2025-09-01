@@ -9,7 +9,13 @@
 
 import {setGlobalOptions} from "firebase-functions";
 /* import {onRequest} from "firebase-functions/https"; */
-import * as logger from "firebase-functions/logger";
+/* import * as logger from "firebase-functions/logger"; */
+
+import * as functions from "firebase-functions";
+
+export const helloWorld = functions.https.onCall(() => {
+  return { message: "Hello world" };
+});
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

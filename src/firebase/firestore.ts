@@ -1,12 +1,14 @@
 // src/firebase/firestore.ts
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { db } from "./config";
+import { db, storage } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";
 import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
 import { resoucesToAllergen } from "./resoucesToAllergen";
+import type { TypeFirestoreUser } from "../types/TypeFirestoreUser";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export async function getSetting() {
 	const docId = "setting";
@@ -200,3 +202,36 @@ export async function handleRelatedRecipe(
 	}
 }
 
+export async function saveUserToFirestore(uid: string, userData: TypeFirestoreUser) {
+
+	try {
+		const docRef = doc(db, "tamaru", uid);
+		await setDoc(docRef, userData);
+		console.log("User saved in Firestore:", uid);
+	} catch (error) {
+		console.error("Error saving user to Firestore:", error);
+	}
+}
+
+export async function uploadFileAndSaveURL(
+	docPath: string,
+	file: File,
+	field: string,
+) {
+	try {
+		const fileRef = ref(storage, `${docPath}/${file.name}`);
+		await uploadBytes(fileRef, file);
+
+		const fileURL = await getDownloadURL(fileRef);
+
+		const docRef = doc(db, docPath);
+		await updateDoc(docRef, { [field]: fileURL });
+
+		console.log(`File uploaded and URL saved for ${docPath}: ${fileURL}`);
+		return fileURL;
+
+	} catch (error) {
+		console.error("Error uploading file:", error);
+		throw error;
+	}
+}

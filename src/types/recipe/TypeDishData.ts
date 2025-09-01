@@ -7,12 +7,13 @@ export type TypeDishData = {
 	id: string;
 	status: "active" | "inactive" | "pending";
 	store: string;
-	kind: "prep";
+	kind: "dish";
 	name: string;
 	nameJa: string;
 	searchKeywords: string[];
 	category: string;
 	image: string | File;
+	description:string;
 	instruction: string;
 	totalCost: number;
 	sellPrice: number;

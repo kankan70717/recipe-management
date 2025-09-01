@@ -8,6 +8,7 @@ import { getSetting } from "./firebase/firestore"
 import Home from "./pages/Home/Home"
 import FilterResultLayout from "./pages/Filter/component/FilterResultLayout"
 import SettingLayout from "./pages/Setting/SettingLayout"
+import { UserLayout } from "./pages/User/UserLayout"
 
 const router = createBrowserRouter([
 	{
@@ -40,6 +41,13 @@ const router = createBrowserRouter([
 				element: <MainContent />,
 				children: [
 					{ index: true, element: <SettingLayout /> },
+				],
+			},
+			{
+				path: "user",
+				element: <MainContent />,
+				children: [
+					{ index: true, element: <UserLayout /> },
 				],
 			},
 		],
