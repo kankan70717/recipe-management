@@ -16,3 +16,11 @@ export async function registerNewUser(email: string, password: string, displayNa
     throw error;
   }
 }
+import { getFunctions, httpsCallable } from "firebase/functions";
+
+export async function createUserViaFunction(userData: any) {
+  const functions = getFunctions();
+  const createUser = httpsCallable(functions, "createUserWithRole");
+  const result = await createUser(userData);
+  return result.data;
+}
