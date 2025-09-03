@@ -7,11 +7,32 @@ import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";
 import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
 import { resoucesToAllergen } from "./resoucesToAllergen";
-import type { TypeFirestoreUser } from "../types/TypeFirestoreUser";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
+export async function customLoaders() {
+	const [setting, users] = await Promise.all([getSetting(), getUsers()]);
+	return { setting, users };
+}
 export async function getSetting() {
 	const docId = "setting";
+	const collectionName = "tamaru";
+
+	const docRef = doc(db, collectionName, docId);
+
+	try {
+		const docSnap = await getDoc(docRef);
+		if (docSnap.exists()) {
+			const data = docSnap.data();
+			console.log("Document data:", data);
+			return data;
+		}
+	} catch (error) {
+		console.error("Error getting document:", error);
+	}
+}
+
+export async function getUsers() {
+	const docId = "users";
 	const collectionName = "tamaru";
 
 	const docRef = doc(db, collectionName, docId);
@@ -199,17 +220,6 @@ export async function handleRelatedRecipe(
 
 	} catch (error) {
 		console.error("Error updating related recipe:", error);
-	}
-}
-
-export async function saveUserToFirestore(uid: string, userData: TypeFirestoreUser) {
-
-	try {
-		const docRef = doc(db, "tamaru", uid);
-		await setDoc(docRef, userData);
-		console.log("User saved in Firestore:", uid);
-	} catch (error) {
-		console.error("Error saving user to Firestore:", error);
 	}
 }
 

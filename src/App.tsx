@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard"
 import { AuthProvider } from "./context/AuthContext"
 import MainContent from "./components/MainContent/MainContent"
 import FilterLayout from "./pages/Filter/FilterLayout"
-import { getSetting } from "./firebase/firestore"
+import { customLoaders } from "./firebase/firestore"
 import Home from "./pages/Home/Home"
 import FilterResultLayout from "./pages/Filter/component/FilterResultLayout"
 import SettingLayout from "./pages/Setting/SettingLayout"
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Dashboard />,
-		loader: getSetting,
+		loader: customLoaders,
 		children: [
 			{
 				path: "home",

@@ -1,12 +1,14 @@
-import type { TypeFirestoreUser } from "../types/TypeFirestoreUser";
+import type { TypeUserData } from "../types/users/TypeUsers";
 
-export const initialUserData: TypeFirestoreUser = {
-	displayName: "",
+export const initialUserData: TypeUserData = {
 	email: "",
+	password: "",
+	displayName: "",
 	role: "viewer",
 	group: "tamaru",
 	store: "all",
-	photoURL: undefined,
+	photoFile: undefined,
+	photoBase64: undefined,
 	createdAt: 0,
 	updatedAt: 0
 };

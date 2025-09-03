@@ -14,18 +14,26 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-	const [state, dispatch] = useReducer(authReducer, { user: null, error: null });
+
+	const [state, dispatch] = useReducer(authReducer, {
+		user: null,
+		claims: null,
+		error: null
+	});
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			if (firebaseUser) {
 				dispatch({ type: "LOGIN", payload: firebaseUser });
+
+				const token = await firebaseUser.getIdTokenResult(true);
+				dispatch({ type: "SET_CLAIMS", payload: token.claims });
 			} else {
 				dispatch({ type: "LOGOUT" });
 			}
 		});
 
-		return () => unsubscribe(); // cleanup listener on unmount
+		return () => unsubscribe();
 	}, []);
 
 	const loginWithEmailPassword = async (email: string, password: string) => {

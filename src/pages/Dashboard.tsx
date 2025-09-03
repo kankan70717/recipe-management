@@ -5,10 +5,10 @@ import { SidebarContextProvider } from "../context/SidebarContext";
 import { SettingProvider } from "../context/SettingsContext";
 
 export default function Dashboard() {
-	const downloadedSetting = useLoaderData();
+	const downloadedData = useLoaderData();
 
 	return (
-		<SettingProvider downloadedSetting={downloadedSetting}>
+		<SettingProvider downloadedData={downloadedData}>
 			<SidebarContextProvider>
 				<Header />
 				<div className="h-svh flex">
