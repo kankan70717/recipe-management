@@ -18,6 +18,11 @@ export function UserLayout() {
 		"createNewUser"
 	);
 
+	const updateUserFunc = httpsCallable<TypeUserData, { message: string }>(
+		functions,
+		"updateUser"
+	);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value, files, type } = e.target as HTMLInputElement;
 
@@ -27,7 +32,7 @@ export function UserLayout() {
 		}));
 	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const createUser = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		try {
@@ -57,6 +62,36 @@ export function UserLayout() {
 		}
 	};
 
+	const updateUser = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		try {
+			let photoBase64: string | undefined;
+
+			if (formData.photoFile) {
+				// Base64 に変換
+				const reader = new FileReader();
+				photoBase64 = await new Promise<string>((resolve, reject) => {
+					reader.onload = () => {
+						const result = reader.result as string;
+						const base64 = result.split(",")[1];
+						resolve(base64);
+					};
+					reader.onerror = reject;
+					reader.readAsDataURL(formData.photoFile!);
+				});
+			}
+
+			const result = await updateUserFunc({ ...formData, photoBase64 });
+			console.log(result.data.message);
+			setFormData(initialUserData);
+
+		} catch (err) {
+			console.error(err);
+			alert("Failed to register user.");
+		}
+	}
+
 	return (
 		<div className={`relative h-full`}>
 			<div className="flex flex-col gap-3 p-10">
@@ -70,38 +105,43 @@ export function UserLayout() {
 				</div>
 				<div className="border border-gray-400 rounded">
 					<table className="table-auto w-full border-collapse">
-						<tr className="capitalize bg-gray-200 leading-10">
-							<th className="pl-5 text-left">name</th>
-							<th className="pl-5 text-left">email</th>
-							<th className="pl-5 text-left">store</th>
-							<th className="pl-5 text-left">role</th>
-							<th className="pl-5 text-left"></th>
-						</tr>
-						{Object.entries(users).map(([uid, user]: [string, TypeUserData]) => (
-							<tr key={uid} className="leading-20">
-								<td className="flex items-center gap-2 border-r-1 border-gray-200 pl-5">
-									<img src={user.photoURL} className="rounded-full w-10 object-cover aspect-square" />
-									<span className="capitalize">{user.displayName}</span>
-								</td>
-								<td className="border-r-1 border-gray-200 pl-5">{user.email}</td>
-								<td className="border-r-1 border-gray-200 pl-5 capitalize">{user.store}</td>
-								<td className="border-r-1 border-gray-200 pl-5 capitalize">{user.role}</td>
-								<td className="text-center">
-									<FontAwesomeIcon
-										icon={faEdit}
-										onClick={() => {
-											setFormOpen(true);
-											setFormData(user);
-										}} />
-								</td>
+						<tbody>
+							<tr className="capitalize bg-gray-200 leading-10">
+								<th className="pl-5 text-left">name</th>
+								<th className="pl-5 text-left">email</th>
+								<th className="pl-5 text-left">store</th>
+								<th className="pl-5 text-left">role</th>
+								<th className="pl-5 text-left"></th>
 							</tr>
-						))}
+							{Object.entries(users).map(([uid, user]: [string, TypeUserData]) => (
+								<tr key={uid} className="leading-20">
+									<td className="flex items-center gap-2 border-r-1 border-gray-200 pl-5">
+										<img src={user.photoURL} className="rounded-full w-10 object-cover aspect-square" />
+										<span className="capitalizegit">{user.displayName}</span>
+									</td>
+									<td className="border-r-1 border-gray-200 pl-5">{user.email}</td>
+									<td className="border-r-1 border-gray-200 pl-5 capitalize">{user.store}</td>
+									<td className="border-r-1 border-gray-200 pl-5 capitalize">{user.role}</td>
+									<td className="text-center">
+										<FontAwesomeIcon
+											icon={faEdit}
+											onClick={() => {
+												setFormOpen(true);
+												setFormData(user);
+											}} />
+									</td>
+								</tr>
+							))}
+						</tbody>
 					</table>
 				</div>
 			</div>
 			{isFormOpen &&
 				<div className="absolute inset-0 bg-black/50">
-					<form onSubmit={handleSubmit} className="flex flex-col justify-center gap-3 my-18 mx-50 py-10 px-15 rounded bg-white">
+					<form onSubmit={formData.email == ""
+						? updateUser
+						: createUser}
+						className="flex flex-col justify-center gap-3 my-18 mx-50 py-10 px-15 rounded bg-white">
 						<div className="flex items-center justify-between">
 							<span className="capitalize text-2xl">
 								{formData.displayName === "" ? "new user" : formData.displayName}
@@ -175,9 +215,15 @@ export function UserLayout() {
 							</select>
 						</div>
 						<div className="flex flex-col gap-2 items-center">
-							{formData.photoFile && (
+							{formData.photoFile ? (
 								<img
 									src={URL.createObjectURL(formData.photoFile)}
+									alt="Preview"
+									className="w-50 h-50 object-cover"
+								/>
+							) : (
+								<img
+									src={formData.photoURL}
 									alt="Preview"
 									className="w-50 h-50 object-cover"
 								/>
@@ -194,7 +240,9 @@ export function UserLayout() {
 							</label>
 						</div>
 						<button type="submit" className="capitalize bg-black text-white py-1 rounded-full">
-							register user
+							{formData.email == ""
+								? "update user"
+								: "register user"}
 						</button>
 					</form>
 				</div>

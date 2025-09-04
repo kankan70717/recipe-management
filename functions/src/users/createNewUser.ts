@@ -1,13 +1,13 @@
 import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import * as admin from "firebase-admin";
-import { TypeCreateUserData } from "./types/TypeUsers";
+import { TypeUserData } from "./types/TypeUsers";
 
 admin.initializeApp();
 const bucket = admin.storage().bucket();
 
-export const createNewUser = onCall<TypeCreateUserData>(
-	async (request: CallableRequest<TypeCreateUserData>) => {
+export const createNewUser = onCall<TypeUserData>(
+	async (request: CallableRequest<TypeUserData>) => {
 		const data = request.data;
 		const auth = request.auth;
 
@@ -42,6 +42,7 @@ export const createNewUser = onCall<TypeCreateUserData>(
 				.doc("users")
 				.set({
 					[`${userRecord.uid}`]: {
+						uid: userRecord.uid,
 						displayName: data.displayName,
 						email: data.email,
 						role: data.role,

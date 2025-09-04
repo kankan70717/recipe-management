@@ -1,6 +1,7 @@
 import type { TypeUserData } from "../types/users/TypeUsers";
 
 export const initialUserData: TypeUserData = {
+	uid: "",
 	email: "",
 	password: "",
 	displayName: "",
