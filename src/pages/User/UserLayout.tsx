@@ -6,6 +6,7 @@ import type { TypeUserData } from "../../types/users/TypeUsers";
 import { useSetting } from "../../context/SettingsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faXmark } from "@fortawesome/free-solid-svg-icons";
+import noImage from "../../assets/noImage.jpg";
 
 export function UserLayout() {
 	const [isFormOpen, setFormOpen] = useState(false);
@@ -88,7 +89,7 @@ export function UserLayout() {
 
 		} catch (err) {
 			console.error(err);
-			alert("Failed to register user.");
+			alert("Failed to update user.");
 		}
 	}
 
@@ -116,7 +117,7 @@ export function UserLayout() {
 							{Object.entries(users).map(([uid, user]: [string, TypeUserData]) => (
 								<tr key={uid} className="leading-20">
 									<td className="flex items-center gap-2 border-r-1 border-gray-200 pl-5">
-										<img src={user.photoURL} className="rounded-full w-10 object-cover aspect-square" />
+										<img src={user.photoURL ? user.photoURL : noImage} className="rounded-full w-10 object-cover aspect-square" />
 										<span className="capitalizegit">{user.displayName}</span>
 									</td>
 									<td className="border-r-1 border-gray-200 pl-5">{user.email}</td>
@@ -138,9 +139,9 @@ export function UserLayout() {
 			</div>
 			{isFormOpen &&
 				<div className="absolute inset-0 bg-black/50">
-					<form onSubmit={formData.email == ""
-						? updateUser
-						: createUser}
+					<form onSubmit={formData.uid == ""
+						? createUser
+						: updateUser}
 						className="flex flex-col justify-center gap-3 my-18 mx-50 py-10 px-15 rounded bg-white">
 						<div className="flex items-center justify-between">
 							<span className="capitalize text-2xl">
@@ -215,19 +216,17 @@ export function UserLayout() {
 							</select>
 						</div>
 						<div className="flex flex-col gap-2 items-center">
-							{formData.photoFile ? (
-								<img
-									src={URL.createObjectURL(formData.photoFile)}
-									alt="Preview"
-									className="w-50 h-50 object-cover"
-								/>
-							) : (
-								<img
-									src={formData.photoURL}
-									alt="Preview"
-									className="w-50 h-50 object-cover"
-								/>
-							)}
+							<img
+								src={
+									formData.photoFile ? (
+										URL.createObjectURL(formData.photoFile))
+										: formData.photoURL
+											? formData.photoURL
+											: noImage
+								}
+								alt="Preview"
+								className="w-50 h-50 object-cover"
+							/>
 							<label className="border rounded px-2 py-1 bg-gray-200 cursor-pointer text-center">
 								<span className="capitalize">choose photo</span>
 								<input
@@ -240,9 +239,9 @@ export function UserLayout() {
 							</label>
 						</div>
 						<button type="submit" className="capitalize bg-black text-white py-1 rounded-full">
-							{formData.email == ""
-								? "update user"
-								: "register user"}
+							{formData.uid == ""
+								? "register user"
+								: "update user"}
 						</button>
 					</form>
 				</div>

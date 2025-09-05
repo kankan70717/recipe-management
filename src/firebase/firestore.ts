@@ -105,21 +105,29 @@ export async function fetchRecipe(
 
 export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
-		const docRef = doc(db, "tamaru", formData.docID);
 
+		let imageURL: string;
+		if (formData.image instanceof File) {
+			imageURL = await uploadFileAndReturnURL(formData.kind, formData.docID, formData.image);
+		} else {
+			imageURL = formData.image;
+		}
+		formData.image = imageURL;
+
+		const docRef = doc(db, "tamaru", formData.docID);
 		if (formData.kind == "prep" || formData.kind == "dish") {
 			const updatedAllergen = resoucesToAllergen((formData as TypePrepData | TypeDishData).resources);
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
 			await updateDoc(docRef, {
 				...structuredClone(formData),
 				allergen: structuredClone(updatedAllergen),
-				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter),
 			});
 
 			if ("resources" in formData) {
 				await Promise.all(
 					Object.entries(formData.resources).map(([resourceID, _]) =>
-						handleRelatedRecipe(formData.kind, resourceID, formData.docID, formData.name, formData.image as string)
+						handleRelatedRecipe(formData.kind, resourceID, formData.docID, formData.name, imageURL)
 					)
 				);
 			}
@@ -143,24 +151,36 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 		const docRef = doc(colRef);
 		const id = docRef.id;
 
-		if (formData.kind == "prep" || formData.kind == "dish") {
+		// 画像アップロード処理
+		let imageURL: string | undefined;
+		if (formData.image instanceof File) {
+			imageURL = await uploadFileAndReturnURL(formData.kind, id, formData.image);
+		} else {
+			imageURL = formData.image;
+		}
+		formData.image = imageURL;
+
+		if (formData.kind === "prep" || formData.kind === "dish") {
 			const updatedAllergen = resoucesToAllergen((formData as TypePrepData | TypeDishData).resources);
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+
 			await setDoc(docRef, {
 				...structuredClone(formData),
 				docID: id,
 				id: Math.floor(Math.random() * 1000000).toString(),
 				allergen: structuredClone(updatedAllergen),
-				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+				image: imageURL
 			});
-
 		} else {
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
+
 			await setDoc(docRef, {
 				...structuredClone(formData),
 				docID: id,
 				id: Math.floor(Math.random() * 1000000).toString(),
-				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
+				allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+				image: imageURL
 			});
 		}
 
@@ -223,21 +243,18 @@ export async function handleRelatedRecipe(
 	}
 }
 
-export async function uploadFileAndSaveURL(
-	docPath: string,
+export async function uploadFileAndReturnURL(
+	kind: TypeFilterKind,
+	docID: string,
 	file: File,
-	field: string,
 ) {
 	try {
-		const fileRef = ref(storage, `${docPath}/${file.name}`);
+		const fileRef = ref(storage, `/tamaru/${kind}/${docID}/${file.name}`);
 		await uploadBytes(fileRef, file);
 
 		const fileURL = await getDownloadURL(fileRef);
 
-		const docRef = doc(db, docPath);
-		await updateDoc(docRef, { [field]: fileURL });
-
-		console.log(`File uploaded and URL saved for ${docPath}: ${fileURL}`);
+		console.log(`File uploaded and URL saved for ${docID}: ${fileURL}`);
 		return fileURL;
 
 	} catch (error) {

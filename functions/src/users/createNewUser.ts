@@ -3,11 +3,10 @@ import { logger } from "firebase-functions/v2";
 import * as admin from "firebase-admin";
 import { TypeUserData } from "./types/TypeUsers";
 
-admin.initializeApp();
-const bucket = admin.storage().bucket();
-
 export const createNewUser = onCall<TypeUserData>(
 	async (request: CallableRequest<TypeUserData>) => {
+		const bucket = admin.storage().bucket();
+
 		const data = request.data;
 		const auth = request.auth;
 
@@ -52,7 +51,7 @@ export const createNewUser = onCall<TypeUserData>(
 						createdAt: admin.firestore.FieldValue.serverTimestamp(),
 						updatedAt: admin.firestore.FieldValue.serverTimestamp(),
 					}
-				});
+				}, { merge: true });
 
 			// 4. add custom claim
 			await admin.auth().setCustomUserClaims(userRecord.uid, {

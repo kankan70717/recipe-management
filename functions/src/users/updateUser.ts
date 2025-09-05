@@ -3,11 +3,10 @@ import { TypeUserData } from "./types/TypeUsers";
 import * as admin from "firebase-admin";
 import { logger } from "firebase-functions";
 
-admin.initializeApp();
-const bucket = admin.storage().bucket();
-
 export const updateUser = onCall<TypeUserData>(
 	async (request: CallableRequest<TypeUserData>) => {
+		const bucket = admin.storage().bucket();
+
 		const data = request.data;
 		const auth = request.auth;
 
@@ -40,23 +39,31 @@ export const updateUser = onCall<TypeUserData>(
 			}
 
 			// 3. update Firestore (users doc 内の uid フィールドを更新)
-			const updateData: Record<string, unknown> = {
-				[`${data.uid}.updatedAt`]: admin.firestore.FieldValue.serverTimestamp(),
-			};
-			if (data.displayName) updateData[`${data.uid}.displayName`] = data.displayName;
-			if (data.email) updateData[`${data.uid}.email`] = data.email;
-			if (data.role) updateData[`${data.uid}.role`] = data.role;
-			if (data.group) updateData[`${data.uid}.group`] = data.group;
-			if (data.store) updateData[`${data.uid}.store`] = data.store;
-			if (photoURL) updateData[`${data.uid}.photoURL`] = photoURL;
+			const userUpdateData: Record<string, unknown> = {};
 
+			if (data.displayName) userUpdateData.displayName = data.displayName;
+			if (data.email) userUpdateData.email = data.email;
+			if (data.role) userUpdateData.role = data.role;
+			if (data.group) userUpdateData.group = data.group;
+			if (data.store) userUpdateData.store = data.store;
+			if (photoURL) userUpdateData.photoURL = photoURL;
+
+			userUpdateData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+			// uid をキーにしたオブジェクトにする
+			const updateData: Record<string, unknown> = {
+				[data.uid]: userUpdateData,
+			};
+
+			// Firestore にマージ
 			await admin.firestore()
 				.collection(data.group)
 				.doc("users")
 				.set(updateData, { merge: true });
 
+
 			// 4. update custom claims
-			const customClaims: Record<string, any> = {};
+			const customClaims: Record<string, unknown> = {};
 			if (data.role) customClaims.role = data.role;
 			if (data.group) customClaims.group = data.group;
 			if (data.store) customClaims.store = data.store;
