@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useFilter } from "../../../context/FilterContext";
-import { fetchRecipe } from "../../../firebase/firestore";
+import { fetchRecipeSnapshot } from "../../../firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faSliders } from "@fortawesome/free-solid-svg-icons";
@@ -21,7 +21,7 @@ export default function FilterResultLayout() {
 	}
 	const { filterItem } = context;
 
-	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | TypePrepData[] | TypeDishData[] | null>(null);
+	const [recipeData, setRecipeData] = useState<(TypeIngredientData | TypePrepData | TypeDishData)[] | null>(null);
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
 	const [formState, setFormState] = useState<{
 		isFormOpen: boolean;
@@ -32,18 +32,10 @@ export default function FilterResultLayout() {
 	});
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const data = await fetchRecipe(filterItem.currentKind, filterItem);
-				console.log(data);
-				setRecipeData(data as TypeIngredientData[]);
-				setDetailData(structuredClone(data[0] as TypeIngredientData));
-			} catch (error) {
-				console.error(error);
-			}
-		};
-		fetchData();
-	}, []);
+		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData);
+
+		return () => unsub();
+	}, [filterItem]);
 
 	return (
 		<div className="relative pt-6 px-6">

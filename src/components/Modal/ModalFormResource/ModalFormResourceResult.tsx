@@ -4,12 +4,12 @@ import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientDat
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { initialIngredientData } from "../../../constants/initialIngredientData";
-import { fetchRecipe } from "../../../firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
 import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
+import { fetchRecipeSnapshot } from "../../../firebase/firestore";
 
 export default function ModalFormResourceResult(
 	{
@@ -28,23 +28,15 @@ export default function ModalFormResourceResult(
 	}
 	const { filterItem } = context;
 
-	const [recipeData, setRecipeData] = useState<TypeIngredientData[] | TypePrepData[] | null>(null);
+	const [recipeData, setRecipeData] = useState<(TypeIngredientData | TypePrepData | TypeDishData)[] | null>(null);
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
 	console.log("formData", formData);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const data = await fetchRecipe(filterItem.currentKind, filterItem);
-				console.log(data);
-				setRecipeData(data as TypeIngredientData[]);
-				setDetailData(data[0] as TypeIngredientData);
-			} catch (error) {
-				console.error(error);
-			}
-		};
-		fetchData();
-	}, []);
+		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData);
+
+		return () => unsub();
+	}, [filterItem]);
 
 	const {
 		handleResource,
@@ -170,7 +162,7 @@ export default function ModalFormResourceResult(
 														)
 														: false
 												}
-												onChange={(e) => handleResource(e, item)} />
+												onChange={(e) => handleResource(e, item as TypeIngredientData | TypePrepData)} />
 										</div>
 										{
 											formData.kind === "prep" || formData.kind === "dish"

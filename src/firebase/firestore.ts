@@ -1,5 +1,5 @@
 // src/firebase/firestore.ts
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
@@ -49,7 +49,7 @@ export async function getUsers() {
 	}
 }
 
-export async function fetchRecipe(
+/* export async function fetchRecipe(
 	currentKind: TypeFilterKind,
 	filterItem: TypeFilterItem,
 ) {
@@ -101,7 +101,64 @@ export async function fetchRecipe(
 		docID: doc.id,
 		...doc.data()
 	}));
+} */
+
+export function fetchRecipeSnapshot(
+	currentKind: TypeFilterKind,
+	filterItem: TypeFilterItem,
+	setData: (data: (TypeIngredientData | TypePrepData | TypeDishData)[]) => void,
+	setDetailData: (item: TypeIngredientData | TypePrepData | TypeDishData) => void
+) {
+	const collectionName = "tamaru";
+
+	const filterAllergen = Object.entries(filterItem[currentKind].allergen)
+		.flatMap(([allergenCategory, obj]) => {
+			if (obj.allSelected) {
+				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
+			} else {
+				return Object.entries(obj.items).flatMap(([allergen, selected]) => {
+					if (selected) return [where(`allergenForFilter.${allergen}`, "in", ["removable", "notContained", "unknown"])];
+					return [];
+				});
+			}
+		});
+
+	const filterCategory = Object.entries(filterItem[currentKind].category)
+		.flatMap(([item, selected]) => selected ? [where(`category.${item}`, "==", true)] : []);
+
+	const filterTag = Object.entries(filterItem[currentKind].tag)
+		.flatMap(([item, selected]) => selected ? [where(`tag.${item}`, "==", true)] : []);
+
+	const q = query(
+		collection(db, collectionName),
+		where("kind", "==", currentKind),
+		where("status", "==", "active"),
+		...filterAllergen,
+		...filterCategory,
+		...filterTag
+	);
+
+	const unsubscribe = onSnapshot(q, (snapshot) => {
+		const liveData = snapshot.docs.map(doc => ({
+			docID: doc.id,
+			...doc.data()
+		}));
+
+		if (liveData.length > 0 && currentKind == "ingredient") {
+			setData(liveData as TypeIngredientData[]);
+			setDetailData(liveData[0] as TypeIngredientData);
+		} else if (liveData.length > 0 && currentKind == "prep") {
+			setData(liveData as TypePrepData[]);
+			setDetailData(liveData[0] as TypePrepData);
+		} else if (liveData.length > 0 && currentKind == "dish") {
+			setData(liveData as TypeDishData[]);
+			setDetailData(liveData[0] as TypeDishData);
+		}
+	});
+
+	return unsubscribe;
 }
+
 
 export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
