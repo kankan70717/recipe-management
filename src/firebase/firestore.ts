@@ -8,6 +8,7 @@ import type { TypeDishData } from "../types/recipe/TypeDishData";
 import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
 import { resoucesToAllergen } from "./resoucesToAllergen";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import type { TypeResource } from "../types/recipe/TypeResource";
 
 export async function customLoaders() {
 	const [setting, users] = await Promise.all([getSetting(), getUsers()]);
@@ -48,60 +49,6 @@ export async function getUsers() {
 		console.error("Error getting document:", error);
 	}
 }
-
-/* export async function fetchRecipe(
-	currentKind: TypeFilterKind,
-	filterItem: TypeFilterItem,
-) {
-	const collectionName = "tamaru";
-
-	const filterAllergen = Object.entries(filterItem[currentKind].allergen)
-		.flatMap(([allergenCategory, obj]) => {
-			if (obj.allSelected) {
-				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
-			} else {
-				return Object.entries(obj.items).flatMap(([allergen, selected]) => {
-					if (selected == true) {
-						return [where(`allergenForFilter.${allergen}`, "in", ["removable", "notContained", "unknown"])];
-					} else {
-						return [];
-					}
-				})
-			}
-		});
-
-	const filterCategory = Object.entries(filterItem[currentKind].category).flatMap(([item, selected]) => {
-		if (selected === true) {
-			return [where(`category.${item}`, "==", true)];
-		} else {
-			return [];
-		}
-	});
-
-	const filterTag = Object.entries(filterItem[currentKind].tag).flatMap(([item, selected]) => {
-		if (selected === true) {
-			return [where(`tag.${item}`, "==", true)];
-		} else {
-			return [];
-		}
-	});
-
-	// Max "where 5"
-	const q = query(
-		collection(db, collectionName),
-		where("kind", "==", currentKind),
-		where("status", "==", "active"),
-		...filterAllergen,
-		...filterCategory,
-		...filterTag
-	);
-
-	const snapshot = await getDocs(q);
-	return snapshot.docs.map(doc => ({
-		docID: doc.id,
-		...doc.data()
-	}));
-} */
 
 export function fetchRecipeSnapshot(
 	currentKind: TypeFilterKind,
@@ -159,10 +106,8 @@ export function fetchRecipeSnapshot(
 	return unsubscribe;
 }
 
-
 export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
-
 		let imageURL: string;
 		if (formData.image instanceof File) {
 			imageURL = await uploadFileAndReturnURL(formData.kind, formData.docID, formData.image);
@@ -196,7 +141,107 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 				allergenForFilter: structuredClone(updateDatedAllergenForFilter)
 			});
 		}
+
+		if ("dishRefs" in formData) {
+			Object.entries(formData.dishRefs).forEach(async ([dishID, _]) => {
+				const docRef = doc(db, "tamaru", dishID);
+				try {
+					const docSnap = await getDoc(docRef);
+					if (docSnap.exists()) {
+						const dishData = docSnap.data();
+						const usageAmount = dishData.resources?.[formData.docID]?.usageAmount ?? 0;
+
+						const updatedResource = {
+							costPerUsageUnit: formData.costPerUsageUnit,
+							kind: formData.kind,
+							name: formData.name,
+							resourceAllergens: structuredClone(formData.allergen),
+							totalCost: formData.costPerUsageUnit * usageAmount,
+							usageAmount,
+							usageUnit: formData.usageUnit,
+						} as TypeResource;
+
+						const updatedResources = {
+							...dishData.resources,
+							[formData.docID]: updatedResource,
+						};
+
+						const dishTotalCost = Object.values(updatedResources).reduce(
+							(sum, resource: any) => sum + (resource.totalCost ?? 0),
+							0
+						);
+
+						const updatedAllergen = resoucesToAllergen(updatedResources);
+
+						const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+
+						await updateDoc(docRef, {
+							resources: updatedResources,
+							totalCost: dishTotalCost,
+							allergen: structuredClone(updatedAllergen),
+							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+						});
+
+					} else {
+						throw new Error(`Dish document ${dishID} does not exist`);
+					}
+				} catch (error) {
+					throw new Error(`Dish document ${dishID} does not exist`);
+				}
+			});
+		}
+
+		if ("prepRefs" in formData) {
+			Object.entries(formData.prepRefs).forEach(async ([prepID, _]) => {
+				const docRef = doc(db, "tamaru", prepID);
+				try {
+					const docSnap = await getDoc(docRef);
+					if (docSnap.exists()) {
+						const prepData = docSnap.data();
+						const usageAmount = prepData.resources?.[formData.docID]?.usageAmount ?? 0;
+
+						const updatedResource = {
+							costPerUsageUnit: formData.costPerUsageUnit,
+							kind: formData.kind,
+							name: formData.name,
+							resourceAllergens: structuredClone(formData.allergen),
+							totalCost: formData.costPerUsageUnit * usageAmount,
+							usageAmount,
+							usageUnit: formData.usageUnit,
+						} as TypeResource;
+
+						const updatedResources = {
+							...prepData.resources,
+							[formData.docID]: updatedResource,
+						};
+
+						const prepTotalCost = Object.values(updatedResources).reduce(
+							(sum, resource: any) => sum + (resource.totalCost ?? 0),
+							0
+						);
+
+						const updatedAllergen = resoucesToAllergen(updatedResources);
+
+						const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+
+						await updateDoc(docRef, {
+							resources: updatedResources,
+							totalCost: prepTotalCost,
+							allergen: structuredClone(updatedAllergen),
+							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+						});
+
+					} else {
+						throw new Error(`Dish document ${prepID} does not exist`);
+					}
+				} catch (error) {
+					throw new Error(`Dish document ${prepID} does not exist`);
+				}
+			});
+		}
+
 		console.log("Document updated successfully!");
+
 	} catch (error) {
 		console.error("Error updating document:", error);
 	}
