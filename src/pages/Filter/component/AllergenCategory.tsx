@@ -36,7 +36,7 @@ export const AllergenCategory = ({
 						type="checkbox"
 						id={allergenObj.category}
 						className="peer"
-						checked={filterItem[currentPath].allergen[allergenObj.category].allSelected}
+						checked={filterItem[currentPath].allergen[allergenObj.category]?.allSelected}
 						onChange={(e) => handleSelect(currentPath, "allergen", allergenObj.category, allergenObj.category, e.target.checked)} />
 					<label htmlFor={allergenObj.category} className="px-1">
 						All {allergenObj.category}

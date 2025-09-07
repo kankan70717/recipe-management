@@ -28,7 +28,7 @@ export const FilterProvider = ({
 		throw new Error("SettingContext must be used within a SettingProvider");
 	}
 	const { setting } = settingContext;
-	const [filterItem, updateFilterItem] = useState<TypeFilterItem>(() => createFilterItem(setting));
+	const [filterItem, updateFilterItem] = useState<TypeFilterItem>(createFilterItem(setting));
 
 	const handleSelect = (
 		filterKind: TypeFilterKind,

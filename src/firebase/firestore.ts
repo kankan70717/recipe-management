@@ -9,11 +9,13 @@ import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
 import { resoucesToAllergen } from "./resoucesToAllergen";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type { TypeResource } from "../types/recipe/TypeResource";
+import type { TypeSetting } from "../types/TypeSetting";
 
 export async function customLoaders() {
 	const [setting, users] = await Promise.all([getSetting(), getUsers()]);
 	return { setting, users };
 }
+
 export async function getSetting() {
 	const docId = "setting";
 	const collectionName = "tamaru";
@@ -53,7 +55,7 @@ export async function getUsers() {
 export function fetchRecipeSnapshot(
 	currentKind: TypeFilterKind,
 	filterItem: TypeFilterItem,
-	setData: (data: (TypeIngredientData | TypePrepData | TypeDishData)[]) => void,
+	setData: (data: (TypeIngredientData | TypePrepData | TypeDishData)[] | null) => void,
 	setDetailData: (item: TypeIngredientData | TypePrepData | TypeDishData) => void
 ) {
 	const collectionName = "tamaru";
@@ -71,7 +73,7 @@ export function fetchRecipeSnapshot(
 		});
 
 	const filterCategory = Object.entries(filterItem[currentKind].category)
-		.flatMap(([item, selected]) => selected ? [where(`category.${item}`, "==", true)] : []);
+		.flatMap(([item, selected]) => selected ? [where("category", "==", item)] : []);
 
 	const filterTag = Object.entries(filterItem[currentKind].tag)
 		.flatMap(([item, selected]) => selected ? [where(`tag.${item}`, "==", true)] : []);
@@ -90,6 +92,11 @@ export function fetchRecipeSnapshot(
 			docID: doc.id,
 			...doc.data()
 		}));
+
+		if (liveData.length === 0) {
+			setData([]);
+			return;
+		}
 
 		if (liveData.length > 0 && currentKind == "ingredient") {
 			setData(liveData as TypeIngredientData[]);
@@ -361,6 +368,16 @@ export async function uploadFileAndReturnURL(
 
 	} catch (error) {
 		console.error("Error uploading file:", error);
+		throw error;
+	}
+}
+
+export async function updateSetting(formData: TypeSetting) {
+	const docRef = doc(db, "tamaru", "setting");
+	try {
+		await updateDoc(docRef, structuredClone(formData));
+	} catch (error) {
+		console.error("Failed to update setting:", error);
 		throw error;
 	}
 }
