@@ -426,13 +426,17 @@ export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData
 				Object.keys(detailData.dishRefs).map(async (dishID) => {
 					const docRef = doc(db, "tamaru", dishID);
 					await updateDoc(docRef, {
-						[`prepRefs.${detailData.docID}`]: deleteField()
+						[`resources.${detailData.docID}`]: deleteField()
 					});
 				})
 			);
 		}
 
 		if ("prepRefs" in detailData) {
+
+		}
+
+		if ("resources" in detailData) {
 
 		}
 		console.log(`Recipe ${docID} deleted successfully.`);
