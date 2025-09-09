@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faCircleQuestion, faTags, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircle as faCircleRegular } from "@fortawesome/free-regular-svg-icons";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
+import { useSetting } from "../../../context/SettingsContext";
 
 
 export function ModalFormIngredient({
@@ -20,6 +21,8 @@ export function ModalFormIngredient({
 	const [tagInput, setTagInput] = useState<string>("");
 	const [isAllergenOpen, setAllergenOpen] = useState(false);
 	const [isTagOpen, setTagOpen] = useState(false);
+
+	const { setting } = useSetting();
 
 	const getStatusIcon = (status: string) => {
 		switch (status) {
@@ -118,7 +121,22 @@ export function ModalFormIngredient({
 								</tr>
 								<tr>
 									<th><label htmlFor="category" className="capitalize">category</label></th>
-									<td><input type="text" className="lowercase border rounded-md px-2" id="category" name="category" defaultValue={formData.category} onChange={(e) => handleTextChange(e)} /></td>
+									<td>
+										<select
+											className={`capitalize w-full py-1 border rounded-md px-2`}
+											id="category"
+											name="category"
+											value={formData.category}
+											onChange={(e) => handleSelectChange(e)}>
+											{
+												setting[formData.kind].category.map(item => (
+													<option key={item} value={item}>
+														{item}
+													</option>
+												))
+											}
+										</select>
+									</td>
 								</tr>
 								<tr>
 									<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>

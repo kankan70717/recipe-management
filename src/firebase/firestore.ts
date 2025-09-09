@@ -73,8 +73,8 @@ export function fetchRecipeSnapshot(
 			}
 		});
 
-	const filterCategory = Object.entries(filterItem[currentKind].category)
-		.flatMap(([item, selected]) => selected ? [where("category", "==", item)] : []);
+	const filterCategory = Object.entries(filterItem[currentKind].category).flatMap(
+		([item, selected]) => selected ? [where("category", "==", item)] : []);
 
 	const filterTag = Object.entries(filterItem[currentKind].tag)
 		.flatMap(([item, selected]) => selected ? [where(`tag.${item}`, "==", true)] : []);

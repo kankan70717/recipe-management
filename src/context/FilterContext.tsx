@@ -12,6 +12,7 @@ type TypeFilterContext = {
 		filterItemName: string,
 		checked: boolean
 	) => void;
+	clearFilter: () => void;
 }
 export const FilterContext = createContext<TypeFilterContext | null>(null);
 
@@ -78,8 +79,15 @@ export const FilterProvider = ({
 		});
 	};
 
+	const clearFilter = () => {
+		updateFilterItem(prev => ({
+			...structuredClone(createFilterItem(setting)),
+			currentKind: prev.currentKind
+		}));
+	};
+
 	return (
-		<FilterContext.Provider value={{ filterItem, handleSelect }}>
+		<FilterContext.Provider value={{ filterItem, handleSelect, clearFilter }}>
 			{children}
 		</FilterContext.Provider>
 	);

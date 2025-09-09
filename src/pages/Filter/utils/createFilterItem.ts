@@ -1,24 +1,7 @@
+import { initFilterItem } from "../../../constants/initFilterItem";
 import type { TypeFilterItem, TypeFilterKind } from "../type/TypeFilter";
 
 export function createFilterItem(setting: any): TypeFilterItem {
-	const initFilterItem: TypeFilterItem = {
-		currentKind: "dish",
-		dish: {
-			allergen: {},
-			category: {},
-			tag: {},
-		},
-		prep: {
-			allergen: {},
-			category: {},
-			tag: {},
-		},
-		ingredient: {
-			allergen: {},
-			category: {},
-			tag: {},
-		},
-	};
 
 	setting.allergen.forEach((allergenObj: any) => {
 		const allergenCategory = allergenObj.category;

@@ -282,7 +282,7 @@ export function FilterResultPrep({
 						detailData.dishRefs
 						&& Object.entries(detailData.dishRefs).map(([relatedRecipeID, relatedRecipeObj]) => (
 							<div key={relatedRecipeID} className="flex items-center gap-3 py-1 border-b-gray-200 border-b-1">
-								<img src={relatedRecipeObj.image} className="h-10 w-10 rounded-full object-cover" />
+								<img src={relatedRecipeObj.image || "/src/assets/noImage.jpg"} className="h-10 w-10 rounded-full object-cover" />
 								<span className="capitalize text-sm">{relatedRecipeObj.name}</span>
 								<FontAwesomeIcon icon={faCircleChevronRight} />
 							</div>

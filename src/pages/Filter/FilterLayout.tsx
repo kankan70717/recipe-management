@@ -13,7 +13,7 @@ export default function FilterLayout() {
 	if (!context) {
 		throw new Error("FilterContext must be used within a FilterProvider");
 	}
-	const { filterItem, handleSelect } = context;
+	const { filterItem, handleSelect, clearFilter } = context;
 
 	return (
 		<>
@@ -60,7 +60,11 @@ export default function FilterLayout() {
 				</div>
 			</div>
 			<div className="h-[10%] px-10 border-t-1 border-gray-200 flex items-center">
-				<button className="capitalize mr-auto">reset filter</button>
+				<button
+					className="capitalize mr-auto"
+					onClick={() => clearFilter()}>
+					reset filter
+				</button>
 				<button className="uppercase py-2 px-4 rounded-full w-30 border border-black bg-white text-black">cancel</button>
 				<button
 					className="uppercase py-2 px-4 rounded-full w-30 ml-3 bg-black text-white"
