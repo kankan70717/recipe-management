@@ -1,15 +1,15 @@
-import { faCircleChevronRight, faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import type { TypeFilterKind } from "../type/TypeFilter";
 import { useState, type Dispatch, type SetStateAction } from "react";
+import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { deleteRecipe } from "../../../firebase/firestore";
 
-export function FilterResultIngredient({
+export function FilterResultDish({
 	detailData,
 	setFormState
 }: {
-	detailData: TypeIngredientData;
+	detailData: TypeDishData;
 	setFormState: Dispatch<SetStateAction<{
 		isFormOpen: boolean;
 		kind: TypeFilterKind | undefined
@@ -38,7 +38,7 @@ export function FilterResultIngredient({
 
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
-			<div className="flex gap-5 pt-5">
+			<div className="flex gap-5">
 				<div className="flex items-center aspect-square w-2/5">
 					{
 						typeof detailData.image === "string" &&
@@ -46,18 +46,18 @@ export function FilterResultIngredient({
 					}
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">
-					<div className="flex items-center justify-between">
-						<h3 className="capitalize text-xl">{detailData?.name}</h3>
+					<div className="flex items-center justify-center">
+						<h3 className="capitalize text-3xl">{detailData.name}</h3>
 						<FontAwesomeIcon
 							icon={faPenToSquare}
 							size="xl"
 							className="ml-10"
 							onClick={() => setFormState({
 								isFormOpen: true,
-								kind: "ingredient"
+								kind: "prep"
 							})} />
 					</div>
-					<div className="flex flex-wrap gap-5 justify-start">
+					<div className="flex flex-wrap gap-5 justify-center">
 						<div className="capitalize flex items-center gap-1">
 							<FontAwesomeIcon icon={faLayerGroup} />
 							<span>{detailData.category}</span>
@@ -66,47 +66,35 @@ export function FilterResultIngredient({
 							<FontAwesomeIcon icon={faStore} />
 							{detailData?.store}
 						</div>
-						<div className="capitalize flex items-center gap-1">
-							<FontAwesomeIcon icon={faTruck} />
-							{detailData?.vendor}
-						</div>
 					</div>
-					<table className="w-full border-separate">
+					<table className="w-full border-separate border-spacing-x-3">
 						<tbody>
 							<tr>
-								<th className="capitalize text-left">purchasePrice:</th>
-								<td className="lowercase w-30">${detailData?.purchasePrice}</td>
+								<th className="capitalize text-left">totalCost:</th>
+								<td className="lowercase w-40">{detailData.totalCost}</td>
 							</tr>
 							<tr>
-								<th className="capitalize text-left">purchaseQuantity:</th>
-								<td className="lowercase">{detailData?.purchaseQuantity}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">purchaseUnit:</th>
-								<td className="lowercase">{detailData?.purchaseUnit}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">usageUnit:</th>
-								<td className="lowercase">{detailData?.usageUnit}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">yieldRate (%):</th>
-								<td className="lowercase">{detailData?.yieldRate}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">unitConversionRate:</th>
-								<td className="lowercase">{detailData?.unitConversionRate}</td>
-							</tr>
-							<tr>
-								<th className="capitalize text-left">costPerUsageUnit ($):</th>
-								<td className="lowercase">{detailData.costPerUsageUnit}</td>
+								<th className="capitalize text-left">sellPrice:</th>
+								<td className="lowercase">{detailData.sellPrice}</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">allergen</h4>
+				<h4 className="capitalize text-lg font-bold">instruction</h4>
+				<div className="px-2">
+					{detailData.instruction}
+				</div>
+			</div>
+			<div className="mt-3 flex flex-col gap-2">
+				<h4 className="capitalize text-lg font-bold">description</h4>
+				<div className="px-2">
+					{detailData.description}
+				</div>
+			</div>
+			<div className="mt-3 flex flex-col gap-2">
+				<h4 className="capitalize text-lg font-bold">allergen</h4>
 				<div className="flex flex-col gap-2">
 					<div className="flex gap-2">
 						{
@@ -276,26 +264,11 @@ export function FilterResultIngredient({
 				</div>
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
-				<h4 className="capitalize text-2xl">tag</h4>
+				<h4 className="capitalize text-lg font-bold">tag</h4>
 				<div className="flex flex-wrap gap-2">
 					{
 						detailData.tag.map((tag) => (
 							<span key={tag} className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">{tag}</span>
-						))
-					}
-				</div>
-			</div>
-			<div>
-				<h4 className="capitalize text-2xl">related recipe</h4>
-				<div className="flex flex-col">
-					{
-						detailData.prepRefs
-						&& Object.entries(detailData.prepRefs).map(([relatedRecipeID, relatedRecipeObj]) => (
-							<div key={relatedRecipeID} className="flex items-center gap-3 py-1 border-b-gray-200 border-b-1">
-								<img src={relatedRecipeObj.image} className="h-10 w-10 rounded-full object-cover" />
-								<span className="capitalize text-sm">{relatedRecipeObj.name}</span>
-								<FontAwesomeIcon icon={faCircleChevronRight} />
-							</div>
 						))
 					}
 				</div>

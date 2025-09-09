@@ -10,7 +10,8 @@ export type TypeUserData = TypeCustomUserClaim & {
 	password: string;
 	displayName: string;
 	photoFile?: File;
-	photoBase64?: string
-	createdAt: number,
-	updatedAt: number
+	photoBase64?: string;
+	photoURL?: string;
+	createdAt: number;
+	updatedAt: number;
 };

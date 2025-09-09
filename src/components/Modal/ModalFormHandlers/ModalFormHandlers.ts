@@ -34,6 +34,12 @@ export function useFormHandlers<T extends TypeIngredientData | TypePrepData | Ty
 					(purchasePrice / (purchaseQuantity * (yieldRate / 100) / unitConversionRate)).toFixed(10)
 				);
 			}
+			if (prev.kind == "prep") {
+				const finishedAmount = parseFloat(updated.finishedAmount);
+				updated.costPerUsageUnit = parseFloat(
+					(updated.totalCost / finishedAmount).toFixed(10)
+				);
+			}
 
 			return updated;
 		});
@@ -115,7 +121,7 @@ export function useFormHandlers<T extends TypeIngredientData | TypePrepData | Ty
 					resources: updatedResources,
 					totalCost: parseFloat(calculatedCost.toFixed(10)),
 				};
-				
+
 			} else {
 				return prev;
 			}

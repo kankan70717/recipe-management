@@ -1,8 +1,9 @@
-import { faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleChevronRight, faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeFilterKind } from "../type/TypeFilter";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
+import { deleteRecipe } from "../../../firebase/firestore";
 
 export function FilterResultPrep({
 	detailData,
@@ -14,6 +15,27 @@ export function FilterResultPrep({
 		kind: TypeFilterKind | undefined
 	}>>
 }) {
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [showConfirm, setShowConfirm] = useState(false);
+
+	const handleDelete = async () => {
+		setIsDeleting(true);
+		try {
+			const result = await deleteRecipe(detailData);
+			if (!result) {
+				alert("Recipe not found. It may have already been deleted.");
+			} else {
+				alert("Recipe deleted successfully!");
+				setShowConfirm(false);
+			}
+		} catch (err) {
+			console.error(err);
+			alert("Failed to delete recipe.");
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
 	return (
 		<div className="flex-2/3 border-l-1 border-gray-200 pl-5 overflow-scroll">
 			<div className="flex gap-5">
@@ -252,6 +274,51 @@ export function FilterResultPrep({
 						))
 					}
 				</div>
+			</div>
+			<div>
+				<h4 className="capitalize text-lg font-bold">related recipe</h4>
+				<div className="flex flex-col">
+					{
+						detailData.dishRefs
+						&& Object.entries(detailData.dishRefs).map(([relatedRecipeID, relatedRecipeObj]) => (
+							<div key={relatedRecipeID} className="flex items-center gap-3 py-1 border-b-gray-200 border-b-1">
+								<img src={relatedRecipeObj.image} className="h-10 w-10 rounded-full object-cover" />
+								<span className="capitalize text-sm">{relatedRecipeObj.name}</span>
+								<FontAwesomeIcon icon={faCircleChevronRight} />
+							</div>
+						))
+					}
+				</div>
+			</div>
+			<div className="text-right">
+				<button
+					onClick={() => setShowConfirm(true)}
+					className="px-4 py-2 bg-black text-white rounded-full">
+					Delete
+				</button>
+
+				{showConfirm && (
+					<div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+						<div className="bg-white p-6 rounded-lg shadow-lg text-center">
+							<p className="mb-4">Are you sure you want to delete this recipe?</p>
+							<div className="flex justify-center gap-4">
+								<button
+									onClick={handleDelete}
+									disabled={isDeleting}
+									className="px-4 py-2 bg-black text-white rounded-full disabled:opacity-50"
+								>
+									{isDeleting ? "Deleting..." : "Yes, Delete"}
+								</button>
+								<button
+									onClick={() => setShowConfirm(false)}
+									className="px-4 py-2 bg-gray-300 rounded-full"
+								>
+									Cancel
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

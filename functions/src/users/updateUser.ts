@@ -36,6 +36,8 @@ export const updateUser = onCall<TypeUserData>(
 				});
 
 				photoURL = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+			} else if (data.photoURL) {
+				photoURL = data.photoURL;
 			}
 
 			// 3. update Firestore (users doc 内の uid フィールドを更新)

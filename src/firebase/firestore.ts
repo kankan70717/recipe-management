@@ -1,5 +1,5 @@
 // src/firebase/firestore.ts
-import { collection, deleteDoc, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
@@ -56,12 +56,13 @@ export function fetchRecipeSnapshot(
 	currentKind: TypeFilterKind,
 	filterItem: TypeFilterItem,
 	setData: (data: (TypeIngredientData | TypePrepData | TypeDishData)[] | null) => void,
-	setDetailData: (item: TypeIngredientData | TypePrepData | TypeDishData) => void
+	setDetailData: (item: TypeIngredientData | TypePrepData | TypeDishData) => void,
+	store: string
 ) {
 	const collectionName = "tamaru";
 
-	const filterAllergen = Object.entries(filterItem[currentKind].allergen)
-		.flatMap(([allergenCategory, obj]) => {
+	const filterAllergen = Object.entries(filterItem[currentKind].allergen).flatMap(
+		([allergenCategory, obj]) => {
 			if (obj.allSelected) {
 				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
 			} else {
@@ -78,13 +79,16 @@ export function fetchRecipeSnapshot(
 	const filterTag = Object.entries(filterItem[currentKind].tag)
 		.flatMap(([item, selected]) => selected ? [where(`tag.${item}`, "==", true)] : []);
 
+	const storeFilter = store !== "all" ? [where("store", "==", store)] : [];
+
 	const q = query(
 		collection(db, collectionName),
+		...storeFilter,
 		where("kind", "==", currentKind),
 		where("status", "==", "active"),
 		...filterAllergen,
 		...filterCategory,
-		...filterTag
+		...filterTag,
 	);
 
 	const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -238,6 +242,13 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
 						});
 
+						/* updating related recipe of related recipe  */
+						const updatedDocSnap = await getDoc(docRef);
+						if (docSnap.exists()) {
+							const updatedData = updatedDocSnap.data();
+							updateRecipe(updatedData as TypeIngredientData | TypePrepData | TypeDishData);
+						}
+
 					} else {
 						throw new Error(`Dish document ${prepID} does not exist`);
 					}
@@ -293,13 +304,112 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 			});
 		}
 
+		if ("dishRefs" in formData) {
+			Object.entries(formData.dishRefs).forEach(async ([dishID, _]) => {
+				const docRef = doc(db, "tamaru", dishID);
+				try {
+					const docSnap = await getDoc(docRef);
+					if (docSnap.exists()) {
+						const dishData = docSnap.data();
+						const usageAmount = dishData.resources?.[formData.docID]?.usageAmount ?? 0;
+
+						const updatedResource = {
+							costPerUsageUnit: formData.costPerUsageUnit,
+							kind: formData.kind,
+							name: formData.name,
+							resourceAllergens: structuredClone(formData.allergen),
+							totalCost: formData.costPerUsageUnit * usageAmount,
+							usageAmount,
+							usageUnit: formData.usageUnit,
+						} as TypeResource;
+
+						const updatedResources = {
+							...dishData.resources,
+							[formData.docID]: updatedResource,
+						};
+
+						const dishTotalCost = Object.values(updatedResources).reduce(
+							(sum, resource: any) => sum + (resource.totalCost ?? 0),
+							0
+						);
+
+						const updatedAllergen = resoucesToAllergen(updatedResources);
+
+						const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+
+						await updateDoc(docRef, {
+							resources: updatedResources,
+							totalCost: dishTotalCost,
+							allergen: structuredClone(updatedAllergen),
+							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+						});
+
+					} else {
+						throw new Error(`Dish document ${dishID} does not exist`);
+					}
+				} catch (error) {
+					throw new Error(`Dish document ${dishID} does not exist`);
+				}
+			});
+		}
+
+		if ("prepRefs" in formData) {
+			Object.entries(formData.prepRefs).forEach(async ([prepID, _]) => {
+				const docRef = doc(db, "tamaru", prepID);
+				try {
+					const docSnap = await getDoc(docRef);
+					if (docSnap.exists()) {
+						const prepData = docSnap.data();
+						const usageAmount = prepData.resources?.[formData.docID]?.usageAmount ?? 0;
+
+						const updatedResource = {
+							costPerUsageUnit: formData.costPerUsageUnit,
+							kind: formData.kind,
+							name: formData.name,
+							resourceAllergens: structuredClone(formData.allergen),
+							totalCost: formData.costPerUsageUnit * usageAmount,
+							usageAmount,
+							usageUnit: formData.usageUnit,
+						} as TypeResource;
+
+						const updatedResources = {
+							...prepData.resources,
+							[formData.docID]: updatedResource,
+						};
+
+						const prepTotalCost = Object.values(updatedResources).reduce(
+							(sum, resource: any) => sum + (resource.totalCost ?? 0),
+							0
+						);
+
+						const updatedAllergen = resoucesToAllergen(updatedResources);
+
+						const updateDatedAllergenForFilter = allergenToAllergenForFiilter(updatedAllergen);
+
+						await updateDoc(docRef, {
+							resources: updatedResources,
+							totalCost: prepTotalCost,
+							allergen: structuredClone(updatedAllergen),
+							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
+						});
+
+					} else {
+						throw new Error(`Dish document ${prepID} does not exist`);
+					}
+				} catch (error) {
+					throw new Error(`Dish document ${prepID} does not exist`);
+				}
+			});
+		}
+
 		console.log("Document created successfully!");
 	} catch (error) {
 		console.error("Error creating document:", error);
 	}
 }
 
-export async function deleteRecipe(docID: string) {
+export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData | TypeDishData) {
+	const docID = detailData.docID;
 	const docRef = doc(db, "tamaru", docID);
 
 	try {
@@ -310,6 +420,21 @@ export async function deleteRecipe(docID: string) {
 		}
 
 		await deleteDoc(docRef);
+
+		if ("dishRefs" in detailData) {
+			await Promise.all(
+				Object.keys(detailData.dishRefs).map(async (dishID) => {
+					const docRef = doc(db, "tamaru", dishID);
+					await updateDoc(docRef, {
+						[`prepRefs.${detailData.docID}`]: deleteField()
+					});
+				})
+			);
+		}
+
+		if ("prepRefs" in detailData) {
+
+		}
 		console.log(`Recipe ${docID} deleted successfully.`);
 		return true;
 

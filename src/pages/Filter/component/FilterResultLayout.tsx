@@ -12,6 +12,8 @@ import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { FilterResultIngredient } from "./FilterResultIngredient";
 import { FilterResultPrep } from "./FilterResultPrep";
+import { useAuth } from "../../../context/AuthContext";
+import { FilterResultDish } from "./FilterResultDish";
 
 export default function FilterResultLayout() {
 	const navigate = useNavigate();
@@ -30,9 +32,9 @@ export default function FilterResultLayout() {
 		isFormOpen: false,
 		kind: undefined
 	});
-
+	const { state } = useAuth();
 	useEffect(() => {
-		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData);
+		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData, state.claims?.store);
 
 		return () => unsub();
 	}, [filterItem]);
@@ -147,7 +149,11 @@ export default function FilterResultLayout() {
 								: filterItem.currentKind == "prep" ?
 									<FilterResultPrep
 										detailData={detailData as TypePrepData}
-										setFormState={setFormState} /> : ""
+										setFormState={setFormState} />
+									: filterItem.currentKind == "dish" ?
+										<FilterResultDish
+											detailData={detailData as TypeDishData}
+											setFormState={setFormState} /> : ""
 				}
 			</div>
 			<ModalLayout

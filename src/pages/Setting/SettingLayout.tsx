@@ -85,6 +85,7 @@ export default function SettingLayout() {
 				{
 					settingFormData.allergen.flatMap((allergenCategoryObj: { category: string, items: string[] }, allergenCategoryIndex: number) => (
 						<SettingAllergen
+							key={allergenCategoryObj.category}
 							allergenCategoryObj={allergenCategoryObj}
 							allergenCategoryIndex={allergenCategoryIndex}
 							setSettingFormData={setSettingFormData} />
@@ -128,6 +129,7 @@ export default function SettingLayout() {
 				{
 					Object.entries(settingFormData.dish).map(([propertyName, propertyValue]: [string, string[]]) => (
 						<SettingItems
+							key={propertyName}
 							kind="dish"
 							propertyName={propertyName as "category" | "tag"}
 							propertyValue={propertyValue}
@@ -147,6 +149,7 @@ export default function SettingLayout() {
 				{
 					Object.entries(settingFormData.prep).map(([propertyName, propertyValue]: [string, string[]]) => (
 						<SettingItems
+							key={propertyName}
 							kind="prep"
 							propertyName={propertyName as "category" | "tag"}
 							propertyValue={propertyValue}
@@ -166,6 +169,7 @@ export default function SettingLayout() {
 				{
 					Object.entries(settingFormData.ingredient).map(([propertyName, propertyValue]: [string, string[]]) => (
 						<SettingItems
+							key={propertyName}
 							kind="ingredient"
 							propertyName={propertyName as "category" | "tag"}
 							propertyValue={propertyValue}

@@ -10,6 +10,7 @@ import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngr
 import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 import { fetchRecipeSnapshot } from "../../../firebase/firestore";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ModalFormResourceResult(
 	{
@@ -32,8 +33,9 @@ export default function ModalFormResourceResult(
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
 	console.log("formData", formData);
 
+	const { state } = useAuth();
 	useEffect(() => {
-		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData);
+		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData, state.claims?.store);
 
 		return () => unsub();
 	}, [filterItem]);
