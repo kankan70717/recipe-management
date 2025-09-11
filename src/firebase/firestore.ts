@@ -344,12 +344,35 @@ export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData
 		}
 
 		if ("prepRefs" in detailData) {
-
+			await Promise.all(
+				Object.keys(detailData.prepRefs).map(async (prepID) => {
+					const docRef = doc(db, "tamaru", prepID);
+					await updateDoc(docRef, {
+						[`resources.${detailData.docID}`]: deleteField()
+					});
+				})
+			);
 		}
 
 		if ("resources" in detailData) {
-
+			await Promise.all(
+				Object.keys(detailData.resources).map(async (resourceID) => {
+					const docRef = doc(db, "tamaru", resourceID);
+					if (detailData.kind == "dish") {
+						await updateDoc(docRef, {
+							[`dishRefs.${detailData.docID}`]: deleteField()
+						});
+						console.log(`dishRefs ${detailData.docID} deleted successfully.`);
+					} else if (detailData.kind == "prep") {
+						await updateDoc(docRef, {
+							[`prepRefs.${detailData.docID}`]: deleteField()
+						});
+						console.log(`prepRefs ${detailData.docID} deleted successfully.`);
+					}
+				})
+			);
 		}
+
 		console.log(`Recipe ${docID} deleted successfully.`);
 		return true;
 
