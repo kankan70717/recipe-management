@@ -139,8 +139,8 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 
 			if ("resources" in formData) {
 				await Promise.all(
-					Object.entries(formData.resources).map(([resourceID, _]) =>
-						handleRelatedRecipe(formData.kind, resourceID, formData.docID, formData.name, imageURL)
+					Object.entries(formData.resources).map(([resourceID, resourceObj]) =>
+						handleRelatedRecipe(resourceObj.kind, resourceID, formData.docID, formData.kind, formData.name, imageURL)
 					)
 				);
 			}
@@ -292,6 +292,15 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 				allergenForFilter: structuredClone(updateDatedAllergenForFilter),
 				image: imageURL
 			});
+
+			if ("resources" in formData) {
+				await Promise.all(
+					Object.entries(formData.resources).map(([resourceID, resourceObj]) =>
+						handleRelatedRecipe(resourceObj.kind, resourceID, docRef.id, formData.kind, formData.name, imageURL)
+					)
+				);
+			}
+
 		} else {
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
 
@@ -302,10 +311,6 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 				allergenForFilter: structuredClone(updateDatedAllergenForFilter),
 				image: imageURL
 			});
-		}
-
-		if ("resources" in formData) {
-			
 		}
 
 		console.log("Document created successfully!");
@@ -358,6 +363,7 @@ export async function handleRelatedRecipe(
 	resourceKind: TypeFilterKind,
 	resourceDocID: string,
 	relatedRecipeID: string,
+	relatedRecipeKind: TypeFilterKind,
 	relatedRecipeName: string,
 	relatedRecipeImage: string,
 ) {
@@ -365,22 +371,32 @@ export async function handleRelatedRecipe(
 		const docRef = doc(db, "tamaru", resourceDocID);
 		console.log(`${resourceKind}`);
 
-		if (resourceKind === "prep") {
-			console.log(`${relatedRecipeID}:${relatedRecipeName} is added in ${resourceDocID}`);
-			await updateDoc(docRef, {
-				[`prepRefs.${relatedRecipeID}`]: {
+		const updateData: any = {};
+
+		if (!relatedRecipeID) {
+			console.error("relatedRecipeID is missing");
+		} else {
+			const docRef = doc(db, "tamaru", resourceDocID);
+			const updateData: any = {};
+
+			if (relatedRecipeKind === "dish") {
+				updateData[`dishRefs.${relatedRecipeID}`] = {
 					name: relatedRecipeName,
-					image: relatedRecipeImage
-				},
-			});
-		} else if (resourceKind === "dish") {
-			await updateDoc(docRef, {
-				[`dishRefs.${relatedRecipeID}`]: {
+					image: relatedRecipeImage,
+				};
+			} else if (relatedRecipeKind === "prep") {
+				updateData[`prepRefs.${relatedRecipeID}`] = {
 					name: relatedRecipeName,
-					image: relatedRecipeImage
-				},
-			});
+					image: relatedRecipeImage,
+				};
+			}
+
+			if (Object.keys(updateData).length > 0) {
+				await updateDoc(docRef, updateData);
+			}
 		}
+
+		await updateDoc(docRef, updateData);
 
 	} catch (error) {
 		console.error("Error updating related recipe:", error);
