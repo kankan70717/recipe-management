@@ -20,40 +20,38 @@ export default function LoginPage() {
 
 	return (
 		<div className="flex items-center justify-center w-full h-svh bg-gray-400">
+			<form onSubmit={(e) => {
+				e.preventDefault();
+				handleLoging();
+			}}>
+				<div className="bg-white rounded-lg p-15 w-100 flex flex-col gap-5">
 
-			<div className="bg-white rounded-lg p-15 w-100 flex flex-col gap-5">
-				<h1 className="text-center text-3xl">Sign in / Sign up</h1>
-
-				<input
-					type="email"
-					placeholder="Email"
-					id="email"
-					className="p-3 rounded-lg bg-gray-200 w-full"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-				/>
-
-				<input
-					type="password"
-					placeholder="Password"
-					id="password"
-					className="p-3 rounded-lg bg-gray-200 w-full"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-
-				{loginError == false ? <div className="text-red-500">Incorrect Email or Password</div> : ""}
-
-
-				<div className="flex justify-evenly">
-					<button
-						className="rounded-full border-1 border-black py-1 px-3 w-30 hover:bg-black hover:text-white"
-						onClick={handleLoging}>
-						Sign In
-					</button>
+					<h1 className="text-center text-3xl">Sign in</h1>
+					<input
+						type="email"
+						placeholder="Email"
+						id="email"
+						className="p-3 rounded-lg bg-gray-200 w-full"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+					/>
+					<input
+						type="password"
+						placeholder="Password"
+						id="password"
+						className="p-3 rounded-lg bg-gray-200 w-full"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+					{loginError == false ? <div className="text-red-500">Incorrect Email or Password</div> : ""}
+					<div className="flex justify-evenly">
+						<button
+							className="rounded-full border-1 border-black py-1 px-3 w-30 hover:bg-black hover:text-white">
+							Sign In
+						</button>
+					</div>
 				</div>
-			</div>
-
+			</form>
 		</div>
 	);
 }

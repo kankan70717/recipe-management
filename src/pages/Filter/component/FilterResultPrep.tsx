@@ -275,7 +275,24 @@ export function FilterResultPrep({
 					}
 				</div>
 			</div>
-			<div>
+			<div className="mt-3 flex flex-col gap-2">
+				<h4 className="capitalize text-lg font-bold">resources</h4>
+				<div className="flex flex-col gap-2">
+					{
+						Object.entries(detailData.resources).map(([resourceID, resourceObj]) => (
+							<div
+								key={resourceID}
+								className="flex items-center justify-between border-b-1 border-gray-200">
+								<span className="capitalize">{resourceObj.name}</span>
+								<span className="capitalize ml-auto">{resourceObj.usageAmount}</span>
+								<span className="ml-1 w-20 text-center">{resourceObj.usageUnit}</span>
+								<FontAwesomeIcon icon={faCircleChevronRight}/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+			<div className="mt-3 flex flex-col gap-2">
 				<h4 className="capitalize text-lg font-bold">related recipe</h4>
 				<div className="flex flex-col">
 					{
@@ -290,7 +307,7 @@ export function FilterResultPrep({
 					}
 				</div>
 			</div>
-			<div className="text-right">
+			<div className="mt-3">
 				<button
 					onClick={() => setShowConfirm(true)}
 					className="px-4 py-2 bg-black text-white rounded-full">

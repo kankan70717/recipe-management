@@ -34,8 +34,8 @@ export function SettingItems({
 							key={propertyItemIndex}
 							className="flex items-center gap-3">
 							<input
-								id={`${propertyName}-${propertyItemIndex}`}
-								name={`${propertyName}-${propertyItemIndex}`}
+								id={`${kind}-${propertyName}-${propertyItemIndex}`}
+								name={`${kind}-${propertyName}-${propertyItemIndex}`}
 								type="text"
 								value={propertyItemValue}
 								className="border border-gray-500 px-2 w-full"
