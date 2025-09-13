@@ -1,7 +1,7 @@
 // src/firebase/firestore.ts
-import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "./config";
-import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
+import type {  TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";
@@ -11,12 +11,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import type { TypeResource } from "../types/recipe/TypeResource";
 import type { TypeSetting } from "../types/TypeSetting";
 
-export async function customLoaders() {
-	const [setting, users] = await Promise.all([getSetting(), getUsers()]);
-	return { setting, users };
-}
-
-export async function getSetting() {
+/* export async function getSetting() {
 	const docId = "setting";
 	const collectionName = "tamaru";
 
@@ -32,9 +27,9 @@ export async function getSetting() {
 	} catch (error) {
 		console.error("Error getting document:", error);
 	}
-}
+} */
 
-export async function getUsers() {
+/* export async function getUsers() {
 	const docId = "users";
 	const collectionName = "tamaru";
 
@@ -50,9 +45,9 @@ export async function getUsers() {
 	} catch (error) {
 		console.error("Error getting document:", error);
 	}
-}
+} */
 
-export function fetchRecipeSnapshot(
+/* export function fetchRecipeSnapshot(
 	currentKind: TypeFilterKind,
 	filterItem: TypeFilterItem,
 	setData: (data: (TypeIngredientData | TypePrepData | TypeDishData)[] | null) => void,
@@ -115,7 +110,7 @@ export function fetchRecipeSnapshot(
 	});
 
 	return unsubscribe;
-}
+} */
 
 export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {

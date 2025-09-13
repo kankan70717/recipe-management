@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useFilter } from "../../../context/FilterContext";
-import { fetchRecipeSnapshot } from "../../../firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight, faSliders } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +13,7 @@ import { FilterResultIngredient } from "./FilterResultIngredient";
 import { FilterResultPrep } from "./FilterResultPrep";
 import { useAuth } from "../../../context/AuthContext";
 import { FilterResultDish } from "./FilterResultDish";
+import { getRecipeFn } from "../../../firebase/functions";
 
 export default function FilterResultLayout() {
 	const navigate = useNavigate();
@@ -32,12 +32,27 @@ export default function FilterResultLayout() {
 		isFormOpen: false,
 		kind: undefined
 	});
-	const { state } = useAuth();
-	useEffect(() => {
-		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData, state.claims?.store);
 
-		return () => unsub();
-	}, [filterItem]);
+	const { state } = useAuth();
+
+	useEffect(() => {
+		const fetchRecipes = async () => {
+			if (!state.claims) return;
+
+			try {
+				const result = await getRecipeFn({ filterItem });
+
+				setRecipeData(result.data as (TypeDishData | TypePrepData | TypeIngredientData)[]);
+				setDetailData(result.data as TypeDishData | TypePrepData | TypeIngredientData);
+
+			} catch (error: any) {
+				console.error("Error calling getRecipe:", error.message || error);
+			}
+		};
+
+		fetchRecipes();
+
+	}, [filterItem, state.claims]);
 
 	return (
 		<div className="relative pt-6 px-6">

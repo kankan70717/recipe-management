@@ -27,5 +27,9 @@ export function createFilterItem(setting: any): TypeFilterItem {
 		});
 	});
 
+	(["dish", "prep", "ingredient"] as TypeFilterKind[]).forEach(path => {
+		initFilterItem[path].status = "active";
+	});
+
 	return initFilterItem;
 }

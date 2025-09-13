@@ -9,8 +9,8 @@ import { faAngleRight, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons
 import { ModalFormResourceResultIngredient } from "./ModalFormResourceResultIngredient";
 import { ModalFormResourceResultPrep } from "./ModalFormResourceResultPrep";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
-import { fetchRecipeSnapshot } from "../../../firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
+import { getRecipeFn } from "../../../firebase/functions";
 
 export default function ModalFormResourceResult(
 	{
@@ -34,11 +34,25 @@ export default function ModalFormResourceResult(
 	console.log("formData", formData);
 
 	const { state } = useAuth();
-	useEffect(() => {
-		const unsub = fetchRecipeSnapshot(filterItem.currentKind, filterItem, setRecipeData, setDetailData, state.claims?.store);
 
-		return () => unsub();
-	}, [filterItem]);
+	useEffect(() => {
+		const fetchRecipes = async () => {
+			if (!state.claims) return;
+
+			try {
+				const result = await getRecipeFn({ filterItem });
+
+				setRecipeData(result.data as (TypeDishData | TypePrepData | TypeIngredientData)[]);
+				setDetailData(result.data as TypeDishData | TypePrepData | TypeIngredientData);
+
+			} catch (error: any) {
+				console.error("Error calling getRecipe:", error.message || error);
+			}
+		};
+
+		fetchRecipes();
+
+	}, [filterItem, state.claims]);
 
 	const {
 		handleResource,

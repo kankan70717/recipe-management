@@ -1,10 +1,9 @@
-import { onCall, HttpsError, CallableRequest } from "firebase-functions/v2/https";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import * as admin from "firebase-admin";
-import { TypeUserData } from "./types/TypeUsers";
 
-export const createNewUser = onCall<TypeUserData>(
-	async (request: CallableRequest<TypeUserData>) => {
+export const createNewUser = onCall(
+	async (request) => {
 		const bucket = admin.storage().bucket();
 
 		const data = request.data;

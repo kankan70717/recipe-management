@@ -1,10 +1,13 @@
-import { createNewUser } from "./users/createNewUser";
-import { updateUser } from "./users/updateUser";
-/* import { syncSettingChange } from "./setting/syncSettingChange"; */
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-export { createNewUser };
-export { updateUser };
-/* export { syncSettingChange }; */
+import { getRecipe } from "./features/recipe/getRecipe";
+
+import { getSetting } from "./features/setting/getSetting";
+
+import { createNewUser } from "./features/users/createNewUser";
+import { updateUser } from "./features/users/updateUser";
+import { getUsers } from "./features/users/getUsers";
+
+export { getRecipe, getSetting, createNewUser, updateUser, getUsers };
