@@ -17,6 +17,7 @@ export function FilterResultIngredient({
 }) {
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [showConfirm, setShowConfirm] = useState(false);
+	console.log("detailData", detailData);
 
 	const handleDelete = async () => {
 		setIsDeleting(true);
@@ -277,13 +278,17 @@ export function FilterResultIngredient({
 			</div>
 			<div className="mt-3 flex flex-col gap-2">
 				<h4 className="capitalize text-2xl">tag</h4>
-				<div className="flex flex-wrap gap-2">
-					{
-						detailData.tag.map((tag) => (
-							<span key={tag} className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">{tag}</span>
-						))
-					}
-				</div>
+				{detailData.tag.length !== 0 && (
+					<div className="flex flex-wrap gap-2">
+						{detailData.tag.map((tag) => (
+							<span
+								key={tag}
+								className="rounded-full bg-gray-200 px-4 py-2 capitalize text-sm">
+								{tag}
+							</span>
+						))}
+					</div>
+				)}
 			</div>
 			<div>
 				<h4 className="capitalize text-2xl">related recipe</h4>
