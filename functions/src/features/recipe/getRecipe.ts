@@ -2,19 +2,11 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { TypeFilterItem } from "./types/TypeFilter";
 import { db } from "../../config";
 import { logger } from "firebase-functions";
+import { validateAuth } from "../../utils/validateAuth";
 
 export const getRecipe = onCall(async (request) => {
-	const auth = request.auth;
-	logger.debug("auth", auth);
-	if (!auth) throw new HttpsError("unauthenticated", "You must be signed in.");
 
-	const claims = auth.token as { store?: string; group?: string };
-	logger.debug("claims", claims);
-	if (!claims.store || !claims.group) {
-		throw new HttpsError("permission-denied", "Custom claims missing store or group.");
-	}
-
-	const { store, group } = claims;
+	const { store, group } = validateAuth(request.auth);
 
 	const { filterItem } = request.data as { filterItem: TypeFilterItem };
 	logger.debug("filterItem", filterItem);

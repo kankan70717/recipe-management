@@ -42,8 +42,8 @@ export default function ModalFormResourceResult(
 			try {
 				const result = await getRecipeFn({ filterItem });
 
-				setRecipeData(result.data as (TypeDishData | TypePrepData | TypeIngredientData)[]);
-				setDetailData(result.data as TypeDishData | TypePrepData | TypeIngredientData);
+				setRecipeData(result.data);
+				setDetailData(result.data[0]);
 
 			} catch (error: any) {
 				console.error("Error calling getRecipe:", error.message || error);
