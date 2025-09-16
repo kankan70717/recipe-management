@@ -6,7 +6,7 @@ export type TypeIngredientData = {
 	id: string;
 	status: "active" | "inactive" | "pending";
 	store: string;
-	kind: "ingredient" | "prep" | "dish";
+	kind: "ingredient";
 	name: string;
 	nameJa: string;
 	searchKeywords: string[];

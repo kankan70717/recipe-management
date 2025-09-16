@@ -9,3 +9,5 @@ export const getRecipeFn = httpsCallable<
 	{ filterItem: TypeFilterItem },
 	(TypeDishData | TypePrepData | TypeIngredientData)[]
 >(functions, "getRecipe");
+
+export const createRecipeFn = httpsCallable<TypeDishData | TypePrepData | TypeIngredientData>(functions, "createRecipe");

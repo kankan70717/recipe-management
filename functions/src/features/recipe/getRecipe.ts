@@ -9,7 +9,6 @@ export const getRecipe = onCall(async (request) => {
 	const { store, group } = validateAuth(request.auth);
 
 	const { filterItem } = request.data as { filterItem: TypeFilterItem };
-	logger.debug("filterItem", filterItem);
 	if (!filterItem || !filterItem.currentKind) {
 		throw new HttpsError("invalid-argument", "filterItem or currentKind is missing.");
 	}

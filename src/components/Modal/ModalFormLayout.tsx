@@ -2,7 +2,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { addRecipe, updateRecipe } from "../../firebase/firestore";
+import { updateRecipe } from "../../firebase/firestore";
 import type { TypeFilterKind } from "../../pages/Filter/type/TypeFilter";
 import type { TypePrepData } from "../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../types/recipe/TypeDishData";
@@ -10,6 +10,7 @@ import { ModalFormIngredient } from "./ModalFormKind/ModalFormIngredient";
 import { ModalFormPrep } from "./ModalFormKind/ModalFormPrep";
 import ModalFormResourceFilter from "./ModalFormResource/ModalFormResourceFilter";
 import { ModalFormDish } from "./ModalFormKind/ModalFormDish";
+import { createRecipeFn } from "../../firebase/functions";
 
 export default function ModalFormLayout(
 	{
@@ -49,7 +50,7 @@ export default function ModalFormLayout(
 				await updateRecipe(formData);
 			} else {
 				formData.createdDate.seconds = nowSeconds;
-				await addRecipe(formData);
+				await createRecipeFn(formData);
 			}
 			setSubmitStatus("success");
 			console.log("Saved Form Data:", formData);

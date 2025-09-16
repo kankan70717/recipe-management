@@ -260,7 +260,7 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 	}
 }
 
-export async function addRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
+/* export async function addRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
 		const colRef = collection(db, "tamaru");
 		const docRef = doc(colRef);
@@ -312,7 +312,7 @@ export async function addRecipe(formData: TypeIngredientData | TypePrepData | Ty
 	} catch (error) {
 		console.error("Error creating document:", error);
 	}
-}
+} */
 
 export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData | TypeDishData) {
 	const docID = detailData.docID;
@@ -377,7 +377,7 @@ export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData
 	}
 }
 
-export async function handleRelatedRecipe(
+/* export async function handleRelatedRecipe(
 	resourceKind: TypeFilterKind,
 	resourceDocID: string,
 	relatedRecipeID: string,
@@ -419,7 +419,7 @@ export async function handleRelatedRecipe(
 	} catch (error) {
 		console.error("Error updating related recipe:", error);
 	}
-}
+} */
 
 export async function uploadFileAndReturnURL(
 	kind: TypeFilterKind,

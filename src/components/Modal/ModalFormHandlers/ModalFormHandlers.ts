@@ -1,5 +1,3 @@
-// usePrepFormHandlers.ts
-import type { TypeFilterKind } from "../../../pages/Filter/type/TypeFilter";
 import type { Dispatch, SetStateAction } from "react";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
@@ -8,62 +6,72 @@ import type { TypeAllergenStatus } from "../../../types/TypeAllergenStatus";
 import type { TypeResource } from "../../../types/recipe/TypeResource";
 import { initialResourcesData } from "../../../constants/initialResourcesData";
 
-export function useFormHandlers<T extends TypeIngredientData | TypePrepData | TypeDishData>(
-	setFormData: Dispatch<SetStateAction<T>>
+export function useFormHandlers(
+	setFormData: Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>
 ) {
+	const calculateCostPerUsageUnit = (formData: TypeIngredientData | TypePrepData | TypeDishData) => {
+		switch (formData.kind) {
+			case "prep": {
+				const costPerUsageUnit = parseFloat((formData.totalCost / formData.finishedAmount).toFixed(10));
+				return costPerUsageUnit;
+			}
 
-	const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const { name, value } = e.target;
+			case "ingredient": {
+				const costPerUsageUnit = parseFloat((formData.purchasePrice / (formData.purchaseQuantity * (formData.yieldRate / 100) / formData.unitConversionRate)).toFixed(10));
+				return costPerUsageUnit;
+			}
+		}
+	}
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+		const { name, value, type } = e.target;
 
 		setFormData(prev => {
 			const updated: any = structuredClone(prev);
+			const fieldType =
+				e.target instanceof HTMLSelectElement
+					? "select"
+					: type;
 
-			if (["purchasePrice", "purchaseQuantity", "yieldRate", "unitConversionRate"].includes(name)) {
-				updated[name] = parseFloat(value);
-			} else {
-				updated[name] = value.toLowerCase();
+			switch (fieldType) {
+				case "number": {
+					updated[name] = parseFloat(value);
+					break;
+				}
+				case "select":
+				case "text": {
+					updated[name] = value.toLowerCase();
+					break;
+				}
+
+				case "file": {
+					const target = e.target as HTMLInputElement;
+					updated[name] = target.files?.[0] || null;
+					break;
+				}
 			}
 
-			const purchasePrice = parseFloat(updated.purchasePrice);
-			const purchaseQuantity = parseFloat(updated.purchaseQuantity);
-			const yieldRate = parseFloat(updated.yieldRate);
-			const unitConversionRate = parseFloat(updated.unitConversionRate);
-
-			if (!isNaN(purchasePrice) && !isNaN(purchaseQuantity) && !isNaN(yieldRate) && !isNaN(unitConversionRate) && purchaseQuantity > 0 && unitConversionRate > 0) {
-				updated.costPerUsageUnit = parseFloat(
-					(purchasePrice / (purchaseQuantity * (yieldRate / 100) / unitConversionRate)).toFixed(10)
-				);
-			}
 			if (prev.kind == "prep") {
-				const finishedAmount = parseFloat(updated.finishedAmount);
-				updated.costPerUsageUnit = parseFloat(
-					(updated.totalCost / finishedAmount).toFixed(10)
-				);
+				updated.costPerUsageUnit = calculateCostPerUsageUnit(updated);
 			}
 
 			return updated;
 		});
 	};
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name } = e.target;
-		const file = e.target.files?.[0] || null;
-		setFormData(prev => ({ ...prev, [name]: file }));
-	};
-
-	const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target;
-		setFormData(prev => ({ ...prev, [name]: value as TypeFilterKind }));
-	};
-
 	const handleTagChange = (tag: string, way: "add" | "delete") => {
+
 		setFormData(prev => {
-			return {
-				...prev,
-				tag: way === "delete"
-					? (prev as any).tag.filter((item: string) => item !== tag)
-					: (prev as any).tag.includes(tag) ? (prev as any).tag : [...(prev as any).tag, tag]
-			};
+			const updated: any = structuredClone(prev);
+
+			if (way === "delete") {
+				const updatedTag = updated.tag.filter((item: string) => item !== tag);
+				updated.tag = updatedTag;
+			} else {
+				const updatedTag = updated.tag.includes(tag) ? updated.tag : [...updated.tag, tag];
+				updated.tag = updatedTag;
+			}
+			return updated;
 		});
 	};
 
@@ -218,9 +226,7 @@ export function useFormHandlers<T extends TypeIngredientData | TypePrepData | Ty
 	};
 
 	return {
-		handleTextChange,
-		handleImageChange,
-		handleSelectChange,
+		handleChange,
 		handleTagChange,
 		handleResourceUsageAmount,
 		handleResource,
