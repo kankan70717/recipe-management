@@ -43,7 +43,9 @@ export function FilterResultIngredient({
 				<div className="flex items-center aspect-square w-2/5">
 					{
 						typeof detailData.image === "string" &&
-						(<img src={detailData.image ? detailData.image : "/src/assets/noImage.jpg"} />)
+						(<img 
+							src={detailData.image ? detailData.image : "/src/assets/noImage.jpg"}
+							className="w-full h-full object-cover" />)
 					}
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">

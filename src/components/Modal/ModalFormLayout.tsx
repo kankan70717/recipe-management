@@ -2,7 +2,6 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeIngredientData } from "../../types/recipe/TypeIngredientData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { updateRecipe } from "../../firebase/firestore";
 import type { TypeFilterKind } from "../../pages/Filter/type/TypeFilter";
 import type { TypePrepData } from "../../types/recipe/TypePrepData";
 import type { TypeDishData } from "../../types/recipe/TypeDishData";
@@ -10,7 +9,7 @@ import { ModalFormIngredient } from "./ModalFormKind/ModalFormIngredient";
 import { ModalFormPrep } from "./ModalFormKind/ModalFormPrep";
 import ModalFormResourceFilter from "./ModalFormResource/ModalFormResourceFilter";
 import { ModalFormDish } from "./ModalFormKind/ModalFormDish";
-import { createRecipeFn } from "../../firebase/functions";
+import { saveRecipeFn } from "../../firebase/functions";
 
 export default function ModalFormLayout(
 	{
@@ -44,14 +43,10 @@ export default function ModalFormLayout(
 		setSubmitStatus("pending");
 		const nowSeconds = Math.floor(Date.now() / 1000);
 		formData.updateDate.seconds = nowSeconds;
+		formData.id = Math.random().toString(36).substring(2, 10);
 
 		try {
-			if (cucd == "update") {
-				await updateRecipe(formData);
-			} else {
-				formData.createdDate.seconds = nowSeconds;
-				await createRecipeFn(formData);
-			}
+			await saveRecipeFn(formData);
 			setSubmitStatus("success");
 			console.log("Saved Form Data:", formData);
 		} catch (error) {
@@ -78,18 +73,18 @@ export default function ModalFormLayout(
 							? <ModalFormIngredient
 								cucd={cucd}
 								formData={formData as TypeIngredientData}
-								setFormData={setFormData as Dispatch<SetStateAction<TypeIngredientData>>} />
+								setFormData={setFormData as Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>} />
 							: formState.kind == "prep"
 								? <ModalFormPrep
 									cucd={cucd}
 									formData={formData as TypePrepData}
-									setFormData={setFormData as Dispatch<SetStateAction<TypePrepData>>}
+									setFormData={setFormData as Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>}
 									setShowFilter={setShowFilter} />
 								: formState.kind == "dish"
 									? <ModalFormDish
 										cucd={cucd}
 										formData={formData as TypeDishData}
-										setFormData={setFormData as Dispatch<SetStateAction<TypeDishData>>}
+										setFormData={setFormData as Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>}
 										setShowFilter={setShowFilter} />
 									: null
 					}

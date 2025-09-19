@@ -1,14 +1,10 @@
-// src/firebase/firestore.ts
-import { collection, deleteDoc, deleteField, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "./config";
-import type {  TypeFilterKind } from "../pages/Filter/type/TypeFilter";
+import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
 import type { TypePrepData } from "../types/recipe/TypePrepData";
 import type { TypeDishData } from "../types/recipe/TypeDishData";
-import { allergenToAllergenForFiilter } from "./allergenToAllergenForFIilter";
-import { resoucesToAllergen } from "./resoucesToAllergen";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import type { TypeResource } from "../types/recipe/TypeResource";
 import type { TypeSetting } from "../types/TypeSetting";
 
 /* export async function getSetting() {
@@ -112,7 +108,7 @@ import type { TypeSetting } from "../types/TypeSetting";
 	return unsubscribe;
 } */
 
-export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
+/* export async function updateRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
 		let imageURL: string;
 		if (formData.image instanceof File) {
@@ -237,7 +233,6 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 							allergenForFilter: structuredClone(updateDatedAllergenForFilter),
 						});
 
-						/* updating related recipe of related recipe  */
 						const updatedDocSnap = await getDoc(docRef);
 						if (docSnap.exists()) {
 							const updatedData = updatedDocSnap.data();
@@ -258,7 +253,7 @@ export async function updateRecipe(formData: TypeIngredientData | TypePrepData |
 	} catch (error) {
 		console.error("Error updating document:", error);
 	}
-}
+} */
 
 /* export async function addRecipe(formData: TypeIngredientData | TypePrepData | TypeDishData) {
 	try {
@@ -449,4 +444,65 @@ export async function updateSetting(formData: TypeSetting) {
 		console.error("Failed to update setting:", error);
 		throw error;
 	}
+}
+
+export function subscribeRecipe(
+	filterItem: TypeFilterItem,
+	setRecipeData: React.Dispatch<React.SetStateAction<any>>,
+	setDetailData: React.Dispatch<React.SetStateAction<any>>,
+	store: string
+) {
+	const collectionName = "tamaru";
+
+	const filterAllergen = Object.entries(filterItem[filterItem.currentKind].allergen).flatMap(
+		([allergenCategory, obj]) => {
+			if (obj.allSelected) {
+				return [where(`allergenForFilter.${allergenCategory}`, "in", ["removable", "notContained", "unknown"])];
+			} else {
+				return Object.entries(obj.items).flatMap(([allergen, selected]) => {
+					if (selected) return [where(`allergenForFilter.${allergen}`, "in", ["removable", "notContained", "unknown"])];
+					return [];
+				});
+			}
+		});
+
+	const filterCategory = Object.entries(filterItem[filterItem.currentKind].category).flatMap(
+		([item, selected]) => selected ? [where("category", "==", item)] : []);
+
+	const filterTag = Object.entries(filterItem[filterItem.currentKind].tag)
+		.flatMap(([item, selected]) => selected ? [where(`tag.${item}`, "==", true)] : []);
+
+	const storeFilter = store !== "all" ? [where("store", "==", store)] : [];
+
+	const q = query(
+		collection(db, collectionName),
+		...storeFilter,
+		where("kind", "==", filterItem.currentKind),
+		where("status", "==", "active"),
+		...filterAllergen,
+		...filterCategory,
+		...filterTag,
+	);
+
+	const unsubscribe = onSnapshot(q, (snapshot) => {
+		const liveData = snapshot.docs.map(doc => ({ docID: doc.id, ...doc.data() }));
+
+		if (liveData.length === 0) {
+			setRecipeData([]);
+			return;
+		}
+
+		if (filterItem.currentKind === "ingredient") {
+			setRecipeData(liveData as TypeIngredientData[]);
+			setDetailData(liveData[0] as TypeIngredientData);
+		} else if (filterItem.currentKind === "prep") {
+			setRecipeData(liveData as TypePrepData[]);
+			setDetailData(liveData[0] as TypePrepData);
+		} else if (filterItem.currentKind === "dish") {
+			setRecipeData(liveData as TypeDishData[]);
+			setDetailData(liveData[0] as TypeDishData);
+		}
+	});
+
+	return unsubscribe;
 }

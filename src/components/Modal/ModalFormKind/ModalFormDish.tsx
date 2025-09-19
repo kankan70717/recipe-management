@@ -4,6 +4,8 @@ import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 import { useSetting } from "../../../context/SettingsContext";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
+import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 
 export function ModalFormDish({
 	cucd,
@@ -13,7 +15,7 @@ export function ModalFormDish({
 }: {
 	cucd: "update" | "create" | "delte" | "read";
 	formData: TypeDishData;
-	setFormData: Dispatch<SetStateAction<TypeDishData>>;
+	setFormData: Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>;
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -25,9 +27,7 @@ export function ModalFormDish({
 	const { setting } = useSetting();
 
 	const {
-		handleTextChange,
-		handleImageChange,
-		handleSelectChange,
+		handleChange,
 		handleTagChange,
 		removeResource,
 		handleResourceUsageAmount
@@ -48,12 +48,13 @@ export function ModalFormDish({
 								) : (
 									<img
 										src={formData.image || "/src/assets/noImage.jpg"}
+										className="w-full h-full object-cover"
 									/>
 								)}
 							</div>
 							<label className="capitalize border border-black rounded-full py-1 px-3">
 								<span>upload image</span>
-								<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleImageChange(e)} />
+								<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleChange(e)} />
 							</label>
 						</td>
 						<td className="w-1/2">
@@ -67,7 +68,7 @@ export function ModalFormDish({
 												id="status"
 												name="status"
 												value={formData.status}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												<option value="active">active</option>
 												<option value="inactive">inactive</option>
 												<option value="pending">pending</option>
@@ -83,7 +84,7 @@ export function ModalFormDish({
 												name="kind"
 												value={formData.kind}
 												disabled={true}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												<option value="dish">dish</option>
 												<option value="prep">prep</option>
 												<option value="ingredient">ingredient</option>
@@ -98,7 +99,7 @@ export function ModalFormDish({
 												id="category"
 												name="category"
 												value={formData.category}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												{
 													setting[formData.kind].category.map(item => (
 														<option key={item} value={item}>
@@ -111,23 +112,23 @@ export function ModalFormDish({
 									</tr>
 									<tr>
 										<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" value={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" value={formData.nameJa} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="name" className="capitalize">name</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" value={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" value={formData?.name} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="store" className="capitalize">store</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" value={formData.store} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" value={formData.store} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="totalCost" className="capitalize">totalCost</label></th>
-										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="cost" name="cost" value={formData.totalCost} disabled onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="cost" name="cost" value={formData.totalCost} disabled onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="sellPrice" className="capitalize">sellPrice</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" value={formData.sellPrice} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="sellPrice" name="sellPrice" value={formData.sellPrice} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -181,7 +182,7 @@ export function ModalFormDish({
 												name="updatePerson"
 												placeholder={formData.updatePerson}
 												required
-												onChange={(e) => handleTextChange(e)} />
+												onChange={(e) => handleChange(e)} />
 										</td>
 									</tr>
 								</tbody>
@@ -197,7 +198,7 @@ export function ModalFormDish({
 									id="instruction"
 									className="lowercase border-black border rounded-md px-2 mb-3"
 									value={formData.instruction}
-									onChange={(e) => handleTextChange(e)}></textarea>
+									onChange={(e) => handleChange(e)}></textarea>
 							</div>
 						</td>
 					</tr>

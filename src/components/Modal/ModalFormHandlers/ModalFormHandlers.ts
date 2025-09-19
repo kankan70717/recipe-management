@@ -51,7 +51,7 @@ export function useFormHandlers(
 				}
 			}
 
-			if (prev.kind == "prep") {
+			if (prev.kind == "prep" || prev.kind == "ingredient") {
 				updated.costPerUsageUnit = calculateCostPerUsageUnit(updated);
 			}
 

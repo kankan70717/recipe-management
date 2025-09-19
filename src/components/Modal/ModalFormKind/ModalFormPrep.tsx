@@ -4,6 +4,8 @@ import { faAngleRight, faCircleXmark, faTags, faXmark } from "@fortawesome/free-
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
 import { useFormHandlers } from "../ModalFormHandlers/ModalFormHandlers";
 import { useSetting } from "../../../context/SettingsContext";
+import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
+import type { TypeDishData } from "../../../types/recipe/TypeDishData";
 
 export function ModalFormPrep({
 	cucd,
@@ -13,7 +15,7 @@ export function ModalFormPrep({
 }: {
 	cucd: "update" | "create" | "delte" | "read";
 	formData: TypePrepData;
-	setFormData: Dispatch<SetStateAction<TypePrepData>>;
+	setFormData: Dispatch<SetStateAction<TypeIngredientData | TypePrepData | TypeDishData>>;
 	setShowFilter: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -25,9 +27,7 @@ export function ModalFormPrep({
 	const { setting } = useSetting();
 
 	const {
-		handleTextChange,
-		handleImageChange,
-		handleSelectChange,
+		handleChange,
 		handleTagChange,
 		removeResource,
 		handleResourceUsageAmount
@@ -53,7 +53,7 @@ export function ModalFormPrep({
 							</div>
 							<label className="capitalize border border-black rounded-full py-1 px-3">
 								<span>upload image</span>
-								<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleImageChange(e)} />
+								<input type="file" accept="image/*" className="hidden" name="image" onChange={(e) => handleChange(e)} />
 							</label>
 						</td>
 						<td className="w-1/2">
@@ -67,7 +67,7 @@ export function ModalFormPrep({
 												id="status"
 												name="status"
 												defaultValue={formData.status}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												<option value="active">active</option>
 												<option value="inactive">inactive</option>
 												<option value="pending">pending</option>
@@ -83,7 +83,7 @@ export function ModalFormPrep({
 												name="kind"
 												defaultValue={formData.kind}
 												disabled={true}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												<option value="dish">dish</option>
 												<option value="prep">prep</option>
 												<option value="ingredient">ingredient</option>
@@ -98,7 +98,7 @@ export function ModalFormPrep({
 												id="category"
 												name="category"
 												value={formData.category}
-												onChange={(e) => handleSelectChange(e)}>
+												onChange={(e) => handleChange(e)}>
 												{
 													setting[formData.kind].category.map(item => (
 														<option key={item} value={item}>
@@ -111,27 +111,27 @@ export function ModalFormPrep({
 									</tr>
 									<tr>
 										<th><label htmlFor="nameJa" className="capitalize">nameJa</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="nameJa" name="nameJa" defaultValue={formData.nameJa} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="name" className="capitalize">name</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="name" name="name" defaultValue={formData?.name} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="store" className="capitalize">store</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="store" name="store" defaultValue={formData.store} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="finishedAmount" className="capitalize">finishedAmount</label></th>
-										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="finishedAmount" name="finishedAmount" defaultValue={formData.finishedAmount} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border-black border rounded-md px-2" id="finishedAmount" name="finishedAmount" defaultValue={formData.finishedAmount} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="usageUnit" className="capitalize">usageUnit</label></th>
-										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={formData.usageUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="text" className="lowercase border-black border rounded-md px-2" id="usageUnit" name="usageUnit" defaultValue={formData.usageUnit} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="costPerUsageUnit" className="capitalize">costPerUsageUnit</label></th>
-										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="costPerUsageUnit" name="costPerUsageUnit" disabled value={formData.costPerUsageUnit} onChange={(e) => handleTextChange(e)} /></td>
+										<td><input type="number" className="lowercase border rounded-md px-2 bg-gray-200 border-gray-500" id="costPerUsageUnit" name="costPerUsageUnit" disabled value={formData.costPerUsageUnit} onChange={(e) => handleChange(e)} /></td>
 									</tr>
 									<tr>
 										<th><label htmlFor="updateDate" className="capitalize">updateDate</label></th>
@@ -185,7 +185,7 @@ export function ModalFormPrep({
 												name="updatePerson"
 												placeholder={formData.updatePerson}
 												required
-												onChange={(e) => handleTextChange(e)} />
+												onChange={(e) => handleChange(e)} />
 										</td>
 									</tr>
 								</tbody>
@@ -201,7 +201,7 @@ export function ModalFormPrep({
 									id="instruction"
 									className="lowercase border-black border rounded-md px-2 mb-3"
 									defaultValue={formData.instruction}
-									onChange={(e) => handleTextChange(e)}></textarea>
+									onChange={(e) => handleChange(e)}></textarea>
 							</div>
 						</td>
 					</tr>

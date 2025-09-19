@@ -10,7 +10,7 @@ export const FilterTypeLayout = ({
 ) => {
 
 	return (
-		<div className="w-40 pr-5 border-r-1 border-r-gray-200">
+		<div className="w-40 pr-5 border-r-1 border-r-gray-200 overflow-scroll">
 			<h2 className="text-md mb-3">Filter by</h2>
 			<ul className="list-none capitalize flex flex-col gap-3">
 				<li>

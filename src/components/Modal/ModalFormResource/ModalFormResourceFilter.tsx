@@ -85,7 +85,7 @@ export default function ModalFormResourceFilter({
 				&& <ModalFormResourceResult
 					setShowResourceResult={setShowResourceResult}
 					formData={formData}
-					setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData>>} />
+					setFormData={setFormData as Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>} />
 			}
 		</div>
 	);

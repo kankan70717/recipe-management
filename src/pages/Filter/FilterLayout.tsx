@@ -16,8 +16,8 @@ export default function FilterLayout() {
 	const { filterItem, handleSelect, clearFilter } = context;
 
 	return (
-		<>
-			<div className="pt-6 pr-10 pl-10 h-[90%]">
+		<div className="relative h-full">
+			<div className="pt-6 pr-10 pl-10 h-[90%] flex flex-col">
 				<div className="flex items-center mb-5">
 					<h2 className="capitalize text-2xl mr-5">search</h2>
 					<div className="capitalize flex gap-2">
@@ -53,13 +53,13 @@ export default function FilterLayout() {
 						</label>
 					</div>
 				</div>
-				<div className="flex h-[90%]">
+				<div className="h-full flex">
 					<FilterTypeLayout setFilterType={setFilterType} />
 					<FilterItemLayout currentKind={filterItem.currentKind} filterType={filterType} />
 					<FilterSelectedLayout currentKind={filterItem.currentKind} />
 				</div>
 			</div>
-			<div className="h-[10%] px-10 border-t-1 border-gray-200 flex items-center">
+			<div className="absolute bottom-0 right-0 left-0 h-[10%] px-10 border-t-1 border-gray-200 flex items-center bg-white">
 				<button
 					className="capitalize mr-auto"
 					onClick={() => clearFilter()}>
@@ -71,6 +71,6 @@ export default function FilterLayout() {
 					onClick={() => navigation("result")}>
 					apply</button>
 			</div>
-		</>
+		</div>
 	);
 }

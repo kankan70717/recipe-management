@@ -10,4 +10,4 @@ export const getRecipeFn = httpsCallable<
 	(TypeDishData | TypePrepData | TypeIngredientData)[]
 >(functions, "getRecipe");
 
-export const createRecipeFn = httpsCallable<TypeDishData | TypePrepData | TypeIngredientData>(functions, "createRecipe");
+export const saveRecipeFn = httpsCallable<TypeDishData | TypePrepData | TypeIngredientData>(functions, "saveRecipe");

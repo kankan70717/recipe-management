@@ -14,6 +14,7 @@ import { FilterResultPrep } from "./FilterResultPrep";
 import { useAuth } from "../../../context/AuthContext";
 import { FilterResultDish } from "./FilterResultDish";
 import { getRecipeFn } from "../../../firebase/functions";
+import { subscribeRecipe } from "../../../firebase/firestore";
 
 export default function FilterResultLayout() {
 	const navigate = useNavigate();
@@ -36,23 +37,30 @@ export default function FilterResultLayout() {
 	const { state } = useAuth();
 
 	useEffect(() => {
-		const fetchRecipes = async () => {
-			if (!state.claims) return;
+		if (!state.claims) return;
 
-			try {
-				const result = await getRecipeFn({ filterItem });
+		const fetchAndSubscribe = async () => {
+			const result = await getRecipeFn({ filterItem });
+			setRecipeData(result.data);
+			setDetailData(result.data[0]);
 
-				setRecipeData(result.data);
-				setDetailData(result.data[0]);
+			const unsub = subscribeRecipe(
+				filterItem,
+				setRecipeData,
+				setDetailData,
+				state.claims?.store
+			);
 
-			} catch (error: any) {
-				console.error("Error calling getRecipe:", error.message || error);
-			}
+			return unsub;
 		};
 
-		fetchRecipes();
+		const unsubscribePromise = fetchAndSubscribe();
 
-	}, [filterItem, state.claims]);
+		return () => {
+			unsubscribePromise.then(unsub => unsub && unsub());
+		};
+	}, []);
+
 
 	return (
 		<div className="relative pt-6 px-6">

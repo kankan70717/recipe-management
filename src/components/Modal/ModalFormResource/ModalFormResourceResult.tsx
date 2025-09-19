@@ -20,7 +20,7 @@ export default function ModalFormResourceResult(
 	}: {
 		setShowResourceResult: Dispatch<SetStateAction<boolean>>;
 		formData: TypeDishData | TypePrepData | TypeIngredientData;
-		setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData>>;
+		setFormData: Dispatch<SetStateAction<TypeDishData | TypePrepData | TypeIngredientData>>;
 	}
 ) {
 	const context = useFilter();
@@ -31,7 +31,6 @@ export default function ModalFormResourceResult(
 
 	const [recipeData, setRecipeData] = useState<(TypeIngredientData | TypePrepData | TypeDishData)[] | null>(null);
 	const [detailData, setDetailData] = useState<TypeIngredientData | TypePrepData | TypeDishData>(initialIngredientData);
-	console.log("formData", formData);
 
 	const { state } = useAuth();
 
@@ -135,24 +134,24 @@ export default function ModalFormResourceResult(
 						) : (
 							recipeData.map((item, index) => (
 								<div key={index} className="flex items-center border-b-1 border-gray-200">
+									<input
+										type="radio"
+										id={item.id}
+										name="filterResult"
+										className="hidden peer"
+										checked={detailData?.id === item.id}
+										onChange={() => setDetailData(item)}
+									/>
 									<label
-										key={index}
 										htmlFor={item.id}
-										className="grow flex items-center gap-2 p-2 has-checked:bg-gray-200 peer">
-										{
-											typeof item.image === "string" &&
-											(<img
+										className={`grow flex items-center gap-2 p-2 rounded ${detailData?.id === item.id ? "bg-gray-200" : ""}`}>
+										{typeof item.image === "string" && (
+											<img
 												src={item.image ? item.image : "/src/assets/noImage.jpg"}
-												className="h-20 aspect-square object-cover" />)
-										}
+												className="h-20 aspect-square object-cover"
+											/>
+										)}
 										<h2 className="capitalize">{item.name}</h2>
-										<input
-											type="radio"
-											id={item.id}
-											name="filterResult"
-											className="hidden"
-											checked={detailData?.id == item.id}
-											onChange={() => setDetailData(item)} />
 									</label>
 									<div className="h-full flex gap-2 flex-col justify-center items-center px-2 w-25">
 										<div>
