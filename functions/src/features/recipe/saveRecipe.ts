@@ -44,8 +44,10 @@ export const saveRecipe = onCall(async (request) => {
 				console.error(`Error updating ${updatedFormData.docID} recipe:`, error);
 			}
 
-			/* Ingredient */
-		} else {
+		}
+
+		/* Ingredient */
+		if (formData.kind === "ingredient") {
 			const updateDatedAllergenForFilter = allergenToAllergenForFiilter(formData.allergen);
 			updatedFormData = {
 				...structuredClone(updatedFormData),

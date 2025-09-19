@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeFilterKind } from "../type/TypeFilter";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypePrepData } from "../../../types/recipe/TypePrepData";
-import { deleteRecipe } from "../../../firebase/firestore";
+import { deleteRecipeFn } from "../../../firebase/functions";
 
 export function FilterResultPrep({
 	detailData,
@@ -21,7 +21,7 @@ export function FilterResultPrep({
 	const handleDelete = async () => {
 		setIsDeleting(true);
 		try {
-			const result = await deleteRecipe(detailData);
+			const result = await deleteRecipeFn({ docID: detailData.docID });
 			if (!result) {
 				alert("Recipe not found. It may have already been deleted.");
 			} else {

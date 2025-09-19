@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeFilterKind } from "../type/TypeFilter";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import type { TypeDishData } from "../../../types/recipe/TypeDishData";
-import { deleteRecipe } from "../../../firebase/firestore";
+import { deleteRecipeFn } from "../../../firebase/functions";
 
 export function FilterResultDish({
 	detailData,
@@ -21,7 +21,7 @@ export function FilterResultDish({
 	const handleDelete = async () => {
 		setIsDeleting(true);
 		try {
-			const result = await deleteRecipe(detailData);
+			const result = await deleteRecipeFn({ docID: detailData.docID });
 			if (!result) {
 				alert("Recipe not found. It may have already been deleted.");
 			} else {
@@ -42,9 +42,9 @@ export function FilterResultDish({
 				<div className="flex items-center aspect-square w-2/5">
 					{
 						typeof detailData.image === "string" &&
-						(<img 
-							src={detailData.image ? detailData.image : "/src/assets/noImage.jpg"} 
-							className="w-full h-full object-cover"/>)
+						(<img
+							src={detailData.image ? detailData.image : "/src/assets/noImage.jpg"}
+							className="w-full h-full object-cover" />)
 					}
 				</div>
 				<div className="flex-1 flex flex-col gap-3 justify-center">

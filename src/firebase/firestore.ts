@@ -1,4 +1,4 @@
-import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { db, storage } from "./config";
 import type { TypeFilterItem, TypeFilterKind } from "../pages/Filter/type/TypeFilter";
 import type { TypeIngredientData } from "../types/recipe/TypeIngredientData";
@@ -309,7 +309,7 @@ import type { TypeSetting } from "../types/TypeSetting";
 	}
 } */
 
-export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData | TypeDishData) {
+/* export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData | TypeDishData) {
 	const docID = detailData.docID;
 	const docRef = doc(db, "tamaru", docID);
 
@@ -370,7 +370,7 @@ export async function deleteRecipe(detailData: TypeIngredientData | TypePrepData
 		console.error("Error deleting recipe:", error);
 		throw error;
 	}
-}
+} */
 
 /* export async function handleRelatedRecipe(
 	resourceKind: TypeFilterKind,

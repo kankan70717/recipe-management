@@ -11,3 +11,8 @@ export const getRecipeFn = httpsCallable<
 >(functions, "getRecipe");
 
 export const saveRecipeFn = httpsCallable<TypeDishData | TypePrepData | TypeIngredientData>(functions, "saveRecipe");
+
+export const deleteRecipeFn = httpsCallable<{ docID: string }, { success: boolean; message: string }>(
+	functions,
+	"deleteRecipe"
+);
