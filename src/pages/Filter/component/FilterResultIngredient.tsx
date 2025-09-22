@@ -1,9 +1,9 @@
 import { faCircleChevronRight, faCircleQuestion, faLayerGroup, faPenToSquare, faStore, faTriangleExclamation, faTruck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { TypeIngredientData } from "../../../types/recipe/TypeIngredientData";
-import type { TypeFilterKind } from "../type/TypeFilter";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { deleteRecipeFn } from "../../../firebase/functions";
+import type { TypeFilterKind } from "../type/TypeFilter";
 
 export function FilterResultIngredient({
 	detailData,
