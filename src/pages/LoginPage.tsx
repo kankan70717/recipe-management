@@ -6,11 +6,14 @@ export default function LoginPage() {
 	const [email, setEmail] = useState<string>('');
 	const [password, setPassword] = useState<string>('');
 	const [loginError, setLoginError] = useState<boolean | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
 	const { loginWithEmailPassword } = useAuth();
 	const navigate = useNavigate();
 
 	const handleLoging = async () => {
 		const result = await loginWithEmailPassword(email, password);
+		setLoading(true);
+
 		if (result.success) {
 			navigate('/home');
 		} else {
@@ -46,8 +49,8 @@ export default function LoginPage() {
 					{loginError == false ? <div className="text-red-500">Incorrect Email or Password</div> : ""}
 					<div className="flex justify-evenly">
 						<button
-							className="rounded-full border-1 border-black py-1 px-3 w-30 hover:bg-black hover:text-white">
-							Sign In
+							className={`rounded-full border-1 border-black py-1 px-3 w-30 hover:bg-black hover:text-white ${loading && "border-0"}`}>
+							{loading ? "Processing..." : "Sign In"}
 						</button>
 					</div>
 				</div>

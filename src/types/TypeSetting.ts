@@ -15,4 +15,9 @@ export type TypeSetting = {
 		category: string[];
 		tag: string[];
 	};
+	store: {
+		name: string;
+		address: string;
+		tel: string;
+	}[];
 }

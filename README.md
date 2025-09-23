@@ -5,3 +5,9 @@ ReciPal is a restaurant management application designed to help staff build and 
 The name “ReciPal” is a combination of “Recipe” and “Pal”:
 - Recipe: Represents the app’s core function: managing recipes, ingredients, and menus.
 - Pal: Symbolizes a friendly helper or companion, supporting staff in their daily workflow.
+
+# Tech Stack
+| Category | Tech Stack |
+|----------|----------|
+| FrontEnd   | TypeScript, React |
+| BackEnd   | Row 2B   |
